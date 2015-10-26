@@ -1,0 +1,116 @@
+# The node types providing support for technologies in DICE
+
+node_types:
+
+  # The basis for all the supported technologies is a
+  # Chef application
+  dice.chef_application:
+    derived_from: cloudify.chef.nodes.ApplicationServer
+    properties:
+      version: 
+        default: { get_input: chef_version }
+      chef_server_url: 
+        default: { get_input: chef_server }
+      environment: 
+        default: '_default'
+      validation_client_name: 
+        default: { get_input: chef_validation_user }
+      validation_key: 
+        default: { get_input: chef_validation_key }
+      node_name_prefix: 
+        default: ''
+      node_name_suffix: 
+        default: '.openstack'
+      runlists:
+        default:
+          configure: { get_property: [SELF, chef_cookbooks] }
+      chef_cookbooks:
+        default: []
+
+  # Zookeeper
+  dice.zookeeper:
+    derived_from: dice.chef_application
+    properties:
+      tickTime:
+        default: 2000
+      initLimit:
+        default: 10
+      syncLimit:
+        default: 5
+      clientPort: 
+        default: 2181
+      chef_config:
+        default:
+          version: { get_property: [ SELF, version ] }
+          chef_server_url: { get_input: chef_server }
+          validation_client_name: { get_input: chef_validation_user }
+          validation_key: { get_input: chef_validation_key }
+          node_name_prefix: ''
+          node_name_suffix: '.openstack'
+          runlists:
+            configure:
+              - 'recipe[apt::default]'
+              - 'recipe[java::default]'
+              - 'recipe[hadoop::default]'
+              - 'recipe[hadoop::zookeeper_server]'
+              - 'recipe[hadoop::zookeeper_configure]'
+            start:
+              - 'recipe[hadoop::zookeeper_start]'
+          environment: '_default'
+          attributes:
+            zookeeper:
+              zoocfg:
+                tickTime: { get_property: [SELF, tickTime ] }
+                initLimit: { get_property: [SELF, initLimit] }
+                syncLimit: { get_property: [SELF, syncLimit] }
+                clientPort: { get_property: [SELF, clientPort] }
+
+  # Storm
+  dice.storm_nimbus:
+    derived_from: dice.chef_application
+    properties:
+      chef_config:
+        default:
+          version: { get_property: [ SELF, version ] }
+          chef_server_url: { get_input: chef_server }
+          validation_client_name: { get_input: chef_validation_user }
+          validation_key: { get_input: chef_validation_key }
+          node_name_prefix: ''
+          node_name_suffix: '.openstack'
+          runlists:
+            configure:
+              - 'recipe[apt::default]'
+              - 'recipe[java::default]'
+              - 'recipe[storm-cluster::nimbus]'
+              - 'recipe[storm-cluster::supervisor]'
+              - 'recipe[storm-cluster::configure]'
+            start:
+              - 'recipe[storm-cluster::start]'
+          environment: '_default'
+          attributes:
+            storm:
+              install_method: remote_file
+
+  dice.storm:
+    derived_from: dice.chef_application
+    properties:
+      chef_config:
+        default:
+          version: { get_property: [ SELF, version ] }
+          chef_server_url: { get_input: chef_server }
+          validation_client_name: { get_input: chef_validation_user }
+          validation_key: { get_input: chef_validation_key }
+          node_name_prefix: ''
+          node_name_suffix: '.openstack'
+          runlists:
+            configure:
+              - 'recipe[apt::default]'
+              - 'recipe[java::default]'
+              - 'recipe[storm-cluster::supervisor]'
+              - 'recipe[storm-cluster::configure]'
+            start:
+              - 'recipe[storm-cluster::start]'
+          environment: '_default'
+          attributes:
+            storm:
+              install_method: remote_file

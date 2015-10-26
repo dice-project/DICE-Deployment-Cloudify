@@ -1,0 +1,37 @@
+# The DICE node types providing support for the OpenStack.
+
+node_types:
+
+  dice.small_host:
+    derived_from: cloudify.openstack.nodes.Server
+    properties:
+      cloudify_agent:
+        default:
+          user: { get_input: agent_user }
+      image: 
+        default: { get_input: image }
+      flavor: 
+        default: { get_input: flavor_small }
+
+  dice.medium_host:
+    derived_from: cloudify.openstack.nodes.Server
+    properties:
+      cloudify_agent:
+        default:
+          user: { get_input: agent_user }
+      image: 
+        default: { get_input: image }
+      flavor: 
+        default: { get_input: flavor_med }
+
+  dice.large_host:
+    derived_from: cloudify.openstack.nodes.Server
+    properties:
+      cloudify_agent:
+        default:
+          user: { get_input: agent_user }
+      image: 
+        default: { get_input: image }
+      flavor: 
+        default: { get_input: flavor_large }
+
