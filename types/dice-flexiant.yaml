@@ -1,0 +1,42 @@
+# The DICE node types providing support for the OpenStack.
+
+node_types:
+
+  dice.base_host:
+    derived_from: cloudify.flexiant.nodes.Server
+    properties:
+      auth:
+        default:
+          username: { get_input: fco_username }
+          password: { get_input: fco_password }
+          customer: { get_input: fco_customer }
+          url: "https://cp.diceproject.flexiant.net"
+          verify_ca_cert: False
+      image:
+        default: { get_input: fco_image_uuid }
+      vdc:
+        default: { get_input: fco_vdc_uuid }
+      network:
+        default: { get_input: fco_network_uuid }
+      agent_key:
+        default: { get_input: fco_agent_key }
+
+      cloudify_agent:
+        default:
+          user: { get_input: agent_user }
+
+  dice.small_host:
+    derived_from: dice.base_host
+    properties:
+      server_type:
+        default: { get_input: fco_server_offer_small }
+      disk:
+        default: { get_input: fco_disk_offer_small }
+
+  dice.medium_host:
+    derived_from: dice.base_host
+    properties:
+      server_type:
+        default: { get_input: fco_server_offer_medium }
+      disk:
+        default: { get_input: fco_disk_offer_medium }
