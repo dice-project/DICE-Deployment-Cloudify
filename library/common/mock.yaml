@@ -1,0 +1,31 @@
+# Mock components that can be used for testing deploymnets etc.
+
+node_types:
+
+  dice.components.mock.WebServer:
+    derived_from: cloudify.nodes.WebServer
+    properties:
+      port:
+        default: 8080
+      title:
+        description: This will appear as the title of the page
+        default: Cloudify Hello World
+      description:
+        description: This will appear as the body of the page
+        default: This is an example page.
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        configure: dice.dice_plugin.tasks.test.configure
+        start:     dice.dice_plugin.tasks.test.start
+        stop:      dice.dice_plugin.tasks.test.stop
+        delete:    dice.dice_plugin.tasks.test.delete
+
+  dice.firewall_rules.mock.WebServer:
+    derived_from: dice.firewall_rules.Base
+    properties:
+      rules:
+        default:
+          - remote_ip_prefix: 0.0.0.0/0
+            port: 8080
+          - remote_ip_prefix: 0.0.0.0/0
+            port: 22

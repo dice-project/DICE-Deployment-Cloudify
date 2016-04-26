@@ -1,0 +1,4 @@
+plugins:
+  dice:
+    source: https://gitlab.xlab.si/tadej.borovsak/test-tosca-lib/repository/archive.zip?ref=master
+    executor: host_agent

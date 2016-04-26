@@ -1,0 +1,41 @@
+node_types:
+
+  dice.firewall_rules.Base:
+    derived_from: cloudify.openstack.nodes.SecurityGroup
+
+  dice.hosts.Custom:
+    derived_from: cloudify.openstack.nodes.Server
+    properties:
+      cloudify_agent:
+        default:
+          user: { get_input: agent_user }
+
+  dice.hosts.Small:
+    derived_from: dice.hosts.Custom
+    properties:
+      image:
+        default: { get_input: small_image_id }
+      flavor:
+        default: { get_input: small_flavor_id }
+
+  dice.hosts.Medium:
+    derived_from: dice.hosts.Custom
+    properties:
+      image:
+        default: { get_input: medium_image_id }
+      flavor:
+        default: { get_input: medium_flavor_id }
+
+  dice.hosts.Large:
+    derived_from: dice.hosts.Custom
+    properties:
+      image:
+        default: { get_input: large_image_id }
+      flavor:
+        default: { get_input: large_flavor_id }
+
+
+relationships:
+
+  dice.relationships.ProtectedBy:
+    derived_from: cloudify.openstack.server_connected_to_security_group
