@@ -1,13 +1,3 @@
-# DICE blueprint library
+# DICE TOSCA library
 
-This repository contains types that can be used by DICE tools when creating
-blueprints.
-
-
-## Contents
-
-Contents of the library is split into several parts:
-
-  * `types` folder contains all type definitions the can be used in blueprints
-  * `scripts` folder contains helpers that execute various tasks at deployment
-
+Add description and usage instructions here
