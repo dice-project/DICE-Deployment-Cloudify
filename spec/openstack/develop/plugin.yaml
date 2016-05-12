@@ -1,0 +1,72 @@
+node_types:
+  dice.components.mock.WebServer:
+    derived_from: cloudify.nodes.WebServer
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        configure: dice.dice_plugin.tasks.test.configure
+        delete: dice.dice_plugin.tasks.test.delete
+        start: dice.dice_plugin.tasks.test.start
+        stop: dice.dice_plugin.tasks.test.stop
+    properties:
+      description:
+        default: This is an example page.
+        description: This will appear as the body of the page
+      port:
+        default: 8080
+      title:
+        default: Cloudify Hello World
+        description: This will appear as the title of the page
+  dice.firewall_rules.Base:
+    derived_from: cloudify.openstack.nodes.SecurityGroup
+  dice.firewall_rules.mock.WebServer:
+    derived_from: dice.firewall_rules.Base
+    properties:
+      rules:
+        default:
+        - port: 8080
+          remote_ip_prefix: 0.0.0.0/0
+        - port: 22
+          remote_ip_prefix: 0.0.0.0/0
+  dice.hosts.Custom:
+    derived_from: cloudify.openstack.nodes.Server
+    properties:
+      cloudify_agent:
+        default:
+          user:
+            get_input: agent_user
+  dice.hosts.Large:
+    derived_from: dice.hosts.Custom
+    properties:
+      flavor:
+        default:
+          get_input: large_flavor_id
+      image:
+        default:
+          get_input: large_image_id
+  dice.hosts.Medium:
+    derived_from: dice.hosts.Custom
+    properties:
+      flavor:
+        default:
+          get_input: medium_flavor_id
+      image:
+        default:
+          get_input: medium_image_id
+  dice.hosts.Small:
+    derived_from: dice.hosts.Custom
+    properties:
+      flavor:
+        default:
+          get_input: small_flavor_id
+      image:
+        default:
+          get_input: small_image_id
+plugins:
+  dice:
+    executor: host_agent
+    source: https://github.com/dice-project/DICE-Deployment-Cloudify/archive/develop.zip
+relationships:
+  dice.relationships.ContainedIn:
+    derived_from: cloudify.relationships.contained_in
+  dice.relationships.ProtectedBy:
+    derived_from: cloudify.openstack.server_connected_to_security_group
