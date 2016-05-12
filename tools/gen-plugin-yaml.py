@@ -27,6 +27,8 @@ import sys
 import yaml
 import argparse
 
+from string import Template
+
 
 def log(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
@@ -43,12 +45,16 @@ def merge(a, b):
             a[k] = b[k]
 
 
-def process_library(library_path, vendor_name):
+def process_library(library_path, vendor_name, version):
     # Header
     template = os.path.join(library_path, "plugin.yaml")
     log("Processing '{}' ...".format(template))
     with open(template, "r") as input:
         library = yaml.load(input)
+
+    # Place proper version inside header
+    template = Template(library["plugins"]["dice"]["source"])
+    library["plugins"]["dice"]["source"] = template.substitute(VERSION=version)
 
     # Common types
     common = os.path.join(library_path, "common")
@@ -88,9 +94,12 @@ def main():
     parser.add_argument(
         "vendor", help="Vendor name for which library should be generated"
     )
+    parser.add_argument(
+        "version", help="Version name for which library should be generated"
+    )
     args = parser.parse_args()
 
-    library = process_library(args.library, args.vendor)
+    library = process_library(args.library, args.vendor, args.version)
     save_output(library, args.output)
 
 

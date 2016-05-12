@@ -127,18 +127,17 @@ a `plugin.yaml` file that holds metadata about the plugin. Vendor dependent
 definitions should be placed inside `vendor.yaml` file alongside `common`
 folder.
 
-Layout of the `common` folder is free-form. Just make sure files with
-type definitions inside end with `.yaml` and the tool that produces final,
-"includable" plugin description will take of traversing the folder structure.
+Layout of the `common` folder is free-form. Just make sure files with type
+definitions inside end with `.yaml` and the tool that produces final,
+"includable" plugin description will take care of traversing the folder
+structure.
 
-```
-library
-├── common
-│   ├── mock.yaml
-│   └── relationships.yaml
-├── openstack.yaml
-└── plugin.yaml
-```
+    library
+    ├── common
+    │   ├── mock.yaml
+    │   └── relationships.yaml
+    ├── openstack.yaml
+    └── plugin.yaml
 
 Tasks that can be used in type definitions are defined inside `dice_plugin`
 python package. This is a standard python package, so if you ever worked on
@@ -150,12 +149,52 @@ that takes complete library folder along with selected vendor and produces
 plugin definition that can be included in blueprints. For more information,
 run script with no parameters and read help.
 
-NOTE: Generated scripts should be placed under version control for now. This
-makes it easier to keep plugin sources and definition in one place. When we
-have more stable library, things can be offloaded to separate host.
+
+### Developing plug-in
+
+Plugin development should be done in feature branches. When the feature is
+complete, feature branch should be rebased onto develop branch and then merge
+request should be submitted.
+
+## Creating release
+
+Tasks that need to be done when creating release are:
+
+ 1. Merge develop branch into master.
+ 2. Tag the current git HEAD with proper version number.
+ 3. Run `gen-plugin-yaml.py` script with proper vendor and version information
+    to produce includable plug-in description.
+ 4. Publish generated plug-in description on Github pages hosting.
+
+First three commands are easy, so we will just look at how to properly do the
+last point. First, we need to get `gh-pages` branch checked out. You ca do
+this by cloning a separate copy of repo or by using `git worktree` command.
+Simply executing
+
+    $ git worktree gh-pages gh-pages
+
+will checkout `gh-pages` branch into `gh-pages` folder. Now create subfolder
+with version name and place file, generated in step three, into this folder.
+Commit changes and push branch.
+
+One note about folder structure in `gh-pages` branch and where to place the
+released plug-in yaml. We currently use `/spec/<vendor>/<version>/plugin.yaml`
+template to structure releases. Listing below shows two releases of OpenStack
+plug-in: 0.1.0 and develop.
+
+    gh-pages
+    └── spec
+        └── openstack
+            ├── 0.1.0
+            │   └── plugin.yaml
+            └── develop
+                └── plugin.yaml
+
+Develop release is a special release that can be updated whenever developers
+feel that `develop` branch is stable enough to warrant a development release.
 
 
-## Reporting bugs
+### Reporting bugs
 
 There are no bugs in this piece of software. Really. Go ahead and try to find
 one. I dare you;)

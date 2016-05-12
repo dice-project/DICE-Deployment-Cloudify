@@ -1,4 +1,4 @@
 plugins:
   dice:
-    source: https://gitlab.xlab.si/tadej.borovsak/test-tosca-lib/repository/archive.zip?ref=master
+    source: https://github.com/dice-project/DICE-Deployment-Cloudify/archive/${VERSION}.zip
     executor: host_agent
