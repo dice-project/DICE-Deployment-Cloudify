@@ -156,7 +156,21 @@ Plugin development should be done in feature branches. When the feature is
 complete, feature branch should be rebased onto develop branch and then merge
 request should be submitted.
 
-## Creating release
+
+## Adding new platform to library
+
+In order to make adding new platform to library as painless as possible,
+`library/platform.yaml.template` is provided that should serve as a starting
+point for new platform. Make copy of this template, fill in details (replace
+various Unimplemented placeholders).
+
+Note that placeholders are designed in such a way that blueprint that simply
+includes them will validate. Even more, as long as none of the Undefined types
+is used at runtime, things will work as expected. This should make incremental
+development more manageable.
+
+
+### Creating release
 
 Tasks that need to be done when creating release are:
 

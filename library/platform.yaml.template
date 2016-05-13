@@ -1,0 +1,29 @@
+node_types:
+
+  dice.firewall_rules.Base:
+    derived_from: dice.firewall_rules.Unimplemented
+
+  dice.hosts.Custom:
+    derived_from: dice.hosts.Unimplemented
+    properties:
+      cloudify_agent:
+        default:
+          user: { get_input: agent_user }
+
+  dice.hosts.Small:
+    derived_from: dice.hosts.Custom
+    properties:
+
+  dice.hosts.Medium:
+    derived_from: dice.hosts.Custom
+    properties:
+
+  dice.hosts.Large:
+    derived_from: dice.hosts.Custom
+    properties:
+
+
+relationships:
+
+  dice.relationships.ProtectedBy:
+    derived_from: dice.relationships.Unimplemented
