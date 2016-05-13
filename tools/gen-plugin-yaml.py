@@ -45,7 +45,7 @@ def merge(a, b):
             a[k] = b[k]
 
 
-def process_library(library_path, vendor_name, version):
+def process_library(library_path, platform, version):
     # Header
     template = os.path.join(library_path, "plugin.yaml")
     log("Processing '{}' ...".format(template))
@@ -65,10 +65,10 @@ def process_library(library_path, vendor_name, version):
         with open(y, "r") as input:
             merge(library, yaml.load(input))
 
-    # Vendor types
-    vendor = os.path.join(library_path, "{}.yaml".format(vendor_name))
-    log("Processing '{}' ...".format(vendor))
-    with open(vendor, "r") as input:
+    # Platform-dependent types
+    platform = os.path.join(library_path, "{}.yaml".format(platform))
+    log("Processing '{}' ...".format(platform))
+    with open(platform, "r") as input:
         merge(library, yaml.load(input))
 
     return library
@@ -92,14 +92,14 @@ def main():
         type=argparse.FileType("w"), default=sys.stdout
     )
     parser.add_argument(
-        "vendor", help="Vendor name for which library should be generated"
+        "platform", help="Platform for which library should be generated"
     )
     parser.add_argument(
         "version", help="Version name for which library should be generated"
     )
     args = parser.parse_args()
 
-    library = process_library(args.library, args.vendor, args.version)
+    library = process_library(args.library, args.platform, args.version)
     save_output(library, args.output)
 
 

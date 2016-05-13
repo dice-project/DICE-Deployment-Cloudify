@@ -23,7 +23,7 @@ tosca_definitions_version: cloudify_dsl_1_1
 imports:
   - http://www.getcloudify.org/spec/cloudify/3.2.1/types.yaml
   - http://www.getcloudify.org/spec/openstack-plugin/1.2.1/plugin.yaml
-  - https://gitlab.xlab.si/tadej.borovsak/test-tosca-lib/raw/master/openstack.yaml
+  - http://dice-project.github.io/DICE-Deployment-Cloudify/spec/openstack/develop/plugin.yaml
 ```
 
 All blueprints need the first import - this is where basic types are defined.
@@ -122,10 +122,10 @@ server.
 ## Developer information
 
 Various TOSCA type definitions are stored inside `library` folder. In there,
-there is a `common` folder that hosts vendor independent type definitions and
-a `plugin.yaml` file that holds metadata about the plugin. Vendor dependent
-definitions should be placed inside `vendor.yaml` file alongside `common`
-folder.
+there is a `common` folder that hosts platform independent type definitions
+and a `plugin.yaml` file that holds metadata about the plugin. Platform
+dependent definitions should be placed inside `platform.yaml` file alongside
+`common` folder.
 
 Layout of the `common` folder is free-form. Just make sure files with type
 definitions inside end with `.yaml` and the tool that produces final,
@@ -145,7 +145,7 @@ package before, you should feel right at home.
 
 Last component are the tools that take the various library files and produce
 end results. Currently, there is only one tool, called `gen-plugin-yaml.py`,
-that takes complete library folder along with selected vendor and produces
+that takes complete library folder along with selected platform and produces
 plugin definition that can be included in blueprints. For more information,
 run script with no parameters and read help.
 
@@ -162,8 +162,8 @@ Tasks that need to be done when creating release are:
 
  1. Merge develop branch into master.
  2. Tag the current git HEAD with proper version number.
- 3. Run `gen-plugin-yaml.py` script with proper vendor and version information
-    to produce includable plug-in description.
+ 3. Run `gen-plugin-yaml.py` script with proper platform and version
+    information to produce includable plug-in description.
  4. Publish generated plug-in description on Github pages hosting.
 
 First three commands are easy, so we will just look at how to properly do the
@@ -178,9 +178,9 @@ with version name and place file, generated in step three, into this folder.
 Commit changes and push branch.
 
 One note about folder structure in `gh-pages` branch and where to place the
-released plug-in yaml. We currently use `/spec/<vendor>/<version>/plugin.yaml`
-template to structure releases. Listing below shows two releases of OpenStack
-plug-in: 0.1.0 and develop.
+released plug-in yaml. We currently use
+`/spec/<platform>/<version>/plugin.yaml` template to structure releases.
+Listing below shows two releases of OpenStack plug-in: 0.1.0 and develop.
 
     gh-pages
     └── spec
