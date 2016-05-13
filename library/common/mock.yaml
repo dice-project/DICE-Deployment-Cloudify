@@ -1,7 +1,8 @@
-# Mock components that can be used for testing deploymnets etc.
+# Mock components that can be used for testing deployments etc.
 
 node_types:
 
+  # Demonstration web server
   dice.components.mock.WebServer:
     derived_from: cloudify.nodes.WebServer
     properties:
@@ -29,3 +30,16 @@ node_types:
             port: 8080
           - remote_ip_prefix: 0.0.0.0/0
             port: 22
+
+
+  # Missing implementation markers (they are similar to Haskell's undefined -
+  # they throw a fit when used, but they do validate)
+  dice.hosts.Unimplemented:
+    derived_from: cloudify.nodes.Root
+  dice.firewall_rules.Unimplemented:
+    derived_from: cloudify.nodes.Root
+
+relationships:
+
+  dice.relationships.Unimplemented:
+    derived_from: cloudify.relationships.depends_on
