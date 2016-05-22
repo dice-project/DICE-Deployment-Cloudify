@@ -1,0 +1,45 @@
+# Apache zookeeper
+
+node_types:
+
+  dice.components.zookeeper.Server:
+    derived_from: dice.chef.SoftwareComponent
+    properties:
+      configure_runlist:
+        default:
+          - recipe[apt::default@2.9.2]
+          - recipe[java::default@1.36.0]
+          - recipe[hadoop::default@2.0.10]
+          - recipe[hadoop::zookeeper_server@2.0.10]
+          - recipe[hadoop::zookeeper_configure@2.0.10]
+      start_runlist:
+        default:
+          - recipe[hadoop::zookeeper_start@2.0.10]
+
+  dice.components.zookeeper.Quorum:
+    derived_from: cloudify.nodes.Root
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        configure:
+          implementation: dice.dice_plugin.tasks.zookeeper.merge_config
+          executor: central_deployment_agent
+
+
+relationships:
+
+  dice.relationships.zookeeper.QuorumContains:
+    derived_from: cloudify.relationships.depends_on
+    source_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        preconfigure:
+          implementation: dice.dice_plugin.tasks.zookeeper.gather_config
+          executor: central_deployment_agent
+          max_retries: -1
+          retry_interval: 2
+
+  dice.relationships.zookeeper.MemberOfQuorum:
+    derived_from: cloudify.relationships.depends_on
+    source_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        preconfigure:
+          implementation: dice.dice_plugin.tasks.zookeeper.retrieve_config

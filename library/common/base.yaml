@@ -1,0 +1,70 @@
+# Basic types
+
+node_types:
+
+  dice.SoftwareComponent:
+    derived_from: cloudify.nodes.SoftwareComponent
+    properties:
+      configuration:
+        description: >
+          This propery holds arbitrary configuration data that can be used by
+          installation procedure.
+        default: {}
+
+  dice.chef.SoftwareComponent:
+    derived_from: cloudify.chef.nodes.SoftwareComponent
+    properties:
+      configuration:
+        description: >
+          This propery holds arbitrary configuration data that can be used by
+          installation procedure.
+        default: {}
+      create_runlist:
+        description: >
+          Runlist that is executed when creating node instance (this is where
+          file installation should take place).
+        default: []
+      configure_runlist:
+        description: >
+          Runlist that is executed when configuring node (this is where all
+          that /etc/ files should be installed).
+        default: []
+      start_runlist:
+        description: >
+          Runlist that starts the node (this is where relevant services should
+          be enabled and started).
+        default: []
+      stop_runlist:
+        description: >
+          Runlist that stops the node (most likely, services will be stopped
+          and disabled here).
+        default: []
+      delete_runlist:
+        description: >
+          Runlist that deletes the node (should delete ALL installed files,
+          including but not limited to configuration files, files that are
+          produced while running, ...).
+        default: []
+
+      # Derived types should leave this intact or bad things will happen
+      chef_config:
+        default:
+          version:                { get_input: chef_version         }
+          chef_server_url:        { get_input: chef_server          }
+          validation_client_name: { get_input: chef_validation_user }
+          validation_key:         { get_input: chef_validation_key  }
+          node_name_prefix: ""
+          node_name_suffix: ""
+          runlists:
+            create:    { get_property: [ SELF, create_runlist    ] }
+            configure: { get_property: [ SELF, configure_runlist ] }
+            start:     { get_property: [ SELF, start_runlist     ] }
+            stop:      { get_property: [ SELF, stop_runlist      ] }
+            delete:    { get_property: [ SELF, delete_runlist    ] }
+          environment: _default
+
+
+relationships:
+
+  dice.relationships.ContainedIn:
+    derived_from: cloudify.relationships.contained_in

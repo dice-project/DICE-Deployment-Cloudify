@@ -1,4 +1,0 @@
-relationships:
-
-  dice.relationships.ContainedIn:
-    derived_from: cloudify.relationships.contained_in
