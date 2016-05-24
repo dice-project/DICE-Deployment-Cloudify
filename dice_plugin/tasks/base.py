@@ -22,22 +22,11 @@
 from cloudify.decorators import operation
 
 
-QUORUM_MEMBER_PREFIX = "zoo_"
-QUORUM_CONFIG_KEY = "zookeeper_quorum"
-
-
 @operation
-def gather_config(ctx):
-    id = ctx.target.instance.id
-    ip = ctx.target.instance.host_ip
-    ctx.logger.info("Gathering IP address from {} ({})".format(id, ip))
-    key = "{}{}".format(QUORUM_MEMBER_PREFIX, id)
-    ctx.source.instance.runtime_properties[key] = ip
-
-
-@operation
-def merge_config(ctx):
-    ctx.logger.info("Merging gathered data into complete configuration")
-    props = ctx.instance.runtime_properties
-    cfg = [v for k, v in props.items() if k.startswith(QUORUM_MEMBER_PREFIX)]
-    ctx.instance.runtime_properties[QUORUM_CONFIG_KEY] = cfg
+def copy_runtime_prop(ctx, property):
+    msg = "Copying runtime property '{}' from '{}' to '{}'"
+    ctx.logger.info(msg.format(
+        property, ctx.target.instance.id, ctx.source.instance.id
+    ))
+    prop = ctx.target.instance.runtime_properties[property]
+    ctx.source.instance.runtime_properties[property] = prop

@@ -42,4 +42,7 @@ relationships:
     source_interfaces:
       cloudify.interfaces.relationship_lifecycle:
         preconfigure:
-          implementation: dice.dice_plugin.tasks.zookeeper.retrieve_config
+          implementation: dice.dice_plugin.tasks.base.copy_runtime_prop
+          inputs:
+            property:
+              default: zookeeper_quorum
