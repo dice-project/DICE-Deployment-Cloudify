@@ -45,6 +45,10 @@ node_types:
           including but not limited to configuration files, files that are
           produced while running, ...).
         default: null
+      chef_attributes:
+        description: >
+          Chef attributes that are supplied to all runlists
+        default: {}
 
       # Derived types should leave this intact or bad things will happen
       chef_config:
@@ -62,6 +66,7 @@ node_types:
             stop:      { get_property: [ SELF, stop_runlist      ] }
             delete:    { get_property: [ SELF, delete_runlist    ] }
           environment: _default
+          attributes: { get_property: [ SELF, chef_attributes ] }
 
 
 relationships:
