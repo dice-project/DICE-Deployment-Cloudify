@@ -23,28 +23,28 @@ node_types:
         description: >
           Runlist that is executed when creating node instance (this is where
           file installation should take place).
-        default: []
+        default: null
       configure_runlist:
         description: >
           Runlist that is executed when configuring node (this is where all
           that /etc/ files should be installed).
-        default: []
+        default: null
       start_runlist:
         description: >
           Runlist that starts the node (this is where relevant services should
           be enabled and started).
-        default: []
+        default: null
       stop_runlist:
         description: >
           Runlist that stops the node (most likely, services will be stopped
           and disabled here).
-        default: []
+        default: null
       delete_runlist:
         description: >
           Runlist that deletes the node (should delete ALL installed files,
           including but not limited to configuration files, files that are
           produced while running, ...).
-        default: []
+        default: null
 
       # Derived types should leave this intact or bad things will happen
       chef_config:
