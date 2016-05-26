@@ -1,0 +1,59 @@
+# Apache Storm
+
+node_types:
+
+  dice.components.storm.Worker:
+    derived_from: dice.chef.SoftwareComponent
+    properties:
+      configure_runlist:
+        default:
+          - recipe[apt::default@2.9.2]
+          - recipe[java::default@1.36.0]
+          - recipe[storm-cluster::supervisor@0.0.24]
+          - recipe[storm-cluster::configure@0.0.24]
+      start_runlist:
+        default:
+          - recipe[storm-cluster::start@0.0.24]
+      chef_attributes: &STORM_CHEF_ATTRS
+        default:
+          storm:
+            install_method: remote_file
+            download_url: http://193.77.50.17/
+
+  dice.components.storm.Nimbus:
+    derived_from: dice.chef.SoftwareComponent
+    properties:
+      configure_runlist:
+        default:
+          - recipe[apt::default@2.9.2]
+          - recipe[java::default@1.36.0]
+          - recipe[storm-cluster::nimbus@0.0.24]
+          - recipe[storm-cluster::supervisor@0.0.24]
+          - recipe[storm-cluster::configure@0.0.24]
+      start_runlist:
+        default:
+          - recipe[storm-cluster::start@0.0.24]
+      chef_attributes: *STORM_CHEF_ATTRS
+
+
+relationships:
+
+  dice.relationships.storm.ConnectedToZookeeperQuorum:
+    derived_from: cloudify.relationships.connected_to
+    source_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        preconfigure:
+          implementation: dice.dice_plugin.tasks.base.copy_runtime_prop
+          inputs:
+            property:
+              default: zookeeper_quorum
+
+  dice.relationships.storm.ConnectedToNimbus:
+    derived_from: cloudify.relationships.connected_to
+    source_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        preconfigure:
+          implementation: dice.dice_plugin.tasks.base.copy_runtime_prop
+          inputs:
+            property:
+              default: storm_nimbus_ip
