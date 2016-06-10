@@ -1,0 +1,318 @@
+node_types:
+  dice.SoftwareComponent:
+    derived_from: cloudify.nodes.SoftwareComponent
+    properties:
+      configuration:
+        default: {}
+        description: 'This propery holds arbitrary configuration data that can be
+          used by installation procedure.
+
+          '
+  dice.chef.SoftwareComponent:
+    derived_from: cloudify.chef.nodes.SoftwareComponent
+    properties:
+      chef_attributes:
+        default: {}
+        description: 'Chef attributes that are supplied to all runlists
+
+          '
+      chef_config:
+        default:
+          attributes:
+            get_property:
+            - SELF
+            - chef_attributes
+          chef_repo: https://github.com/dice-project/DICE-Chef-Repository/archive/0.1.3.tar.gz
+          runlists:
+            configure:
+              get_property:
+              - SELF
+              - configure_runlist
+            create:
+              get_property:
+              - SELF
+              - create_runlist
+            delete:
+              get_property:
+              - SELF
+              - delete_runlist
+            start:
+              get_property:
+              - SELF
+              - start_runlist
+            stop:
+              get_property:
+              - SELF
+              - stop_runlist
+          version: 12.11.18
+      configuration:
+        default: {}
+        description: 'This propery holds arbitrary configuration data that can be
+          used by installation procedure.
+
+          '
+      configure_runlist:
+        default: null
+        description: 'Runlist that is executed when configuring node (this is where
+          all that /etc/ files should be installed).
+
+          '
+      create_runlist:
+        default: null
+        description: 'Runlist that is executed when creating node instance (this is
+          where file installation should take place).
+
+          '
+      delete_runlist:
+        default: null
+        description: 'Runlist that deletes the node (should delete ALL installed files,
+          including but not limited to configuration files, files that are produced
+          while running, ...).
+
+          '
+      start_runlist:
+        default: null
+        description: 'Runlist that starts the node (this is where relevant services
+          should be enabled and started).
+
+          '
+      stop_runlist:
+        default: null
+        description: 'Runlist that stops the node (most likely, services will be stopped
+          and disabled here).
+
+          '
+  dice.components.mock.WebServer:
+    derived_from: cloudify.nodes.WebServer
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        configure: dice.dice_plugin.tasks.test.configure
+        delete: dice.dice_plugin.tasks.test.delete
+        start: dice.dice_plugin.tasks.test.start
+        stop: dice.dice_plugin.tasks.test.stop
+    properties:
+      description:
+        default: This is an example page.
+        description: This will appear as the body of the page
+      port:
+        default: 8080
+      title:
+        default: Cloudify Hello World
+        description: This will appear as the title of the page
+  dice.components.storm.Nimbus:
+    derived_from: dice.chef.SoftwareComponent
+    properties:
+      chef_attributes: &id001
+        default:
+          storm:
+            download_url: http://193.77.50.17/
+            install_method: remote_file
+      configure_runlist:
+        default:
+        - recipe[apt::default@2.9.2]
+        - recipe[java::default@1.36.0]
+        - recipe[storm-cluster::nimbus@0.0.24]
+        - recipe[storm-cluster::supervisor@0.0.24]
+        - recipe[storm-cluster::configure@0.0.24]
+      start_runlist:
+        default:
+        - recipe[storm-cluster::start@0.0.24]
+  dice.components.storm.Topology:
+    derived_from: cloudify.nodes.Root
+    properties:
+      application:
+        description: 'Location of topology jar file. If this is relative path, file
+          is assumed to be part of the blueprint package. If this URL, file will be
+          downloaded.
+
+          '
+      topology_class:
+        description: 'Class name that contains Storm topology
+
+          '
+      topology_name:
+        description: 'Topology name (this name will be seen in Storm UI)
+
+          '
+  dice.components.storm.Worker:
+    derived_from: dice.chef.SoftwareComponent
+    properties:
+      chef_attributes: *id001
+      configure_runlist:
+        default:
+        - recipe[apt::default@2.9.2]
+        - recipe[java::default@1.36.0]
+        - recipe[storm-cluster::supervisor@0.0.24]
+        - recipe[storm-cluster::configure@0.0.24]
+      start_runlist:
+        default:
+        - recipe[storm-cluster::start@0.0.24]
+  dice.components.zookeeper.Quorum:
+    derived_from: cloudify.nodes.Root
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        configure:
+          executor: central_deployment_agent
+          implementation: dice.dice_plugin.tasks.zookeeper.merge_config
+  dice.components.zookeeper.Server:
+    derived_from: dice.chef.SoftwareComponent
+    properties:
+      configure_runlist:
+        default:
+        - recipe[apt::default@2.9.2]
+        - recipe[java::default@1.36.0]
+        - recipe[hadoop::default@2.0.10]
+        - recipe[hadoop::zookeeper_server@2.0.10]
+        - recipe[hadoop::zookeeper_configure@2.0.10]
+      start_runlist:
+        default:
+        - recipe[hadoop::zookeeper_start@2.0.10]
+  dice.firewall_rules.Base:
+    derived_from: dice.firewall_rules.Unimplemented
+  dice.firewall_rules.Unimplemented:
+    derived_from: cloudify.nodes.Root
+  dice.firewall_rules.mock.WebServer:
+    derived_from: dice.firewall_rules.Base
+    properties:
+      rules:
+        default:
+        - port: 8080
+          remote_ip_prefix: 0.0.0.0/0
+        - port: 22
+          remote_ip_prefix: 0.0.0.0/0
+  dice.hosts.Custom:
+    derived_from: cloudify.flexiant.nodes.Server
+    properties:
+      agent_key:
+        default:
+          get_input: agent_key
+      auth:
+        default:
+          customer:
+            get_input: customer
+          password:
+            get_input: password
+          url:
+            get_input: service_url
+          username:
+            get_input: username
+          verify_ca_cert: false
+      cloudify_agent:
+        default:
+          user:
+            get_input: agent_user
+      network:
+        default:
+          get_input: network
+      vdc:
+        default:
+          get_input: vdc
+  dice.hosts.Large:
+    derived_from: dice.hosts.Custom
+    properties:
+      disk:
+        default:
+          get_input: large_disk
+      image:
+        default:
+          get_input: large_image_id
+      server_type:
+        default:
+          get_input: large_server_type
+  dice.hosts.Medium:
+    derived_from: dice.hosts.Custom
+    properties:
+      disk:
+        default:
+          get_input: medium_disk
+      image:
+        default:
+          get_input: medium_image_id
+      server_type:
+        default:
+          get_input: medium_server_type
+  dice.hosts.Small:
+    derived_from: dice.hosts.Custom
+    properties:
+      disk:
+        default:
+          get_input: small_disk
+      image:
+        default:
+          get_input: small_image_id
+      server_type:
+        default:
+          get_input: small_server_type
+  dice.hosts.Unimplemented:
+    derived_from: cloudify.nodes.Root
+plugins:
+  dice:
+    executor: host_agent
+    source: https://github.com/dice-project/DICE-Deployment-Cloudify/archive/0.1.1.zip
+relationships:
+  dice.relationships.ContainedIn:
+    derived_from: cloudify.relationships.contained_in
+  dice.relationships.Needs:
+    derived_from: cloudify.relationships.depends_on
+  dice.relationships.ProtectedBy:
+    derived_from: dice.relationships.Unimplemented
+  dice.relationships.Unimplemented:
+    derived_from: cloudify.relationships.depends_on
+  dice.relationships.storm.ConnectedToNimbus:
+    derived_from: cloudify.relationships.connected_to
+    source_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        preconfigure:
+          implementation: dice.dice_plugin.tasks.base.copy_ip_address
+          inputs:
+            property:
+              default: storm_nimbus_ip
+  dice.relationships.storm.ConnectedToZookeeperQuorum:
+    derived_from: cloudify.relationships.connected_to
+    source_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        preconfigure:
+          implementation: dice.dice_plugin.tasks.base.copy_runtime_prop
+          inputs:
+            property:
+              default: zookeeper_quorum
+  dice.relationships.storm.SubmittedBy:
+    derived_from: cloudify.relationships.connected_to
+    target_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        postconfigure:
+          implementation: dice.dice_plugin.tasks.storm.submit_topology
+          inputs:
+            jar:
+              default:
+                get_property:
+                - SOURCE
+                - application
+            klass:
+              default:
+                get_property:
+                - SOURCE
+                - topology_class
+            name:
+              default:
+                get_property:
+                - SOURCE
+                - topology_name
+  dice.relationships.zookeeper.MemberOfQuorum:
+    derived_from: cloudify.relationships.depends_on
+    source_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        preconfigure:
+          implementation: dice.dice_plugin.tasks.base.copy_runtime_prop
+          inputs:
+            property:
+              default: zookeeper_quorum
+  dice.relationships.zookeeper.QuorumContains:
+    derived_from: cloudify.relationships.depends_on
+    source_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        preconfigure:
+          executor: central_deployment_agent
+          implementation: dice.dice_plugin.tasks.zookeeper.gather_config
+          max_retries: -1
+          retry_interval: 2
