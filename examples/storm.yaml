@@ -53,8 +53,10 @@ inputs:
 
 
 node_templates:
-  zookeeer_vm:
+  zookeeper_vm:
     type: dice.hosts.Medium
+    instances:
+      deploy: 1
 
   zookeeper_quorum:
     type: dice.components.zookeeper.Quorum
@@ -100,3 +102,28 @@ node_templates:
         target: zookeeper_quorum
       - type: dice.relationships.storm.ConnectedToNimbus
         target: nimbus
+
+  wordcount:
+    type: dice.components.storm.Topology
+    properties:
+      application: http://109.231.122.66/jenkins/view/DICE%20Review/job/02%20Build%20Word%20Count/lastSuccessfulBuild/artifact/target/storm-starter-0.9.3.jar
+      topology_name: dice-wordcount
+      topology_class: storm.starter.WordCountTopology
+    relationships:
+      - type: dice.relationships.storm.SubmittedBy
+        target: nimbus
+      - type: dice.relationships.Needs
+        target: storm
+
+
+outputs:
+  storm_nimbus_address:
+    description: The address to be used by the storm client
+    value: { get_attribute: [nimbus_vm, ip] }
+  storm_nimbus_gui:
+    description: URL of the Storm nimbus gui
+    value:
+      concat: [ 'http://', { get_attribute: [nimbus_vm, ip] }, ':8080' ]
+  wordcount_id:
+    description: Unique Storm topology ID
+    value: { get_attribute: [ wordcount, topology_id ] }
