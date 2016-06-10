@@ -44,5 +44,4 @@ relationships:
         preconfigure:
           implementation: dice.dice_plugin.tasks.base.copy_runtime_prop
           inputs:
-            property:
-              default: zookeeper_quorum
+            property: { default: zookeeper_quorum }

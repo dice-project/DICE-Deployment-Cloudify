@@ -35,6 +35,21 @@ node_types:
           - recipe[storm-cluster::start@0.0.24]
       chef_attributes: *STORM_CHEF_ATTRS
 
+  dice.components.storm.Topology:
+    derived_from: cloudify.nodes.Root
+    properties:
+      application:
+        description: >
+          Location of topology jar file. If this is relative path, file is
+          assumed to be part of the blueprint package. If this URL, file will
+          be downloaded.
+      topology_name:
+        description: >
+          Topology name (this name will be seen in Storm UI)
+      topology_class:
+        description: >
+          Class name that contains Storm topology
+
 
 relationships:
 
@@ -55,3 +70,14 @@ relationships:
           implementation: dice.dice_plugin.tasks.base.copy_ip_address
           inputs:
             property: { default: storm_nimbus_ip }
+
+  dice.relationships.storm.SubmittedBy:
+    derived_from: cloudify.relationships.connected_to
+    target_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        postconfigure:
+          implementation: dice.dice_plugin.tasks.storm.submit_topology
+          inputs:
+            jar:   { default: { get_property: [ SOURCE, application    ] } }
+            name:  { default: { get_property: [ SOURCE, topology_name  ] } }
+            klass: { default: { get_property: [ SOURCE, topology_class ] } }

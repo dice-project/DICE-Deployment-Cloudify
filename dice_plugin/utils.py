@@ -19,24 +19,24 @@
 # Author:
 #     Tadej Borovšak <tadej.borovsak@xlab.si>
 
-import setuptools
+import urlparse
+import requests
+import tempfile
 
-setuptools.setup(
-    name="dice-plugin",
 
-    version="0.1",
-    author="Tadej Borovšak",
-    author_email="tadej.borovsak@xlab.si",
-    description="DICE TOSCA library",
-    license="LICENSE",
+def parse_resource(path):
+    url = urlparse.urlparse(path)
+    return (url.scheme == ""), url.path
 
-    packages=setuptools.find_packages(exclude=["*.tests"]),
-    package_data={
-        "dice_plugin.tasks.data": ["index.html"],
-    },
-    zip_safe=False,
-    install_requires=[
-        "cloudify-plugins-common>=3.3.1",
-        "requests",
-    ]
-)
+
+def obtain_resource(ctx, resource):
+    is_local, path = parse_resource(resource)
+    if is_local:
+        ctx.logger.info("Getting blueprint resource {}".format(path))
+        return ctx.download_resource(path)
+    else:
+        ctx.logger.info("Downloading resource from {}".format(resource))
+        tmp = tempfile.NamedTemporaryFile(delete=False)
+        tmp.write(requests.get(resource, stream=True).raw.read())
+        tmp.close()
+        return tmp.name

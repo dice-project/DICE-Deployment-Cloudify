@@ -54,7 +54,7 @@ node_types:
       chef_config:
         default:
           version: 12.11.18
-          chef_repo: https://github.com/dice-project/DICE-Chef-Repository/archive/feature/cloudify-zookeeper.tar.gz
+          chef_repo: https://github.com/dice-project/DICE-Chef-Repository/archive/master.tar.gz
           runlists:
             create:    { get_property: [ SELF, create_runlist    ] }
             configure: { get_property: [ SELF, configure_runlist ] }
@@ -68,3 +68,6 @@ relationships:
 
   dice.relationships.ContainedIn:
     derived_from: cloudify.relationships.contained_in
+
+  dice.relationships.Needs:
+    derived_from: cloudify.relationships.depends_on
