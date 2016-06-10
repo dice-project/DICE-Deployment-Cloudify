@@ -45,15 +45,13 @@ relationships:
         preconfigure:
           implementation: dice.dice_plugin.tasks.base.copy_runtime_prop
           inputs:
-            property:
-              default: zookeeper_quorum
+            property: { default: zookeeper_quorum }
 
   dice.relationships.storm.ConnectedToNimbus:
     derived_from: cloudify.relationships.connected_to
     source_interfaces:
       cloudify.interfaces.relationship_lifecycle:
         preconfigure:
-          implementation: dice.dice_plugin.tasks.base.copy_runtime_prop
+          implementation: dice.dice_plugin.tasks.base.copy_ip_address
           inputs:
-            property:
-              default: storm_nimbus_ip
+            property: { default: storm_nimbus_ip }

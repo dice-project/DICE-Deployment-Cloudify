@@ -36,6 +36,6 @@ setuptools.setup(
     },
     zip_safe=False,
     install_requires=[
-        "cloudify-plugins-common>=3.2.1",
+        "cloudify-plugins-common>=3.3.1",
     ]
 )

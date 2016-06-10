@@ -18,11 +18,11 @@ server that will serve static web page. First thing we need to do is write
 down `tosca_definitions_version` and import plugins that we will be using.
 
 ```
-tosca_definitions_version: cloudify_dsl_1_1
+tosca_definitions_version: cloudify_dsl_1_2
 
 imports:
-  - http://www.getcloudify.org/spec/cloudify/3.2.1/types.yaml
-  - http://www.getcloudify.org/spec/openstack-plugin/1.2.1/plugin.yaml
+  - http://www.getcloudify.org/spec/cloudify/3.3.1/types.yaml
+  - http://www.getcloudify.org/spec/openstack-plugin/1.3.1/plugin.yaml
   - http://dice-project.github.io/DICE-Deployment-Cloudify/spec/openstack/develop/plugin.yaml
 ```
 
