@@ -3,7 +3,7 @@ tosca_definitions_version: cloudify_dsl_1_2
 imports:
   - http://www.getcloudify.org/spec/cloudify/3.3.1/types.yaml
   - https://raw.githubusercontent.com/dice-project/DICE-FCO-Plugin-Cloudify/master/plugin.yaml
-  - http://www.getcloudify.org/spec/chef-plugin/1.3.1/plugin.yaml
+  - https://gitlab.xlab.si/tadej.borovsak/cloudify-chef-plugin/raw/redirect/plugin.yaml
   - http://dice-project.github.io/DICE-Deployment-Cloudify/spec/fco/develop/plugin.yaml
 
 inputs:
@@ -50,19 +50,6 @@ inputs:
     default: <VDC uuid>
   network:
     default: <network uuid>
-
-  # Chef
-  chef_version:
-    default: 12.5.1
-  chef_server:
-    default: <chef server url>
-  chef_validation_user:
-    default: <validation user>
-  chef_validation_key:
-    default: |
-      -----BEGIN RSA PRIVATE KEY-----
-      validation key should be here
-      -----END RSA PRIVATE KEY-----
 
 
 node_templates:

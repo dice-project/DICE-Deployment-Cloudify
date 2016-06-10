@@ -45,7 +45,7 @@ def merge(a, b):
             a[k] = b[k]
 
 
-def process_library(library_path, platform, version):
+def process_library(library_path, platform, version, is_local):
     # Header
     template = os.path.join(library_path, "plugin.yaml")
     log("Processing '{}' ...".format(template))
@@ -97,9 +97,14 @@ def main():
     parser.add_argument(
         "version", help="Version name for which library should be generated"
     )
+    parser.add_argument(
+        "--local", help="Generate local plugin", action="store_true",
+        default=False
+    )
     args = parser.parse_args()
 
-    library = process_library(args.library, args.platform, args.version)
+    library = process_library(args.library, args.platform, args.version,
+                              args.local)
     save_output(library, args.output)
 
 

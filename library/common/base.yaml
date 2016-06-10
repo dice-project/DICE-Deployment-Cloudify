@@ -53,19 +53,14 @@ node_types:
       # Derived types should leave this intact or bad things will happen
       chef_config:
         default:
-          version:                { get_input: chef_version         }
-          chef_server_url:        { get_input: chef_server          }
-          validation_client_name: { get_input: chef_validation_user }
-          validation_key:         { get_input: chef_validation_key  }
-          node_name_prefix: ""
-          node_name_suffix: ""
+          version: 12.11.18
+          chef_repo: https://github.com/dice-project/DICE-Chef-Repository/archive/feature/cloudify-zookeeper.tar.gz
           runlists:
             create:    { get_property: [ SELF, create_runlist    ] }
             configure: { get_property: [ SELF, configure_runlist ] }
             start:     { get_property: [ SELF, start_runlist     ] }
             stop:      { get_property: [ SELF, stop_runlist      ] }
             delete:    { get_property: [ SELF, delete_runlist    ] }
-          environment: _default
           attributes: { get_property: [ SELF, chef_attributes ] }
 
 
