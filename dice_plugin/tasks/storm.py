@@ -37,23 +37,18 @@ def _get_topology_id(url, name):
 
 @operation
 def submit_topology(ctx, jar, name, klass):
-    if "topology_id" in ctx.source.instance.runtime_properties:
-        ctx.logger.info("Topology '{}' already submitted".format(name))
-        return
-
     ctx.logger.info("Obtaining topology jar '{}'".format(jar))
     local_jar = utils.obtain_resource(ctx, jar)
 
     ctx.logger.info("Submitting '{}' as '{}'".format(local_jar, name))
-    try:
-        subprocess.check_call(["storm", "jar", local_jar, klass, name])
-    except subprocess.CalledProcessError:
-        raise NonRecoverableError("Topology submission failed")
+    subprocess.call(["storm", "jar", local_jar, klass, name])
 
     ctx.logger.info("Retrieving topology id for '{}'".format(name))
     nimbus_ip = ctx.target.instance.host_ip
     url = "http://{}:8080/api/v1/topology/summary".format(nimbus_ip)
     topology_id = _get_topology_id(url, name)
+
     if topology_id is None:
-        raise NonRecoverableError("Topology id cannot be found")
+        msg = "Topology '{}' failed to start properly".format(name)
+        raise NonRecoverableError(msg)
     ctx.source.instance.runtime_properties["topology_id"] = topology_id

@@ -73,6 +73,8 @@ relationships:
 
   dice.relationships.storm.SubmittedBy:
     derived_from: cloudify.relationships.connected_to
+    properties:
+      connection_type: { default: all_to_one }
     target_interfaces:
       cloudify.interfaces.relationship_lifecycle:
         postconfigure:
