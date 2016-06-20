@@ -38,6 +38,12 @@ node_types:
   dice.components.storm.Topology:
     derived_from: cloudify.nodes.Root
     properties:
+      configuration:
+        description: >
+          Storm configuration values that should be set for this topology
+          (this will be passed to nimbus at submission time). This
+          configuration will be merged with storm cluster configration.
+        default: {}
       application:
         description: >
           Location of topology jar file. If this is relative path, file is

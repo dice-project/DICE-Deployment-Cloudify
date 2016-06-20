@@ -19,7 +19,10 @@
 # Author:
 #     Tadej Borovšak <tadej.borovsak@xlab.si>
 
+import os
+import yaml
 import requests
+import tempfile
 import subprocess
 
 from dice_plugin import utils
@@ -35,13 +38,27 @@ def _get_topology_id(url, name):
     return None
 
 
+def _write_tmp_configuration(config):
+    handle, path = tempfile.mkstemp(suffix=".yaml")
+    handle.write(yaml.dump(config))
+    handle.close()
+    return path
+
+
 @operation
 def submit_topology(ctx, jar, name, klass):
     ctx.logger.info("Obtaining topology jar '{}'".format(jar))
     local_jar = utils.obtain_resource(ctx, jar)
 
+    ctx.logger.info("Preparing topology configuration")
+    config = _write_tmp_configuration(ctx.source.properties["configuration"])
+    ctx.logger.info("Configuration stored in '{}'".format(config))
+
     ctx.logger.info("Submitting '{}' as '{}'".format(local_jar, name))
-    subprocess.call(["storm", "jar", local_jar, klass, name])
+    subprocess.call([
+        "storm", "--config", config, "jar", local_jar, klass, name
+    ])
+    os.unlink(config)
 
     ctx.logger.info("Retrieving topology id for '{}'".format(name))
     nimbus_ip = ctx.target.instance.host_ip
