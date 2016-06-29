@@ -36,7 +36,7 @@ node_types:
       chef_attributes: *STORM_CHEF_ATTRS
 
   dice.components.storm.Topology:
-    derived_from: cloudify.nodes.Root
+    derived_from: dice.LogicalNode
     properties:
       configuration:
         description: >

@@ -1,6 +1,44 @@
 # Basic types
 
+# REASONS FOR DUPLICATION IN NODE TYPES DEFINITIONS
+# =================================================
+#
+# Currently, there is no way of reparenting built-in cloudify types, so we
+# basically need to define three base types:
+#
+#   * dice.LogicalNode: Equivalent of cloudify.nodes.Root.
+#   * dice.SoftwareComponent: Equivalent of cloudify.nodes.SoftwareComponent.
+#   * dice.chef.SoftwareComponent: Equivalent of
+#     cloudify.chef.nodes.SoftwareComponent.
+#
+# All DICE base types have 'configuration' property that can hold arbitrary
+# key-value pairs. Chef recipe can use contents of this property to perform
+# additional customization of configuration.
+#
+# Another addition to underlying types is 'dice.interfaces.reconfiguration'
+# interface that contains 'update_configuration' and 'reset' operations. These
+# operations will be used in the future in reconfiguration workflow. Default
+# implementation of 'update_configuration' should be fine for most use cases.
+# On the other hand, 'reset' operation is component dependent and thus must be
+# provided by implementor.
+
 node_types:
+
+  dice.LogicalNode:
+    derived_from: cloudify.nodes.Root
+    properties:
+      configuration:
+        description: >
+          This propery holds arbitrary configuration data that can be used by
+          installation procedure.
+        default: {}
+    interfaces:
+      dice.interfaces.reconfiguration:
+        update_configuration:
+          implementation: dice.dice_plugin.tasks.base.update_configuration
+          inputs:
+            configuration: { default: {} }
+        reset: {}
 
   dice.SoftwareComponent:
     derived_from: cloudify.nodes.SoftwareComponent
@@ -10,6 +48,13 @@ node_types:
           This propery holds arbitrary configuration data that can be used by
           installation procedure.
         default: {}
+    interfaces:
+      dice.interfaces.reconfiguration:
+        reset: {}
+        update_configuration:
+          implementation: dice.dice_plugin.tasks.base.update_configuration
+          inputs:
+            configuration: { default: {} }
 
   dice.chef.SoftwareComponent:
     derived_from: cloudify.chef.nodes.SoftwareComponent
@@ -62,6 +107,13 @@ node_types:
             stop:      { get_property: [ SELF, stop_runlist      ] }
             delete:    { get_property: [ SELF, delete_runlist    ] }
           attributes: { get_property: [ SELF, chef_attributes ] }
+    interfaces:
+      dice.interfaces.reconfiguration:
+        reset: {}
+        update_configuration:
+          implementation: dice.dice_plugin.tasks.base.update_configuration
+          inputs:
+            configuration: { default: {} }
 
 
 relationships:

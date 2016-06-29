@@ -38,3 +38,9 @@ def copy_ip_address(ctx, property):
     ctx.logger.info(msg.format(ctx.target.instance.id, property))
     address = ctx.target.instance.host_ip
     ctx.source.instance.runtime_properties[property] = address
+
+
+@operation
+def update_configuration(ctx, configuration):
+    ctx.logger.info("Updating configuration for '{}'".format(ctx.instance.id))
+    ctx.instance.runtime_properties["configuration"] = configuration
