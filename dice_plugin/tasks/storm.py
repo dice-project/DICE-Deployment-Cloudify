@@ -39,33 +39,43 @@ def _get_topology_id(url, name):
 
 
 def _write_tmp_configuration(config):
-    handle, path = tempfile.mkstemp(suffix=".yaml")
+    handle = tempfile.NamedTemporaryFile(suffix=".yaml", delete=False)
     handle.write(yaml.dump(config))
     handle.close()
-    return path
+    return handle.name
 
 
 @operation
 def submit_topology(ctx, jar, name, klass):
     ctx.logger.info("Obtaining topology jar '{}'".format(jar))
     local_jar = utils.obtain_resource(ctx, jar)
+    ctx.logger.info("Topology jar stored as '{}'".format(local_jar))
 
     ctx.logger.info("Preparing topology configuration")
-    config = _write_tmp_configuration(ctx.source.properties["configuration"])
-    ctx.logger.info("Configuration stored in '{}'".format(config))
+    cfg = ctx.node.properties["configuration"].copy()
+    cfg.update(ctx.instance.runtime_properties.get("configuration", {}))
+    cfg_file = _write_tmp_configuration(cfg)
+    ctx.logger.info("Configuration stored in '{}'".format(cfg_file))
 
     ctx.logger.info("Submitting '{}' as '{}'".format(local_jar, name))
     subprocess.call([
-        "storm", "--config", config, "jar", local_jar, klass, name
+        "storm", "--config", cfg_file, "jar", local_jar, klass, name
     ])
-    os.unlink(config)
+    os.unlink(cfg_file)
 
     ctx.logger.info("Retrieving topology id for '{}'".format(name))
-    nimbus_ip = ctx.target.instance.host_ip
+    nimbus_ip = ctx.instance.host_ip
     url = "http://{}:8080/api/v1/topology/summary".format(nimbus_ip)
     topology_id = _get_topology_id(url, name)
+    ctx.logger.info("Topology id for '{}' is '{}'".format(name, topology_id))
 
     if topology_id is None:
         msg = "Topology '{}' failed to start properly".format(name)
         raise NonRecoverableError(msg)
-    ctx.source.instance.runtime_properties["topology_id"] = topology_id
+    ctx.instance.runtime_properties["topology_id"] = topology_id
+
+
+@operation
+def kill_topology(ctx, name):
+    ctx.logger.info("Killing topology '{}'".format(name))
+    subprocess.call(["storm", "kill", name])

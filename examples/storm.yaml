@@ -106,9 +106,11 @@ node_templates:
   wordcount:
     type: dice.components.storm.Topology
     properties:
-      application: http://109.231.122.66/jenkins/view/DICE%20Review/job/02%20Build%20Word%20Count/lastSuccessfulBuild/artifact/target/storm-starter-0.9.3.jar
-      topology_name: dice-wordcount
-      topology_class: storm.starter.WordCountTopology
+      application: http://my.file.host/path/to/topology.jar
+      topology_name: topology-name
+      topology_class: my.topology.Class
+      configuration:
+        key: value
     relationships:
       - type: dice.relationships.storm.SubmittedBy
         target: nimbus
