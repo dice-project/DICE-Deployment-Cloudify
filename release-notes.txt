@@ -1,0 +1,15 @@
+New in v.0.1.2:
+
+* Initial support for deployments reconfiguration. This will enable
+  that the existing deployments will not need to be destroyed
+  before applying changed configurations to the existing nodes.
+* Storm topologies can be reconfigured. This is achieved by simply
+  killing existing topology, updating configuration and then
+  resubmitting the same topology.
+* Added configuration field to Storm topology. Now the users'
+  Storm topologies can receive arbitrary configuration to be
+  applied at submission.
+* Storm topology submission is now idempotent. Topology equality
+  is determined by comparing names, so the same jar can still run
+  multiple times on storm, but it needs ta have different names for
+  each execution.
