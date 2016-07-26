@@ -24,11 +24,13 @@ import setuptools
 setuptools.setup(
     name="dice-plugin",
 
-    version="0.1.1",
     author="Tadej Borovšak",
     author_email="tadej.borovsak@xlab.si",
     description="DICE TOSCA library",
     license="LICENSE",
+
+    use_scm_version=True,
+    setup_requires=["setuptools_scm"],
 
     packages=setuptools.find_packages(exclude=["*.tests"]),
     package_data={

@@ -28,6 +28,7 @@ import yaml
 import argparse
 
 from string import Template
+from setuptools_scm import get_version
 
 
 def log(*args, **kwargs):
@@ -45,16 +46,12 @@ def merge(a, b):
             a[k] = b[k]
 
 
-def process_library(library_path, platform, version, is_local):
+def process_library(library_path, name, platform, version, chef_repo, is_local):
     # Header
     template = os.path.join(library_path, "plugin.yaml")
     log("Processing '{}' ...".format(template))
     with open(template, "r") as input:
         library = yaml.load(input)
-
-    # Place proper version inside header
-    template = Template(library["plugins"]["dice"]["source"])
-    library["plugins"]["dice"]["source"] = template.substitute(VERSION=version)
 
     # Common types
     common = os.path.join(library_path, "common")
@@ -71,6 +68,19 @@ def process_library(library_path, platform, version, is_local):
     with open(platform, "r") as input:
         merge(library, yaml.load(input))
 
+    # Replace chef repo
+    chef_component = library["node_types"]["dice.chef.SoftwareComponent"]
+    chef_config = chef_component["properties"]["chef_config"]["default"]
+    chef_config["chef_repo"] = chef_repo
+
+    # Prepare library for local work if required, or create release ready yaml
+    dice_plugin = library["plugins"]["dice"]
+    if is_local:
+        dice_plugin["source"] = "dice-plugin-{}".format(version)
+    else:
+        template = Template(dice_plugin["source"])
+        dice_plugin["source"] = template.substitute(VERSION=version)
+
     return library
 
 
@@ -79,32 +89,39 @@ def save_output(library, output):
 
 
 def main():
-    script_path = os.path.dirname(os.path.realpath(__file__))
-    library = os.path.realpath(os.path.join(script_path, "..", "library"))
+    root = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    library = os.path.realpath(os.path.join(root, "library"))
+    version = get_version(root=root)
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-l", "--library", help="Library path (default: {})".format(library),
-        default=library
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument(
-        "-o", "--output", help="Ouptut file location (default: stdout)",
-        type=argparse.FileType("w"), default=sys.stdout
+        "-l", "--library", help="Library path", default=library
     )
     parser.add_argument(
-        "platform", help="Platform for which library should be generated"
+        "-p", "--plugin-name", help="Plugin name", default="dice-plugin"
     )
     parser.add_argument(
-        "version", help="Version name for which library should be generated"
+        "-o", "--output", help="Ouptut file location", default=sys.stdout,
+        type=argparse.FileType("w")
+    )
+    parser.add_argument(
+        "-c", "--chef-repo", help="Path/URL to Chef repo tar.gz.",
+        default=("https://github.com/dice-project/DICE-Chef-Repository/"
+                 "archive/master.tar.gz")
     )
     parser.add_argument(
         "--local", help="Generate local plugin", action="store_true",
         default=False
     )
+    parser.add_argument(
+        "platform", help="Platform for which library should be generated"
+    )
     args = parser.parse_args()
 
-    library = process_library(args.library, args.platform, args.version,
-                              args.local)
+    library = process_library(args.library, args.plugin_name, args.platform,
+                              version, args.chef_repo, args.local)
     save_output(library, args.output)
 
 

@@ -156,6 +156,33 @@ Plugin development should be done in feature branches. When the feature is
 complete, feature branch should be rebased onto develop branch and then merge
 request should be submitted.
 
+When adding new functionality, it is useful to be able to test changes before
+pushing anything to remote git repository. Assuming that we have a development
+blueprint inside `dev` subfolder of the TOSCA library plugin, general steps
+that need to be taken when doing off-line development are:
+
+ 0. Create new `plugins` subfolder inside `dev`.
+ 1. Make changes to plugin and/or chef cookbooks.
+ 2. Create package zip and copy it to `plugins` subfolder.
+ 3. Create tarball of chef repo and copy it to `dev` folder.
+ 5. Generate local plugin description and use it in blueprint.
+ 6. Deploy blueprint.
+ 7. Go back to 1 because something went wrong;).
+
+Commands that one usually executes during the session would look something
+like this:
+
+    $ mkdir dev/plugins
+    $ # Do some developing
+    $ rm -f dist/*.zip && python setup.py sdist --formats=zip
+    $ rm -f dev/plugins/* && cp dist/dice-plugin-*.zip dev/plugins
+    $ tar -cvzf dev/repo.tar.gz -C /path/to/chef/repo --exclude=.git repo
+    $ tools/gen-plugin-yaml.py -o dev/include.yaml -c repo.tar.gz \
+        --local openstack # Or FCO if testing is done on FCO
+    $ cd dev
+    $ cfy ... # Do cloduify testing of blueprint
+    $ cd .. # Now go to line 2 and start again
+
 
 ## Adding new platform to library
 
@@ -176,7 +203,7 @@ Tasks that need to be done when creating release are:
 
  1. Merge develop branch into master.
  2. Tag the current git HEAD with proper version number.
- 3. Run `gen-plugin-yaml.py` script with proper platform and version
+ 3. Run `gen-plugin-yaml.py` script with proper platform
     information to produce includable plug-in description.
  4. Publish generated plug-in description on Github pages hosting.
 
