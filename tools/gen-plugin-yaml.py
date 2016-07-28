@@ -119,12 +119,16 @@ def main():
         "-v", "--version", help="Release version to generate", default=version
     )
     parser.add_argument(
+        "-k", "--chef-version", help="Release version of Chef repo to use",
+        default=version
+    )
+    parser.add_argument(
         "platform", help="Platform for which library should be generated"
     )
     args = parser.parse_args()
 
-    chef = get_repo(args.chef_repo, version)
-    dice = get_repo(args.library_repo, version)
+    chef = get_repo(args.chef_repo, args.chef_version)
+    dice = get_repo(args.library_repo, args.version)
 
     library = process_library(args.library, args.platform, chef, dice)
     save_output(library, args.output)
