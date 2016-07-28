@@ -18,3 +18,5 @@
 #
 # Author:
 #     Tadej Borovšak <tadej.borovsak@xlab.si>
+
+__version__ = "0.1.2.dev1"

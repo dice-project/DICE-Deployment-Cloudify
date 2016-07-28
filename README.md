@@ -17,14 +17,12 @@ Let us write a simple blueprint that can be used to deploy minimalistic web
 server that will serve static web page. First thing we need to do is write
 down `tosca_definitions_version` and import plugins that we will be using.
 
-```
-tosca_definitions_version: cloudify_dsl_1_2
-
-imports:
-  - http://www.getcloudify.org/spec/cloudify/3.3.1/types.yaml
-  - http://www.getcloudify.org/spec/openstack-plugin/1.3.1/plugin.yaml
-  - http://dice-project.github.io/DICE-Deployment-Cloudify/spec/openstack/develop/plugin.yaml
-```
+    tosca_definitions_version: cloudify_dsl_1_2
+    imports:
+      - http://www.getcloudify.org/spec/cloudify/3.3.1/types.yaml
+      - http://dice-project.github.io/cloudify-openstack-plugin/1.4/plugin.yaml
+      - http://dice-project.github.io/cloudify-chef-plugin/1.3.2/plugin.yaml
+      - http://dice-project.github.io/DICE-Deployment-Cloudify/spec/openstack/0.1.3/plugin.yaml
 
 All blueprints need the first import - this is where basic types are defined.
 Since we are preparing blueprint for OpenStack, we included OpenStack plugin
@@ -134,10 +132,14 @@ structure.
 
     library
     ├── common
+    │   ├── base.yaml
+    │   ├── cassandra.yaml
     │   ├── mock.yaml
-    │   └── relationships.yaml
+    │   ├── storm.yaml
+    │   └── zookeeper.yaml
+    ├── fco.yaml
     ├── openstack.yaml
-    └── plugin.yaml
+    └── platform.yaml.template
 
 Tasks that can be used in type definitions are defined inside `dice_plugin`
 python package. This is a standard python package, so if you ever worked on
@@ -175,10 +177,10 @@ like this:
     $ mkdir dev/plugins
     $ # Do some developing
     $ rm -f dist/*.zip && python setup.py sdist --formats=zip
-    $ rm -f dev/plugins/* && cp dist/dice-plugin-*.zip dev/plugins
+    $ cp dist/dice-plugin-*.zip dev/plugins/dice-plugin.zip
     $ tar -cvzf dev/repo.tar.gz -C /path/to/chef/repo --exclude=.git repo
     $ tools/gen-plugin-yaml.py -o dev/include.yaml -c repo.tar.gz \
-        --local openstack # Or FCO if testing is done on FCO
+        -d dice-plugin openstack # Or FCO if testing is done on FCO
     $ cd dev
     $ cfy ... # Do cloduify testing of blueprint
     $ cd .. # Now go to line 2 and start again
@@ -201,13 +203,14 @@ development more manageable.
 
 Tasks that need to be done when creating release are:
 
+ 0. Make sure `dice_plugin/__init__.py` has proper version set.
  1. Merge develop branch into master.
  2. Tag the current git HEAD with proper version number.
  3. Run `gen-plugin-yaml.py` script with proper platform
     information to produce includable plug-in description.
  4. Publish generated plug-in description on Github pages hosting.
 
-First three commands are easy, so we will just look at how to properly do the
+First four commands are easy, so we will just look at how to properly do the
 last point. First, we need to get `gh-pages` branch checked out. You ca do
 this by cloning a separate copy of repo or by using `git worktree` command.
 Simply executing
@@ -236,9 +239,6 @@ feel that `develop` branch is stable enough to warrant a development release.
 
 
 ### Reporting bugs
-
-There are no bugs in this piece of software. Really. Go ahead and try to find
-one. I dare you;)
 
 Since currently, this is a small, one developer project, just find my email
 somewhere inside the sources and contact me directly.

@@ -20,6 +20,7 @@
 #     Tadej Borovšak <tadej.borovsak@xlab.si>
 
 import setuptools
+import dice_plugin
 
 setuptools.setup(
     name="dice-plugin",
@@ -29,8 +30,7 @@ setuptools.setup(
     description="DICE TOSCA library",
     license="LICENSE",
 
-    use_scm_version=True,
-    setup_requires=["setuptools_scm"],
+    version=dice_plugin.__version__,
 
     packages=setuptools.find_packages(exclude=["*.tests"]),
     package_data={

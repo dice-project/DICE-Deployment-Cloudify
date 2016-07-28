@@ -1,4 +1,0 @@
-plugins:
-  dice:
-    source: https://github.com/dice-project/DICE-Deployment-Cloudify/archive/${VERSION}.zip
-    executor: host_agent
