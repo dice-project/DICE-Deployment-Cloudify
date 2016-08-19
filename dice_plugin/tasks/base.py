@@ -33,11 +33,19 @@ def copy_runtime_prop(ctx, property):
 
 
 @operation
-def copy_ip_address(ctx, property):
-    msg = "Copying ip address of '{}' into '{}' runtime poperty"
+def copy_ip_from_target(ctx, property):
+    msg = "Copying ip address of '{}' into '{}' runtime property"
     ctx.logger.info(msg.format(ctx.target.instance.id, property))
     address = ctx.target.instance.host_ip
     ctx.source.instance.runtime_properties[property] = address
+
+
+@operation
+def copy_ip_from_source(ctx, property):
+    msg = "Copying ip address of '{}' into '{}' runtime property"
+    ctx.logger.info(msg.format(ctx.source.instance.id, property))
+    address = ctx.source.instance.host_ip
+    ctx.target.instance.runtime_properties[property] = address
 
 
 @operation

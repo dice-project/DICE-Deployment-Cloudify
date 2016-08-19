@@ -3,6 +3,10 @@ node_types:
   dice.firewall_rules.Base:
     derived_from: dice.firewall_rules.Unimplemented
 
+  # Dummy floating IP that simply holds copy of VM's IP address
+  dice.VirtualIP:
+    derived_from: cloudify.nodes.Root
+
   dice.hosts.Custom:
     derived_from: cloudify.flexiant.nodes.Server
     properties:
@@ -58,3 +62,16 @@ relationships:
 
   dice.relationships.ProtectedBy:
     derived_from: dice.relationships.Unimplemented
+
+  # When connection is established, we copy address from VM. This may seem
+  # a bit backwards at first, but things are done this way in order to be
+  # consistent with OpenStack and Amazon way of doing things.
+  dice.relationships.IPAvailableFrom:
+    derived_from: cloudify.relationships.connected_to
+    target_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        establish:
+          implementation: dice.dice_plugin.tasks.base.copy_ip_from_source
+          executor: central_deployment_agent
+          inputs:
+            property: { default: floating_ip_address }

@@ -62,6 +62,6 @@ relationships:
     source_interfaces:
       cloudify.interfaces.relationship_lifecycle:
         preconfigure:
-          implementation: dice.dice_plugin.tasks.base.copy_ip_address
+          implementation: dice.dice_plugin.tasks.base.copy_ip_from_target
           inputs:
             property: { default: master_ip }

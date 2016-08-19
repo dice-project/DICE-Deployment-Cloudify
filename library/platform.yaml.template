@@ -3,6 +3,9 @@ node_types:
   dice.firewall_rules.Base:
     derived_from: dice.firewall_rules.Unimplemented
 
+  dice.VirtualIP:
+    derived_from: cloudify.nodes.VirtualIP
+
   dice.hosts.Custom:
     derived_from: dice.hosts.Unimplemented
     properties:
@@ -26,4 +29,7 @@ node_types:
 relationships:
 
   dice.relationships.ProtectedBy:
+    derived_from: dice.relationships.Unimplemented
+
+  dice.relationships.IPAvailableFrom:
     derived_from: dice.relationships.Unimplemented

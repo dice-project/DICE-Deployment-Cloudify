@@ -3,6 +3,9 @@ node_types:
   dice.firewall_rules.Base:
     derived_from: cloudify.openstack.nodes.SecurityGroup
 
+  dice.VirtualIP:
+    derived_from: cloudify.openstack.nodes.FloatingIP
+
   dice.hosts.Custom:
     derived_from: cloudify.openstack.nodes.Server
     properties:
@@ -39,3 +42,6 @@ relationships:
 
   dice.relationships.ProtectedBy:
     derived_from: cloudify.openstack.server_connected_to_security_group
+
+  dice.relationships.IPAvailableFrom:
+    derived_from: cloudify.openstack.server_connected_to_floating_ip
