@@ -1,3 +1,9 @@
+New in v.0.1.3:
+* Added support for Apache Cassandra in the technology library.
+* Added support for Spark in technology library. At this time we support
+  the stand-alone version only.
+* Added support for installing DICE Deployment Service - the server side.
+
 New in v.0.1.2:
 
 * Initial support for deployments reconfiguration. This will enable
