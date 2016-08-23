@@ -24,6 +24,19 @@ node_types:
           implementation: dice.dice_plugin.tasks.zookeeper.merge_config
           executor: central_deployment_agent
 
+  # Firewall rules
+  dice.firewall_rules.zookeeper.Server:
+    derived_from: dice.firewall_rules.Base
+    properties:
+      rules:
+        default:
+          - remote_ip_prefix: 0.0.0.0/0
+            port: 2181
+          - remote_ip_prefix: 0.0.0.0/0
+            port: 2888
+          - remote_ip_prefix: 0.0.0.0/0
+            port: 3888
+
 
 relationships:
 
