@@ -44,6 +44,15 @@ node_types:
           - remote_ip_prefix: 0.0.0.0/0
             port: 9160
 
+  # Next two are present only for convenience, since it may be easier for
+  # generator to generate firewall rules that correspond 1:1 onto TOSCA types.
+  dice.firewall_rules.cassandra.Seed:
+    derived_from: dice.firewall_rules.cassandra.Common
+
+  dice.firewall_rules.cassandra.Worker:
+    derived_from: dice.firewall_rules.cassandra.Common
+
+
 relationships:
 
   dice.relationships.cassandra.ConnectedToSeed:
