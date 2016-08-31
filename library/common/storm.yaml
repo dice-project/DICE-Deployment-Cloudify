@@ -43,6 +43,13 @@ node_types:
       topology_class:
         description: >
           Class name that contains Storm topology
+      arguments:
+        description: >
+          Arguments that should be passed to topology on submission. Note that
+          when jar is executed, first argument is always topology name.
+          Arguments in this property are passed as an additional arguments
+          after name.
+        default: []
     interfaces:
       cloudify.interfaces.lifecycle:
         start:
@@ -51,6 +58,7 @@ node_types:
             jar:   { default: { get_property: [ SELF, application    ] } }
             name:  { default: { get_property: [ SELF, topology_name  ] } }
             klass: { default: { get_property: [ SELF, topology_class ] } }
+            args:  { default: { get_property: [ SELF, arguments      ] } }
         stop:
           implementation: dice.dice_plugin.tasks.storm.kill_topology
           inputs:

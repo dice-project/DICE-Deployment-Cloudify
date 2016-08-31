@@ -46,7 +46,7 @@ def _write_tmp_configuration(config):
 
 
 @operation
-def submit_topology(ctx, jar, name, klass):
+def submit_topology(ctx, jar, name, klass, args):
     ctx.logger.info("Obtaining topology jar '{}'".format(jar))
     local_jar = utils.obtain_resource(ctx, jar)
     ctx.logger.info("Topology jar stored as '{}'".format(local_jar))
@@ -60,7 +60,7 @@ def submit_topology(ctx, jar, name, klass):
     ctx.logger.info("Submitting '{}' as '{}'".format(local_jar, name))
     subprocess.call([
         "storm", "--config", cfg_file, "jar", local_jar, klass, name
-    ])
+    ] + args)
     os.unlink(cfg_file)
 
     ctx.logger.info("Retrieving topology id for '{}'".format(name))
