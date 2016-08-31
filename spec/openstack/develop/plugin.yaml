@@ -33,6 +33,8 @@ node_types:
           used by installation procedure.
 
           '
+  dice.VirtualIP:
+    derived_from: cloudify.openstack.nodes.FloatingIP
   dice.chef.SoftwareComponent:
     derived_from: cloudify.chef.nodes.SoftwareComponent
     interfaces:
@@ -115,52 +117,6 @@ node_types:
           and disabled here).
 
           '
-  dice.components.DeploymentService:
-    derived_from: dice.chef.SoftwareComponent
-    properties:
-      configure_runlist:
-        default:
-        - recipe[apt::default]
-        - recipe[dice-common::host]
-        - recipe[dice-deployment-service::default]
-        - recipe[dice-common::consul-common]
-        - recipe[dice-common::consul-server]
-      debug_mode:
-        default:
-          get_input: enable_debug
-        description: Enable debug mode
-      manager:
-        default:
-          get_input: cfy_manager
-        description: Cloudify Manager instance we wrap
-      manager_pass:
-        default:
-          get_input: cfy_manager_password
-        description: Cloudify Manager instance password
-      manager_user:
-        default:
-          get_input: cfy_manager_username
-        description: Cloudify Manager instance username
-      sources:
-        default:
-          get_input: sources
-        description: Application sources for deployment service
-      ssh_key:
-        default:
-          get_input: ssh_key
-        description: Extra SSH public key
-      superuser_email:
-        default:
-          get_input: superuser_email
-        description: E-mail address to assign to the superuser
-      superuser_password:
-        default:
-          get_input: superuser_password
-        description: Password part of the superuser credentials to create
-      superuser_username:
-        default:
-          get_input: superuser_username
-        description: Username part of the superuser credentials to create
   dice.components.cassandra.Base:
     derived_from: dice.chef.SoftwareComponent
     properties:
@@ -245,6 +201,35 @@ node_types:
       title:
         default: Cloudify Hello World
         description: This will appear as the title of the page
+  dice.components.spark.Base:
+    derived_from: dice.chef.SoftwareComponent
+    properties:
+      configure_runlist:
+        default:
+        - recipe[spark::configure]
+      create_runlist:
+        default:
+        - recipe[dice-common::host]
+        - recipe[apt::default]
+        - recipe[java::default]
+        - recipe[spark::default]
+      start_runlist:
+        default:
+        - recipe[spark::start]
+  dice.components.spark.Master:
+    derived_from: dice.components.spark.Base
+    properties:
+      chef_attributes:
+        default:
+          spark:
+            type: master
+  dice.components.spark.Worker:
+    derived_from: dice.components.spark.Base
+    properties:
+      chef_attributes:
+        default:
+          spark:
+            type: worker
   dice.components.storm.Nimbus:
     derived_from: dice.chef.SoftwareComponent
     properties:
@@ -265,6 +250,11 @@ node_types:
         start:
           implementation: dice.dice_plugin.tasks.storm.submit_topology
           inputs:
+            args:
+              default:
+                get_property:
+                - SELF
+                - arguments
             jar:
               default:
                 get_property:
@@ -293,6 +283,13 @@ node_types:
         description: 'Location of topology jar file. If this is relative path, file
           is assumed to be part of the blueprint package. If this URL, file will be
           downloaded.
+
+          '
+      arguments:
+        default: []
+        description: 'Arguments that should be passed to topology on submission. Note
+          that when jar is executed, first argument is always topology name. Arguments
+          in this property are passed as an additional arguments after name.
 
           '
       topology_class:
@@ -337,31 +334,6 @@ node_types:
         - recipe[hadoop::zookeeper_start@2.0.10]
   dice.firewall_rules.Base:
     derived_from: cloudify.openstack.nodes.SecurityGroup
-  dice.firewall_rules.DeploymentService:
-    derived_from: dice.firewall_rules.Base
-    properties:
-      rules:
-        default:
-        - port: 22
-          remote_ip_prefix: 0.0.0.0/0
-        - port: 53
-          remote_ip_prefix: 0.0.0.0/0
-        - port: 53
-          protocol: udp
-          remote_ip_prefix: 0.0.0.0/0
-        - port: 80
-          remote_ip_prefix: 0.0.0.0/0
-        - port: 5555
-          remote_ip_prefix: 0.0.0.0/0
-        - port_range_max: 8302
-          port_range_min: 8300
-          remote_ip_prefix: 0.0.0.0/0
-        - port_range_max: 8302
-          port_range_min: 8300
-          protocol: udp
-          remote_ip_prefix: 0.0.0.0/0
-        - port: 15672
-          remote_ip_prefix: 0.0.0.0/0
   dice.firewall_rules.Unimplemented:
     derived_from: cloudify.nodes.Root
   dice.firewall_rules.cassandra.Common:
@@ -379,6 +351,10 @@ node_types:
           remote_ip_prefix: 0.0.0.0/0
         - port: 9160
           remote_ip_prefix: 0.0.0.0/0
+  dice.firewall_rules.cassandra.Seed:
+    derived_from: dice.firewall_rules.cassandra.Common
+  dice.firewall_rules.cassandra.Worker:
+    derived_from: dice.firewall_rules.cassandra.Common
   dice.firewall_rules.hadoop.DataNode:
     derived_from: dice.firewall_rules.Base
     properties:
@@ -432,6 +408,61 @@ node_types:
           remote_ip_prefix: 0.0.0.0/0
         - port: 22
           remote_ip_prefix: 0.0.0.0/0
+  dice.firewall_rules.spark.Master:
+    derived_from: dice.firewall_rules.Base
+    properties:
+      rules:
+        default:
+        - port: 6066
+          remote_ip_prefix: 0.0.0.0/0
+        - port: 7077
+          remote_ip_prefix: 0.0.0.0/0
+  dice.firewall_rules.spark.Worker:
+    derived_from: dice.firewall_rules.Base
+    properties:
+      rules:
+        default:
+        - port: 7078
+          remote_ip_prefix: 0.0.0.0/0
+  dice.firewall_rules.storm.Nimbus:
+    derived_from: dice.firewall_rules.Base
+    properties:
+      rules:
+        default:
+        - port: 6627
+          remote_ip_prefix: 0.0.0.0/0
+        - port: 8080
+          remote_ip_prefix: 0.0.0.0/0
+        - port_range_max: 6703
+          port_range_min: 6700
+          remote_ip_prefix: 0.0.0.0/0
+        - port: 3773
+          remote_ip_prefix: 0.0.0.0/0
+        - port: 3774
+          remote_ip_prefix: 0.0.0.0/0
+  dice.firewall_rules.storm.Worker:
+    derived_from: dice.firewall_rules.Base
+    properties:
+      rules:
+        default:
+        - port_range_max: 6703
+          port_range_min: 6700
+          remote_ip_prefix: 0.0.0.0/0
+        - port: 3773
+          remote_ip_prefix: 0.0.0.0/0
+        - port: 3774
+          remote_ip_prefix: 0.0.0.0/0
+  dice.firewall_rules.zookeeper.Server:
+    derived_from: dice.firewall_rules.Base
+    properties:
+      rules:
+        default:
+        - port: 2181
+          remote_ip_prefix: 0.0.0.0/0
+        - port: 2888
+          remote_ip_prefix: 0.0.0.0/0
+        - port: 3888
+          remote_ip_prefix: 0.0.0.0/0
   dice.hosts.Custom:
     derived_from: cloudify.openstack.nodes.Server
     properties:
@@ -471,10 +502,12 @@ node_types:
 plugins:
   dice:
     executor: host_agent
-    source: https://github.com/dice-project/DICE-Deployment-Cloudify/archive/develop.zip
+    source: https://github.com/dice-project/DICE-Deployment-Cloudify/archive/feature/add-params-to-topology.zip
 relationships:
   dice.relationships.ContainedIn:
     derived_from: cloudify.relationships.contained_in
+  dice.relationships.IPAvailableFrom:
+    derived_from: cloudify.openstack.server_connected_to_floating_ip
   dice.relationships.Needs:
     derived_from: cloudify.relationships.depends_on
   dice.relationships.ProtectedBy:
@@ -508,12 +541,21 @@ relationships:
           inputs:
             property:
               default: resourcemanager_addr
+  dice.relationships.spark.ConnectedToMaster:
+    derived_from: cloudify.relationships.connected_to
+    source_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        preconfigure:
+          implementation: dice.dice_plugin.tasks.base.copy_ip_from_target
+          inputs:
+            property:
+              default: master_ip
   dice.relationships.storm.ConnectedToNimbus:
     derived_from: cloudify.relationships.connected_to
     source_interfaces:
       cloudify.interfaces.relationship_lifecycle:
         preconfigure:
-          implementation: dice.dice_plugin.tasks.base.copy_ip_address
+          implementation: dice.dice_plugin.tasks.base.copy_ip_from_target
           inputs:
             property:
               default: storm_nimbus_ip
