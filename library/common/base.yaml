@@ -22,9 +22,18 @@
 # On the other hand, 'reset' operation is component dependent and thus must be
 # provided by implementor.
 
+# This is fixed for DICE library in order to have some control over what
+# capabilities we can expect from Cloudify.
+tosca_definitions_version: cloudify_dsl_1_3
+
+# These imports are required by the library itself
+imports:
+  - http://www.getcloudify.org/spec/cloudify/3.4/types.yaml
+  - http://dice-project.github.io/cloudify-chef-plugin/1.3.2/plugin.yaml
+
 plugins:
   dice:
-    source: REPLACE ME WITH ACTUAL PLUGIN REPO LINK TO zip ARCHIVE
+    source: https://github.com/dice-project/DICE-Deployment-Cloudify/archive/develop.zip
     executor: host_agent
 
 node_types:
@@ -104,7 +113,7 @@ node_types:
       chef_config:
         default:
           version: 12.11.18
-          chef_repo: REPLACE ME WITH ACTUAL CHEF REPO LINK TO tar.gz ARCHIVE
+          chef_repo: https://github.com/dice-project/DICE-Chef-Repository/archive/develop.tar.gz
           runlists:
             create:    { get_property: [ SELF, create_runlist    ] }
             configure: { get_property: [ SELF, configure_runlist ] }

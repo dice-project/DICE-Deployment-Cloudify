@@ -1,3 +1,39 @@
+imports:
+  - http://dice-project.github.io/cloudify-openstack-plugin/1.4/plugin.yaml
+
+
+inputs:
+
+  agent_user:
+    description: >-
+      User that can be used to login to cloud image (for Ubuntu images, this
+      should normally be set to ubuntu, for Centos to centos).
+
+  small_image_id:
+    description: >-
+      OpenStack id of the image that should be used on small instances.
+
+  small_flavor_id:
+    description: >-
+      OpenStack id of the flavor that should be used on small instances.
+
+  medium_image_id:
+    description: >-
+      OpenStack id of the image that should be used on medium instances.
+
+  medium_flavor_id:
+    description: >-
+      OpenStack id of the flavor that should be used on medium instances.
+
+  large_image_id:
+    description: >-
+      OpenStack id of the image that should be used on large instances.
+
+  large_flavor_id:
+    description: >-
+      OpenStack id of the flavor that should be used on large instances.
+
+
 node_types:
 
   dice.firewall_rules.Base:

@@ -1,3 +1,53 @@
+imports:
+  - http://dice-project.github.io/DICE-FCO-Plugin-Cloudify/0.1.1/plugin.yaml
+
+
+inputs:
+
+  agent_user:
+    description: >-
+      User that can be used to login to cloud image (for Ubuntu images, this
+      should normally be set to ubuntu, for Centos to centos).
+
+  small_image_id:
+    description: FCO image id that should be used on small instances.
+  small_server_type:
+    description: FCO server type that should be used on small instances.
+  small_disk:
+    description: FCO disk that should be used on small instances.
+
+  medium_image_id:
+    description: FCO image id that should be used on medium instances.
+  medium_server_type:
+    description: FCO server type that should be used on medium instances.
+  medium_disk:
+    description: FCO disk that should be used on medium instances.
+
+  large_image_id:
+    description: FCO image id that should be used on large instances.
+  large_server_type:
+    description: FCO server type that should be used on large instances.
+  large_disk:
+    description: FCO disk that should be used on large instances.
+
+  # TODO: This should be set on manager on bootstrap, but FCO plugin does not
+  # support such functionality yet.
+  username:
+    description: FCO username (UUID).
+  password:
+    description: FCO password.
+  customer:
+    description: FCO customer (UUID).
+  service_url:
+    description: FCO REST service base url.
+  agent_key:
+    description: UUID of the key that should be used by plugin.
+  vdc:
+    description: UUID of the VDC that should be used to create instances.
+  network:
+    description: UUID of the network that instances should be connected to.
+
+
 node_types:
 
   dice.firewall_rules.Base:
