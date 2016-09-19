@@ -1,0 +1,3 @@
+includes:
+  - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/tb-wip/library/fco.yaml
+  - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/tb-wip/library/library.yaml
