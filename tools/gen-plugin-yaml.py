@@ -53,6 +53,10 @@ def merge(a, b):
     for k in b.keys():
         if isinstance(b[k], dict) and k in a and isinstance(a[k], dict):
             merge(a[k], b[k])
+        elif isinstance(b[k], list) and k in a and isinstance(a[k], list):
+            # Merge lists while removing duplicates (if we need to preserve
+            # order, simply casting things to set will ot work).
+            a[k] = list(set(a[k]) | set(b[k]))
         else:
             a[k] = b[k]
 
