@@ -19,7 +19,10 @@
 # Author:
 #     Tadej Borovšak <tadej.borovsak@xlab.si>
 
+import shutil
+
 from cloudify.decorators import operation
+from dice_plugin import utils
 
 
 @operation
@@ -52,3 +55,10 @@ def copy_ip_from_source(ctx, property):
 def update_configuration(ctx, configuration):
     ctx.logger.info("Updating configuration for '{}'".format(ctx.instance.id))
     ctx.instance.runtime_properties["configuration"] = configuration
+
+
+@operation
+def download_resource(ctx, source, destination):
+    ctx.logger.info("Downloading '{}' to '{}'".format(source, destination))
+    tmp_location = utils.obtain_resource(source)
+    shutil.move(tmp, destination)
