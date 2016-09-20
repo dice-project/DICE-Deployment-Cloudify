@@ -58,7 +58,7 @@ def update_configuration(ctx, configuration):
 
 
 @operation
-def download_resource(ctx, source, destination):
-    ctx.logger.info("Downloading '{}' to '{}'".format(source, destination))
-    tmp_location = utils.obtain_resource(source)
-    shutil.move(tmp, destination)
+def download_resource(ctx, source, destination_key):
+    ctx.logger.info("Downloading '{}'".format(source))
+    location = utils.obtain_resource(ctx, source)
+    ctx.instance.runtime_properties[destination_key] = location
