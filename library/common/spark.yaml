@@ -7,7 +7,7 @@ node_types:
     properties:
       create_runlist:
         default:
-          - recipe[dice-common::host]
+          - recipe[dice_common::host]
           - recipe[apt::default]
           - recipe[java::default]
           - recipe[spark::default]

@@ -2,32 +2,31 @@
 
 node_types:
 
-  dice.components.storm.Worker:
+  dice.components.storm.Base:
     derived_from: dice.chef.SoftwareComponent
     properties:
       configure_runlist:
         default:
-          - recipe[apt::default@2.9.2]
-          - recipe[java::default@1.36.0]
-          - recipe[storm-cluster::common@0.0.25]
-          - recipe[storm-cluster::configure@0.0.25]
+          - recipe[dice_common::host]
+          - recipe[apt::default]
+          - recipe[java::default]
+          - recipe[storm::default]
+          - recipe[storm::configure]
+
+  dice.components.storm.Worker:
+    derived_from: dice.components.storm.Base
+    properties:
       start_runlist:
         default:
-          - recipe[storm-cluster::start_supervisor@0.0.25]
+          - recipe[storm::start_supervisor]
 
   dice.components.storm.Nimbus:
-    derived_from: dice.chef.SoftwareComponent
+    derived_from: dice.components.storm.Base
     properties:
-      configure_runlist:
-        default:
-          - recipe[apt::default@2.9.2]
-          - recipe[java::default@1.36.0]
-          - recipe[storm-cluster::common@0.0.25]
-          - recipe[storm-cluster::configure@0.0.25]
       start_runlist:
         default:
-          - recipe[storm-cluster::start_nimbus@0.0.25]
-          - recipe[storm-cluster::start_supervisor@0.0.25]
+          - recipe[storm::start_nimbus]
+          - recipe[storm::start_supervisor]
 
   dice.components.storm.Topology:
     derived_from: dice.LogicalNode
