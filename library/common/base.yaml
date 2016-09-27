@@ -40,13 +40,13 @@ node_types:
 
   dice.LogicalNode:
     derived_from: cloudify.nodes.Root
-    properties:
+    properties: &base_properties
       configuration:
         description: >
           This propery holds arbitrary configuration data that can be used by
           installation procedure.
         default: {}
-    interfaces:
+    interfaces: &base_interfaces
       dice.interfaces.reconfiguration:
         update_configuration:
           implementation: dice.dice_plugin.tasks.base.update_configuration
@@ -56,28 +56,13 @@ node_types:
 
   dice.SoftwareComponent:
     derived_from: cloudify.nodes.SoftwareComponent
-    properties:
-      configuration:
-        description: >
-          This propery holds arbitrary configuration data that can be used by
-          installation procedure.
-        default: {}
-    interfaces:
-      dice.interfaces.reconfiguration:
-        reset: {}
-        update_configuration:
-          implementation: dice.dice_plugin.tasks.base.update_configuration
-          inputs:
-            configuration: { default: {} }
+    properties: *base_properties
+    interfaces: *base_interfaces
 
   dice.chef.SoftwareComponent:
     derived_from: cloudify.chef.nodes.SoftwareComponent
     properties:
-      configuration:
-        description: >
-          This propery holds arbitrary configuration data that can be used by
-          installation procedure.
-        default: {}
+      << : *base_properties
       create_runlist:
         description: >
           Runlist that is executed when creating node instance (this is where
@@ -121,13 +106,7 @@ node_types:
             stop:      { get_property: [ SELF, stop_runlist      ] }
             delete:    { get_property: [ SELF, delete_runlist    ] }
           attributes: { get_property: [ SELF, chef_attributes ] }
-    interfaces:
-      dice.interfaces.reconfiguration:
-        reset: {}
-        update_configuration:
-          implementation: dice.dice_plugin.tasks.base.update_configuration
-          inputs:
-            configuration: { default: {} }
+    interfaces: *base_interfaces
 
 
 relationships:
