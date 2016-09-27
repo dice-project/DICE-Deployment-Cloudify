@@ -36,6 +36,16 @@ plugins:
     source: https://github.com/dice-project/DICE-Deployment-Cloudify/archive/develop.zip
     executor: host_agent
 
+
+inputs:
+
+  dns_server:
+    description: >-
+      This should be populated with DICE deployment service's private IP.
+      Doing this will ensure that services can discover each other by using
+      FQDNs for addressing.
+
+
 node_types:
 
   dice.LogicalNode:
@@ -46,6 +56,9 @@ node_types:
           This propery holds arbitrary configuration data that can be used by
           installation procedure.
         default: {}
+      dns_server:
+        description: See dns_server input description.
+        default: { get_input: dns_server }
     interfaces: &base_interfaces
       dice.interfaces.reconfiguration:
         update_configuration:
