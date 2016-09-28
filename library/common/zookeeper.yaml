@@ -5,16 +5,18 @@ node_types:
   dice.components.zookeeper.Server:
     derived_from: dice.chef.SoftwareComponent
     properties:
+      create_runlist:
+        default:
+          - recipe[dice_common::host]
+          - recipe[apt::default]
+          - recipe[java::default]
+          - recipe[zookeeper::default]
       configure_runlist:
         default:
-          - recipe[apt::default@2.9.2]
-          - recipe[java::default@1.36.0]
-          - recipe[hadoop::default@2.0.10]
-          - recipe[hadoop::zookeeper_server@2.0.10]
-          - recipe[hadoop::zookeeper_configure@2.0.10]
+          - recipe[zookeeper::configure]
       start_runlist:
         default:
-          - recipe[hadoop::zookeeper_start@2.0.10]
+          - recipe[zookeeper::start]
 
   dice.components.zookeeper.Quorum:
     derived_from: cloudify.nodes.Root
