@@ -1,3 +1,21 @@
+New in v.0.2.1:
+
+* Added firewall rules for Zookeeper, Storm, Cassandra as a node types.
+* Apache Storm topology can now be parametrized, supplying user's custom command
+  line parameters to the topology submitter.
+* Enabled DNS query redirection to the Consul micro DNS server installed with
+  the DICE deployment service.
+* Abstracted virtual IP address to mask differences in platforms (floating
+  IPs in OpenStack, etc.)
+  * On FCO platform, virtual IP does not really exist, hence for FCO it is
+    mapped to a dummy node template.
+* Made DICE library modular, loadable through nested imports. This change
+  requires that Cloudify Manager 3.4.0 is used as the back-end.
+* Added task for downloading selected resource during the Cloudify workflows
+  to prepare files for Chef recipes, which themselves have no access to
+  Cloudify resources.
+* Enabled merging and deduplication of inputs and other lists.
+
 New in v.0.1.3:
 * Added support for Apache Cassandra in the technology library.
 * Added support for Spark in technology library. At this time we support
