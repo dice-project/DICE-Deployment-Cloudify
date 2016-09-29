@@ -6,58 +6,28 @@ blueprints for various providers with minimal changes.
 
 ## Sample blueprint for minimalistic web server
 
-First, we will assume that we have Cloudify Manager installed and configured
-on OpenStack. If this is not the case, consult official documentation on how
-to [bootstrap the manager][cfy-mng-boot].
+First, we will assume that we have Cloudify Manager installed and configured.
+If this is not the case, consult official documentation on how to
+[bootstrap the manager][cfy-mng-boot].
 
-[cfy-mng-boot]: http://docs.getcloudify.org/3.3.1/manager/bootstrapping/
+[cfy-mng-boot]: http://docs.getcloudify.org/3.4.0/manager/bootstrapping/
 
 
 Let us write a simple blueprint that can be used to deploy minimalistic web
 server that will serve static web page. First thing we need to do is write
 down `tosca_definitions_version` and import plugins that we will be using.
 
-    tosca_definitions_version: cloudify_dsl_1_2
+    tosca_definitions_version: cloudify_dsl_1_3
     imports:
-      - http://www.getcloudify.org/spec/cloudify/3.3.1/types.yaml
-      - http://dice-project.github.io/cloudify-openstack-plugin/1.4/plugin.yaml
-      - http://dice-project.github.io/cloudify-chef-plugin/1.3.2/plugin.yaml
-      - http://dice-project.github.io/DICE-Deployment-Cloudify/spec/openstack/0.1.3/plugin.yaml
+      - http://dice-project.github.io/DICE-Deployment-Cloudify/spec/openstack/0.2.1/plugin.yaml
 
-All blueprints need the first import - this is where basic types are defined.
-Since we are preparing blueprint for OpenStack, we included OpenStack plugin
-that will make sure we can create new virtual machines. The last import is our
-DICE library that included wide variety of predefined types (to be honest, at
-the moment, only demo server types are fully functional, but there are others
-in the works).
+All blueprints need the imports section - this is where basic type definitions
+are found. Since we are preparing blueprint for OpenStack, we included
+OpenStack plugin that will make sure we can create new virtual machines. If
+you wish to deploy to FCO, simply replace `openstack` in URL with `fco`.
 
-Next thing we need to provide is inputs section, where we declare variable
-parts of the types. The contents of this section is actually fixed when we use
-DICE library, but due to current limitation of Cloudify DSL that only allows
-inputs to be declared in the blueprint, we need to manually add it to the
-blueprint. All of the inputs are related to OpenStack image in flavor IDs and
-should be reasonably clear to anyone who used OpenStack before.
-
-```
-inputs:
-  agent_user:
-    default: ubuntu
-  small_image_id:
-    default: 36dbc4e8-81dd-49f5-9e43-f44a179a64ea
-  small_flavor_id:
-    default: 070005dc-9bd5-4c0c-b2c6-88f81a7b7239
-  medium_image_id:
-    default: 36dbc4e8-81dd-49f5-9e43-f44a179a64ea
-  medium_flavor_id:
-    default: 070005dc-9bd5-4c0c-b2c6-88f81a7b7239
-  large_image_id:
-    default: 36dbc4e8-81dd-49f5-9e43-f44a179a64ea
-  large_flavor_id:
-    default: 070005dc-9bd5-4c0c-b2c6-88f81a7b7239
-```
-
-It is in the last section of the blueprint that we specify actually topology
-of our application. In our example, topology is simple and consists of:
+Next section of the blueprint specifies actually topology of our application.
+In our example, topology is simple and consists of:
 
  * single virtual machine to host web server (_vm_)
  * actual web server (server)
@@ -69,14 +39,10 @@ values, which makes it easy to start writing blueprints. In our case, we only
 need to define all four nodes that are present in deployment and connect them
 using relationships.
 
-Note that most of the types and relationships are from dice namespace, but no
-virtual_ip. Because floating ip is OpenStack specific thing, we did not try to
-wrap it in dice library.
-
 ```
 node_templates:
   virtual_ip:
-    type: cloudify.openstack.nodes.FloatingIP
+    type: dice.VirtualIP
 
   firewall:
     type: dice.firewall_rules.mock.WebServer
@@ -86,7 +52,7 @@ node_templates:
     relationships:
       - type: dice.relationships.ProtectedBy
         target: firewall
-      - type: cloudify.openstack.server_connected_to_floating_ip
+      - type: dice.relationships.IPAvailableFrom
         target: virtual_ip
 
   server:
@@ -96,14 +62,21 @@ node_templates:
         target: vm
 ```
 
-And that is basically all that we need to write. Complete blueprint (with some
+And that is basically all that we need to write. Complete blueprints (with some
 additional stuff that is not directly relevant to our goal of getting
-something up and running) is available in examples folder.
+something up and running) are available in examples folder for OpenStack and
+FCO platforms.
+
+Last thing before we can attempt to deploy our server is to prepare some
+inputs. TOSCA types that are defined by this library require some
+configuration in order to be able to use them on various platforms. There are
+input files present in example folder that should server as a reference and
+starting point.
 
 Deploying our server is now as simple as
 
     cfy blueprint upload -p hello-openstack.yaml -b hello
-    cfy deployments create -b hello -d hello
+    cfy deployments create -b hello -d hello -i inputs.openstack
     cfy executions start -w install -d hello -l
 
 After a couple of minutes, we should have our server up. Tearing it down is
@@ -114,15 +87,16 @@ again simple. Executing
     cfy blueprints delete -b hello
 
 And that is basically all there is to creating and deploying simple static web
-server.
+server. For more examples visit [Github repo with examples][examples].
+
+[examples]: https://github.com/dice-project/DICE-Deployment-Examples
 
 
 ## Developer information
 
-Various TOSCA type definitions are stored inside `library` folder. In there,
-there is a `common` folder that hosts platform independent type definitions
-and a `plugin.yaml` file that holds metadata about the plugin. Platform
-dependent definitions should be placed inside `platform.yaml` file alongside
+Various TOSCA type definitions are stored inside `library` folder. The
+`common` folder hosts platform independent type definitions. Platform
+dependent definitions should be placed inside `PLATFORM.yaml` file alongside
 `common` folder.
 
 Layout of the `common` folder is free-form. Just make sure files with type
@@ -240,5 +214,6 @@ feel that `develop` branch is stable enough to warrant a development release.
 
 ### Reporting bugs
 
-Since currently, this is a small, one developer project, just find my email
-somewhere inside the sources and contact me directly.
+Visit [project's Github issues page][issues] and file a bug.
+
+[issues]: https://github.com/dice-project/DICE-Deployment-Cloudify/issues

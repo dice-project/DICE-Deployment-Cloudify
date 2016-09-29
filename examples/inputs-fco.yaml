@@ -1,0 +1,21 @@
+agent_user:       ubuntu
+dns_server:       10.10.43.56
+
+large_disk: 500 GB Storage Disk
+large_image_id: 03e7505d-1616-339f-951e-d6e815b940da
+large_server_type: 4 GB / 4 CPU
+medium_disk: 100 GB Storage Disk
+medium_image_id: 03e7505d-1616-339f-951e-d6e815b940da
+medium_server_type: 2 GB / 1 CPU
+small_disk: 20 GB Storage Disk
+small_image_id: 03e7505d-1616-339f-951e-d6e815b940da
+small_server_type: 1 GB / 1 CPU
+
+username: username
+customer: customer
+password: password
+
+service_url: https://cp.diceproject.flexiant.net
+network: 179a6319-3a74-3942-a59c-742d5eab43fe
+agent_key: 21e90e22-31c6-3d64-8590-af03dea25392
+vdc: 42bb54ac-4090-3caa-b730-e916b27daeff

@@ -1,0 +1,9 @@
+dns_server:       10.10.43.56
+
+agent_user: ubuntu
+medium_image_id:  ca290f2d-5163-483b-9dd5-fafe21517c0a
+medium_flavor_id: 93e4960e-9b6d-454f-b422-0d50121b01c6
+small_image_id:   ca290f2d-5163-483b-9dd5-fafe21517c0a
+small_flavor_id:  93e4960e-9b6d-454f-b422-0d50121b01c6
+large_image_id:   ca290f2d-5163-483b-9dd5-fafe21517c0a
+large_flavor_id:  93e4960e-9b6d-454f-b422-0d50121b01c6
