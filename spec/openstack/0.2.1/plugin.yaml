@@ -1,0 +1,8 @@
+imports:
+  - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/0.2.1/library/openstack.yaml
+  - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/0.2.1/library/common/base.yaml
+  - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/0.2.1/library/common/cassandra.yaml
+  - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/0.2.1/library/common/mock.yaml
+  - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/0.2.1/library/common/spark.yaml
+  - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/0.2.1/library/common/storm.yaml
+  - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/0.2.1/library/common/zookeeper.yaml
