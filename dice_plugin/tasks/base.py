@@ -19,7 +19,7 @@
 # Author:
 #     Tadej Borovšak <tadej.borovsak@xlab.si>
 
-import shutil
+import socket
 
 from cloudify.decorators import operation
 from dice_plugin import utils
@@ -41,6 +41,13 @@ def copy_ip_from_target(ctx, property):
     ctx.logger.info(msg.format(ctx.target.instance.id, property))
     address = ctx.target.instance.host_ip
     ctx.source.instance.runtime_properties[property] = address
+
+
+@operation
+def copy_fqdn_from_target(ctx, property):
+    msg = "Copying FQDN of '{}' into '{}' runtime property"
+    ctx.logger.info(msg.format(ctx.target.instance.id, property))
+    ctx.source.instance.runtime_properties[property] = socket.getfqdn()
 
 
 @operation

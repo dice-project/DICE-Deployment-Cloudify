@@ -1,0 +1,75 @@
+# Apache Hadoop
+
+node_types:
+
+  dice.components.hadoop.Base:
+    derived_from: dice.chef.SoftwareComponent
+    properties:
+      create_runlist:
+        default:
+          - recipe[dice_common::default]
+          - recipe[apt::default]
+          - recipe[java::default]
+          - recipe[hadoop::default]
+      chef_attributes:
+        default:
+          java:
+            jdk_version: "8"
+
+  dice.components.hadoop.NameNode:
+    derived_from: dice.components.hadoop.Base
+    properties:
+      configure_runlist:
+        default:
+          - recipe[hadoop::hdfs_configure]
+          - recipe[hadoop::namenode_configure]
+      start_runlist:
+        default:
+          - recipe[hadoop::namenode_start]
+
+  dice.components.hadoop.DataNode:
+    derived_from: dice.components.hadoop.Base
+    properties:
+      configure_runlist:
+        default:
+          - recipe[hadoop::hdfs_configure]
+          - recipe[hadoop::datanode_configure]
+      start_runlist:
+        default:
+          - recipe[hadoop::datanode_start]
+
+  # Firewall rules
+  dice.firewall_rules.hadoop.NameNode:
+    derived_from: dice.firewall_rules.Base
+    properties:
+      rules:
+        default:
+          - remote_ip_prefix: 0.0.0.0/0
+            port: 8020
+          - remote_ip_prefix: 0.0.0.0/0
+            port: 50070
+
+  dice.firewall_rules.hadoop.DataNode:
+    derived_from: dice.firewall_rules.Base
+    properties:
+      rules:
+        default:
+          - remote_ip_prefix: 0.0.0.0/0
+            port: 50010
+          - remote_ip_prefix: 0.0.0.0/0
+            port: 50020
+          - remote_ip_prefix: 0.0.0.0/0
+            port: 50075
+
+
+relationships:
+
+  dice.relationships.hadoop.ConnectedToNameNode:
+    derived_from: cloudify.relationships.connected_to
+    target_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        preconfigure:
+          implementation: dice.dice_plugin.tasks.base.copy_fqdn_from_target
+          inputs:
+            property:
+              default: namenode_addr
