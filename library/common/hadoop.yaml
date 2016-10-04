@@ -38,6 +38,28 @@ node_types:
         default:
           - recipe[hadoop::datanode_start]
 
+  dice.components.hadoop.ResourceManager:
+    derived_from: dice.components.hadoop.Base
+    properties:
+      configure_runlist:
+        default:
+          - recipe[hadoop::yarn_configure]
+          - recipe[hadoop::resourcemanager_start]
+      start_runlist:
+        default:
+          - recipe[hadoop::resourcemanager_start]
+
+  dice.components.hadoop.NodeManager:
+    derived_from: dice.components.hadoop.Base
+    properties:
+      configure_runlist:
+        default:
+          - recipe[hadoop::yarn_configure]
+          - recipe[hadoop::nodemanager_configure]
+      start_runlist:
+        default:
+          - recipe[hadoop::nodemanager_start]
+
   # Firewall rules
   dice.firewall_rules.hadoop.NameNode:
     derived_from: dice.firewall_rules.Base
@@ -62,6 +84,33 @@ node_types:
             port: 50075
 
 
+
+  dice.firewall_rules.hadoop.ResourceManager:
+    derived_from: dice.firewall_rules.Base
+    properties:
+      rules:
+        default:
+          - remote_ip_prefix: 0.0.0.0/0
+            port: 8030
+          - remote_ip_prefix: 0.0.0.0/0
+            port: 8031
+          - remote_ip_prefix: 0.0.0.0/0
+            port: 8032
+          - remote_ip_prefix: 0.0.0.0/0
+            port: 8033
+          - remote_ip_prefix: 0.0.0.0/0
+            port: 8088
+
+  dice.firewall_rules.hadoop.NodeManager:
+    derived_from: dice.firewall_rules.Base
+    properties:
+      rules:
+        default:
+          - remote_ip_prefix: 0.0.0.0/0
+            port: 8040
+          - remote_ip_prefix: 0.0.0.0/0
+            port: 8042
+
 relationships:
 
   dice.relationships.hadoop.ConnectedToNameNode:
@@ -73,3 +122,13 @@ relationships:
           inputs:
             property:
               default: namenode_addr
+
+  dice.relationships.hadoop.ConnectedToResourceManager:
+    derived_from: cloudify.relationships.connected_to
+    target_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        preconfigure:
+          implementation: dice.dice_plugin.tasks.base.copy_fqdn_from_target
+          inputs:
+            property:
+              default: resourcemanager_addr
