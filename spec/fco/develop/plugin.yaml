@@ -2,6 +2,8 @@ imports:
   - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/develop/library/fco.yaml
   - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/develop/library/common/base.yaml
   - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/develop/library/common/cassandra.yaml
+  - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/develop/library/common/hadoop.yaml
+  - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/develop/library/common/kafka.yaml
   - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/develop/library/common/mock.yaml
   - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/develop/library/common/spark.yaml
   - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/develop/library/common/storm.yaml
