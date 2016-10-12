@@ -44,7 +44,7 @@ node_types:
       configure_runlist:
         default:
           - recipe[hadoop::yarn_configure]
-          - recipe[hadoop::resourcemanager_start]
+          - recipe[hadoop::resourcemanager_configure]
       start_runlist:
         default:
           - recipe[hadoop::resourcemanager_start]
