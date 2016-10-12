@@ -110,6 +110,8 @@ node_types:
             port: 8040
           - remote_ip_prefix: 0.0.0.0/0
             port: 8042
+          - remote_ip_prefix: 0.0.0.0/0
+            port: 8039
 
 relationships:
 
