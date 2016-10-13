@@ -14,7 +14,8 @@ node_types:
       chef_attributes:
         default:
           java:
-            jdk_version: "8"
+            jdk_version:    { get_input: java_version }
+            install_flavor: { get_input: java_flavor  }
 
   dice.components.hadoop.NameNode:
     derived_from: dice.components.hadoop.Base

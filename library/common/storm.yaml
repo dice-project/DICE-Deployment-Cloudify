@@ -12,6 +12,11 @@ node_types:
           - recipe[java::default]
           - recipe[storm::default]
           - recipe[storm::configure]
+      chef_attributes:
+        default:
+          java:
+            jdk_version:    { get_input: java_version }
+            install_flavor: { get_input: java_flavor  }
 
   dice.components.storm.Worker:
     derived_from: dice.components.storm.Base

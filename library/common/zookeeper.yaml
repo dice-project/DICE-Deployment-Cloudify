@@ -17,6 +17,11 @@ node_types:
       start_runlist:
         default:
           - recipe[zookeeper::start]
+      chef_attributes:
+        default:
+          java:
+            jdk_version:    { get_input: java_version }
+            install_flavor: { get_input: java_flavor  }
 
   dice.components.zookeeper.Quorum:
     derived_from: cloudify.nodes.Root

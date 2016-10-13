@@ -45,6 +45,17 @@ inputs:
       Doing this will ensure that services can discover each other by using
       FQDNs for addressing.
 
+  java_version:
+    description: >-
+      Version of OpenJDK package that should be installed on machines that
+      require java.
+    default: "8"
+
+  java_flavor:
+    description: >-
+      Flavor of JDK to install. Currently supported flavors: openjdk.
+    default: openjdk
+
 
 node_types:
 
