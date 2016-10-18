@@ -1,5 +1,13 @@
 # Apache Spark
 
+dsl_definitions:
+
+  - &default_chef_attributes
+    java:
+      jdk_version:    { get_input: java_version }
+      install_flavor: { get_input: java_flavor  }
+
+
 node_types:
 
   dice.components.spark.Base:
@@ -17,17 +25,13 @@ node_types:
       start_runlist:
         default:
           - recipe[spark::start]
-      chef_attributes:
-        default:
-          java:
-            jdk_version:    { get_input: java_version }
-            install_flavor: { get_input: java_flavor  }
 
   dice.components.spark.Master:
     derived_from: dice.components.spark.Base
     properties:
       chef_attributes:
         default:
+          <<: *default_chef_attributes
           spark:
             type: master
 
@@ -36,8 +40,38 @@ node_types:
     properties:
       chef_attributes:
         default:
+          <<: *default_chef_attributes
           spark:
             type: worker
+
+  dice.components.spark.Application:
+    derived_from: dice.LogicalNode
+    properties:
+      jar:
+        description: >-
+          Location of application's jar file. If this is relative path, file
+          is assumed to be part of the blueprint package. If this URL, file
+          will be downloaded.
+      class:
+        description: Class that should be executed.
+      name:
+        description: Name of the application that is being submitted.
+      args:
+        description: >-
+          Arguments that should be passed to application on submission. Note
+          that when jar is executed, first argument is always application
+          name.  Arguments in this property are passed as an additional
+          arguments after name.
+        default: []
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        start:
+          implementation: dice.dice_plugin.tasks.spark.submit
+          inputs:
+            jar:   { default: { get_property: [ SELF, jar   ] } }
+            name:  { default: { get_property: [ SELF, name  ] } }
+            klass: { default: { get_property: [ SELF, class ] } }
+            args:  { default: { get_property: [ SELF, args  ] } }
 
 
   # Firewall rules
@@ -49,7 +83,10 @@ node_types:
           - remote_ip_prefix: 0.0.0.0/0
             port: 6066
           - remote_ip_prefix: 0.0.0.0/0
-            port: 7077
+            port_range_min: 7077
+            port_range_max: 7080
+          - remote_ip_prefix: 0.0.0.0/0
+            port: 8080
 
   dice.firewall_rules.spark.Worker:
     derived_from: dice.firewall_rules.Base
@@ -57,7 +94,8 @@ node_types:
       rules:
         default:
           - remote_ip_prefix: 0.0.0.0/0
-            port: 7078
+            port_range_min: 7078
+            port_range_max: 7080
 
 
 relationships:
@@ -70,3 +108,8 @@ relationships:
           implementation: dice.dice_plugin.tasks.base.copy_ip_from_target
           inputs:
             property: { default: master_ip }
+
+  dice.relationships.spark.SubmittedBy:
+    derived_from: cloudify.relationships.contained_in
+    properties:
+      connection_type: { default: all_to_one }

@@ -19,9 +19,11 @@
 # Author:
 #     Tadej Borovšak <tadej.borovsak@xlab.si>
 
+import os
 import urlparse
 import requests
 import tempfile
+import subprocess
 
 
 def parse_resource(path):
@@ -40,3 +42,16 @@ def obtain_resource(ctx, resource):
         tmp.write(requests.get(resource, stream=True).raw.read())
         tmp.close()
         return tmp.name
+
+
+def call(cmd, run_in_background):
+    cmd = map(str, cmd)
+    if run_in_background:
+        cmd.insert(0, "nohup")
+
+    # TODO: Currently, we simply throw log data away. This should change once
+    # we have proper job submission in place.
+    handle, name = tempfile.mkstemp(suffix=".log")
+    proc = subprocess.Popen(cmd, stdin=open(os.devnull, "r"),
+                            stdout=handle, stderr=subprocess.STDOUT)
+    return proc, name
