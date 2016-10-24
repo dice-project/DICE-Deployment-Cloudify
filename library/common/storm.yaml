@@ -42,7 +42,6 @@ node_types:
       start_runlist:
         default:
           - recipe[storm::start_nimbus]
-          - recipe[storm::start_supervisor]
           - recipe[dmon_agent::storm]
 
   dice.components.storm.Topology:
