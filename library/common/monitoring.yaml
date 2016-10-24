@@ -1,0 +1,60 @@
+# Monitoring support
+
+inputs:
+
+  dmon_address:
+    description: >-
+      Place dmon address here (eg. 10.50.51.4:5001). This input is
+      required if one wishes to use monitoring components.
+    default: INVALID_ADDRESS
+
+  logstash_lumberjack_address:
+    description: >-
+      Place logstash lumberjack address here (eg. 10.50.51.4:5000).
+      This input is required if one wishes to use monitoring components that
+      utilize lumberjack logstash input.
+    default: INVALID_ADDRESS
+
+  logstash_lumberjack_crt:
+    description: >-
+      Content of certificate that is offered by logstash lumberjack address.
+    default: INVALID_CRT
+
+  logstash_graphite_address:
+    description: >-
+      Place logstash graphite address here (eg. 10.50.51.4:5002).
+      This input is required if one wishes to use monitoring components that
+      utilize graphite logstash input.
+    default: INVALID_ADDRESS
+
+  logstash_udp_address:
+    description: >-
+      Place logstash udp address here (eg. 10.50.51.4:25826).
+      This input is required if one wishes to use monitoring components that
+      utilize udp logstash input.
+    default: INVALID_ADDRESS
+
+
+data_types:
+
+  dice.types.MonitoringConfig:
+    description: Monitoring configuration.
+    properties:
+      enabled:
+        type: boolean
+        default: false
+      dmon_address:
+        type: string
+        default: { get_input: dmon_address }
+      logstash_lumberjack_address:
+        type: string
+        default: { get_input: logstash_lumberjack_address }
+      logstash_lumberjack_crt:
+        type: string
+        default: { get_input: logstash_lumberjack_crt }
+      logstash_graphite_address:
+        type: string
+        default: { get_input: logstash_graphite_address }
+      logstash_udp_address:
+        type: string
+        default: { get_input: logstash_udp_address }

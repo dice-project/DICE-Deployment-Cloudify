@@ -5,6 +5,14 @@ node_types:
   dice.components.storm.Base:
     derived_from: dice.chef.SoftwareComponent
     properties:
+      # TODO: Document additional requirements that need to be in place before
+      # using this functionality.
+      # NOTE to developers: This property is not defined on root DICE types
+      # because not all types support monitoring and specifying thing on a
+      # more granular level gives blueprint validator additional leverage
+      # when performing checks.
+      monitoring:
+        type: dice.types.MonitoringConfig
       configure_runlist:
         default:
           - recipe[dice_common::default]
@@ -12,6 +20,8 @@ node_types:
           - recipe[java::default]
           - recipe[storm::default]
           - recipe[storm::configure]
+          - recipe[dmon_agent::default]
+          - recipe[dmon_agent::collectd]
       chef_attributes:
         default:
           java:
@@ -24,6 +34,7 @@ node_types:
       start_runlist:
         default:
           - recipe[storm::start_supervisor]
+          - recipe[dmon_agent::storm]
 
   dice.components.storm.Nimbus:
     derived_from: dice.components.storm.Base
@@ -32,10 +43,13 @@ node_types:
         default:
           - recipe[storm::start_nimbus]
           - recipe[storm::start_supervisor]
+          - recipe[dmon_agent::storm]
 
   dice.components.storm.Topology:
     derived_from: dice.LogicalNode
     properties:
+      monitoring:
+        type: dice.types.MonitoringConfig
       application:
         description: >
           Location of topology jar file. If this is relative path, file is
@@ -56,13 +70,20 @@ node_types:
         default: []
     interfaces:
       cloudify.interfaces.lifecycle:
-        start:
+        create:
           implementation: dice.dice_plugin.tasks.storm.submit_topology
           inputs:
             jar:   { default: { get_property: [ SELF, application    ] } }
             name:  { default: { get_property: [ SELF, topology_name  ] } }
             klass: { default: { get_property: [ SELF, topology_class ] } }
             args:  { default: { get_property: [ SELF, arguments      ] } }
+        configure:
+          implementation: dice.dice_plugin.tasks.storm.register_topology
+          inputs:
+            topology_id: { default: { get_attribute: [ SELF, topology_id ] } }
+            monitoring:  { default: { get_property:  [ SELF, monitoring  ] } }
+          max_retries: 10
+          retry_interval: 15
         stop:
           implementation: dice.dice_plugin.tasks.storm.kill_topology
           inputs:
