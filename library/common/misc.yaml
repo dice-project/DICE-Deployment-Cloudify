@@ -1,0 +1,30 @@
+# Miscellaneous components that are useful on its own
+
+node_types:
+
+  dice.components.misc.ScriptRunner:
+    derived_from: dice.LogicalNode
+    properties:
+      script:
+        description: >-
+          Bash script to execute. This can either be relative path, in which
+          case script should be bundled with blueprint, or URL, in which case
+          script will be downloaded first and then executed.
+      arguments:
+        description: >-
+          Array of arguments that will be supplied to the script when being
+          executed. This is where copious amount in intrinsic function calls
+          (get_attribute, get_property) is expected.
+        default: []
+      language:
+        description: >-
+          Language, in which the script has been written. Script runner
+          currently supports only bash.
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        start:
+          implementation: dice.dice_plugin.tasks.misc.run_script
+          inputs:
+            script:    { default: { get_property: [ SELF, script    ] } }
+            arguments: { default: { get_property: [ SELF, arguments ] } }
+            language:  { default: { get_property: [ SELF, language  ] } }
