@@ -3,7 +3,7 @@
 node_types:
 
   dice.components.misc.ScriptRunner:
-    derived_from: dice.LogicalNode
+    derived_from: dice.chef.SoftwareComponent
     properties:
       script:
         description: >-
@@ -20,6 +20,9 @@ node_types:
         description: >-
           Language, in which the script has been written. Script runner
           currently supports only bash.
+      create_runlist:
+        default:
+          - recipe[dice_common::default]
     interfaces:
       cloudify.interfaces.lifecycle:
         start:

@@ -51,3 +51,6 @@ def run_script(ctx, script, arguments, language):
     if proc.returncode != 0:
         msg = "Script terminated with non-zero ({}) status."
         raise NonRecoverableError(msg.format(proc.returncode))
+
+    ctx.instance.runtime_properties["ip"] = ctx.instance.host_ip
+    ctx.instance.runtime_properties["fqdn"] = utils.get_fqdn()
