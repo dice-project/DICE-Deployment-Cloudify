@@ -20,6 +20,7 @@
 #     Tadej Borovšak <tadej.borovsak@xlab.si>
 
 import os
+import socket
 import urlparse
 import requests
 import tempfile
@@ -55,3 +56,7 @@ def call(cmd, run_in_background):
     proc = subprocess.Popen(cmd, stdin=open(os.devnull, "r"),
                             stdout=handle, stderr=subprocess.STDOUT)
     return proc, name
+
+
+def get_fqdn():
+    return socket.getfqdn()

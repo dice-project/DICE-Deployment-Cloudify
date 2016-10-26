@@ -19,8 +19,6 @@
 # Author:
 #     Tadej Borovšak <tadej.borovsak@xlab.si>
 
-import socket
-
 from cloudify.decorators import operation
 from dice_plugin import utils
 
@@ -47,7 +45,7 @@ def copy_ip_from_target(ctx, property):
 def copy_fqdn_from_target(ctx, property):
     msg = "Copying FQDN of '{}' into '{}' runtime property"
     ctx.logger.info(msg.format(ctx.target.instance.id, property))
-    ctx.source.instance.runtime_properties[property] = socket.getfqdn()
+    ctx.source.instance.runtime_properties[property] = utils.get_fqdn()
 
 
 @operation
