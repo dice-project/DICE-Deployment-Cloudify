@@ -62,15 +62,17 @@ relationships:
     source_interfaces:
       cloudify.interfaces.relationship_lifecycle:
         preconfigure:
-          implementation: dice.dice_plugin.tasks.base.copy_runtime_prop
+          implementation: dice.dice_plugin.tasks.base.copy_attr_from_target
           inputs:
-            property: { default: zookeeper_quorum }
+            source_name: { default: zookeeper_quorum }
+            target_name: { default: zookeeper_quorum }
 
   dice.relationships.zookeeper.ConnectedToZookeeperQuorum:
     derived_from: cloudify.relationships.connected_to
     source_interfaces:
       cloudify.interfaces.relationship_lifecycle:
         preconfigure:
-          implementation: dice.dice_plugin.tasks.base.copy_runtime_prop
+          implementation: dice.dice_plugin.tasks.base.copy_attr_from_target
           inputs:
-            property: { default: zookeeper_quorum }
+            source_name: { default: zookeeper_quorum }
+            target_name: { default: zookeeper_quorum }
