@@ -20,6 +20,7 @@
 #     Tadej Borovšak <tadej.borovsak@xlab.si>
 
 import os
+import shutil
 import socket
 import urlparse
 import requests
@@ -32,17 +33,26 @@ def parse_resource(path):
     return (url.scheme == ""), url.path
 
 
-def obtain_resource(ctx, resource):
+def obtain_resource(ctx, resource, dir=None, keep_name=False):
     is_local, path = parse_resource(resource)
     if is_local:
         ctx.logger.info("Getting blueprint resource {}".format(path))
-        return ctx.download_resource(path)
+        file = ctx.download_resource(path)
     else:
         ctx.logger.info("Downloading resource from {}".format(resource))
-        tmp = tempfile.NamedTemporaryFile(delete=False)
-        tmp.write(requests.get(resource, stream=True).raw.read())
-        tmp.close()
-        return tmp.name
+        with tempfile.NamedTemporaryFile(delete=False) as tmp:
+            # TODO: Handle redirects here
+            tmp.write(requests.get(resource, stream=True).raw.read())
+        file = tmp.name
+
+    # Move file if required
+    name = os.path.basename(path) if keep_name else os.path.basename(file)
+    dir = os.path.dirname(file) if dir is None else dir
+    destination = os.path.join(dir, name)
+    shutil.move(file, destination)
+
+    ctx.logger.info("Resource saved to {}".format(destination))
+    return destination
 
 
 def call(cmd, run_in_background):

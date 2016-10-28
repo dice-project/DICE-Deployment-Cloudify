@@ -20,6 +20,8 @@
 #     Tadej Borovšak <tadej.borovsak@xlab.si>
 
 import os
+import shutil
+import tempfile
 import subprocess
 
 from dice_plugin import utils
@@ -28,8 +30,8 @@ from cloudify.exceptions import NonRecoverableError
 
 
 @operation
-def run_script(ctx, script, arguments, language):
-    supported_langs = {"bash"}
+def run_script(ctx, script, arguments, resources, language):
+    supported_langs = {"bash", "python"}
 
     if language not in supported_langs:
         msg = "Unknown language: {}. Available languages: {}."
@@ -37,16 +39,26 @@ def run_script(ctx, script, arguments, language):
             msg.format(language, ", ".join(supported_langs))
         )
 
+    workdir = tempfile.mkdtemp()
+    ctx.logger.info("Created working directory {}".format(workdir))
+
     ctx.logger.info("Getting '{}' script".format(script))
-    local_script = utils.obtain_resource(ctx, script)
+    local_script = utils.obtain_resource(ctx, script, dir=workdir,
+                                         keep_name=True)
     cmd = map(str, [language, local_script] + arguments)
 
+    ctx.logger.info("Getting resources".format(script))
+    for res in resources:
+        utils.obtain_resource(ctx, res, dir=workdir, keep_name=True)
+
     ctx.logger.info("Running command: {}".format(" ".join(cmd)))
-    proc = subprocess.Popen(cmd, stdin=open(os.devnull, "r"),
+    proc = subprocess.Popen(cmd, stdin=open(os.devnull, "r"), cwd=workdir,
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     for line in iter(proc.stdout.readline, ""):
         ctx.logger.info(line.strip())
     proc.wait()
+
+    shutil.rmtree(workdir)
 
     if proc.returncode != 0:
         msg = "Script terminated with non-zero ({}) status."

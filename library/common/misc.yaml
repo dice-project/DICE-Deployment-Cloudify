@@ -16,10 +16,18 @@ node_types:
           executed. This is where copious amount in intrinsic function calls
           (get_attribute, get_property) is expected.
         default: []
+      resources:
+        description: >-
+          Additional resources that will be placed alongside main script. This
+          array can contain mixture of relative paths, in which case resource
+          should be bundled with blueprint, or URLs that point to online
+          resource.
+        default: []
       language:
         description: >-
           Language, in which the script has been written. Script runner
           currently supports only bash.
+        default: bash
       create_runlist:
         default:
           - recipe[dice_common::default]
@@ -30,4 +38,5 @@ node_types:
           inputs:
             script:    { default: { get_property: [ SELF, script    ] } }
             arguments: { default: { get_property: [ SELF, arguments ] } }
+            resources: { default: { get_property: [ SELF, resources ] } }
             language:  { default: { get_property: [ SELF, language  ] } }
