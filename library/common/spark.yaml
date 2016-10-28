@@ -13,18 +13,23 @@ node_types:
   dice.components.spark.Base:
     derived_from: dice.chef.SoftwareComponent
     properties:
+      monitoring:
+        type: dice.types.MonitoringConfig
       create_runlist:
         default:
           - recipe[dice_common::host]
           - recipe[apt::default]
           - recipe[java::default]
           - recipe[spark::default]
+          - recipe[dmon_agent::default]
+          - recipe[dmon_agent::collectd]
       configure_runlist:
         default:
           - recipe[spark::configure]
       start_runlist:
         default:
           - recipe[spark::start]
+          - recipe[dmon_agent::spark]
 
   dice.components.spark.Master:
     derived_from: dice.components.spark.Base
