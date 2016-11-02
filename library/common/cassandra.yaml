@@ -5,10 +5,14 @@ node_types:
   dice.components.cassandra.Base:
     derived_from: dice.chef.SoftwareComponent
     properties:
-      configure_runlist:
+      create_runlist:
         default:
+          - recipe[dice_common::default]
+          - recipe[apt::default]
           - recipe[java::default]
           - recipe[cassandra::default]
+      configure_runlist:
+        default:
           - recipe[cassandra::configure]
       start_runlist:
         default:
