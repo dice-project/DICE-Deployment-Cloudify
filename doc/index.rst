@@ -12,3 +12,4 @@ Documentation Contents
 
    quickstart
    developing
+   templates
