@@ -11,3 +11,12 @@ language = None
 exclude_patterns = ['_build']
 
 pygments_style = 'sphinx'
+
+html_sidebars = {
+    '**': [
+        'about.html',
+        'navigation.html',
+        'relations.html',
+        'searchbox.html',
+    ]
+}
