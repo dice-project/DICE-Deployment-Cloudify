@@ -33,7 +33,7 @@ imports:
 
 plugins:
   dice:
-    source: https://github.com/dice-project/DICE-Deployment-Cloudify/archive/develop.zip
+    source: https://github.com/dice-project/DICE-Deployment-Cloudify/archive/0.2.2.zip
     executor: host_agent
 
 
@@ -122,7 +122,7 @@ node_types:
       chef_config:
         default:
           version: 12.11.18
-          chef_repo: https://github.com/dice-project/DICE-Chef-Repository/archive/develop.tar.gz
+          chef_repo: https://github.com/dice-project/DICE-Chef-Repository/archive/0.1.7.tar.gz
           runlists:
             create:    { get_property: [ SELF, create_runlist    ] }
             configure: { get_property: [ SELF, configure_runlist ] }
