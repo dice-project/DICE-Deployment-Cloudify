@@ -1,3 +1,24 @@
+New in v.0.2.2:
+
+* Added user's custom script runner TOSCA type and the accompanying
+  resources
+* Added Apache Kafka TOSCA types. Currently there are no relationships
+  supported with Kafka yet
+* Added HDFS TOSCA types
+* Added Apache YARN types
+* Added Apache Spark job submitter, supporting client mode
+* Added Apache Storm node DMon monitoring support
+* Added Spark node DMon monitoring support
+* Added support for FQDN setting propagation in TOSCA runtime properties.
+* Moved the `ConnectedToZookeeperQuorum` to a more general namespace
+* Replaces Apache Zookeeper cookbook runlist to use the new cookbooks
+* Unified Java versions across all types. For now this is version 8 of
+  the OpenJDK
+* Fixes Apache Storm cluster setup in 1.x to use the DNS server where
+  previously only IP addresses worked
+* Removed worker process from Storm Nimbus type to free the Nimbus
+  node's resources needed for complex topologies
+
 New in v.0.2.1:
 
 * Added firewall rules for Zookeeper, Storm, Cassandra as a node types.
