@@ -20,7 +20,7 @@ associated output fragment.
        type: dice.VirtualIP
 
      ${STORM}_nimbus_vm:
-       type: dice.hosts.Medium
+       type: dice.hosts.${HOST_SIZE_NIMBUS}
        relationships:
          - type: dice.relationships.ProtectedBy
            target: ${STORM}_nimbus_firewall
@@ -35,13 +35,13 @@ associated output fragment.
          - type: dice.relationships.ContainedIn
            target: ${STORM}_nimbus_vm
          - type: dice.relationships.storm.ConnectedToZookeeperQuorum
-           target: zookeeper_quorum
+           target: ${ZOOKEEPER}_quorum
 
      ${STORM}_worker_firewall:
        type: dice.firewall_rules.storm.Worker
 
      ${STORM}_worker_vm:
-       type: dice.hosts.Medium
+       type: dice.hosts.${HOST_SIZE_WORKER}
        instances:
          deploy: ${STORM_INSTANCE_COUNT}
        relationships:
@@ -131,3 +131,7 @@ associated output fragment.
     A dictionary containing the configuration that will be used when
     submitting the topology jar to the nimbus. If no special configuration is
     needed, use ``{}`` here.
+
+  HOST_SIZE_NIMBUS, HOST_SIZE_WORKER
+    Sizes of the nimbus and worker virtual machines. Available values are
+    *Small*, *Medium* and *Large*.

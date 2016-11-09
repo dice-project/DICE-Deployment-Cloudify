@@ -15,7 +15,7 @@ to submit Spark job into partially prepared cluster).
        type: dice.firewall_rules.spark.Master
 
      ${SPARK}_master_vm:
-       type: dice.hosts.Medium
+       type: dice.hosts.${HOST_SIZE_MASTER}
        relationships:
          - type: dice.relationships.ProtectedBy
            target: ${SPARK}_master_firewall
@@ -30,7 +30,7 @@ to submit Spark job into partially prepared cluster).
        type: dice.firewall_rules.spark.Worker
 
      ${SPARK}_worker_vm:
-       type: dice.hosts.Medium
+       type: dice.hosts.${HOST_SIZE_WORKER}
        instances:
          deploy: ${SPARK_WORKER_COUNT}
        relationships:
@@ -85,3 +85,7 @@ to submit Spark job into partially prepared cluster).
   SPARK_JOB_ARGUMENTS
     Array of arguments that should be passed to jar when being submitted. If
     application takes no additional arguments, set this to ``[]``.
+
+  HOST_SIZE_MASTER, HOST_SIZE_WORKER
+    Sizes of the master and worker virtual machines. Available values are
+    *Small*, *Medium* and *Large*.

@@ -17,7 +17,7 @@ have their default value.
        type: dice.firewall_rules.zookeeper.Server
 
      ${ZOOKEEPER}_vm:
-       type: dice.hosts.Medium
+       type: dice.hosts.${HOST_SIZE}
        instances:
          deploy: ${ZOOKEEPER_INSTANCE_COUNT}
        relationships:
@@ -63,3 +63,7 @@ have their default value.
         tickTime: 1500
         initLimit: 10
         syncLimit: 5
+
+  HOST_SIZE
+    Size of the host virtual machine. Available values are *Small*, *Medium*
+    and *Large*.
