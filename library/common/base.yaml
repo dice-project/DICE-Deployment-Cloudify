@@ -33,7 +33,7 @@ imports:
 
 plugins:
   dice:
-    source: https://github.com/dice-project/DICE-Deployment-Cloudify/archive/0.2.2.zip
+    source: https://github.com/dice-project/DICE-Deployment-Cloudify/archive/develop.zip
     executor: host_agent
 
 
