@@ -30,6 +30,7 @@ node_types:
         default: bash
       create_runlist:
         default:
+          - recipe[apt::default]
           - recipe[dice_common::default]
     interfaces:
       cloudify.interfaces.lifecycle:

@@ -7,8 +7,8 @@ node_types:
     properties:
       create_runlist:
         default:
-          - recipe[dice_common::default]
           - recipe[apt::default]
+          - recipe[dice_common::default]
           - recipe[java::default]
           - recipe[hadoop::default]
       chef_attributes:
