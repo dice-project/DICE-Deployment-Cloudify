@@ -42,6 +42,7 @@ specified and proper DICE TOSCA library plugin description is imported.
 .. include:: templates/cassandra.rst
 .. include:: templates/hadoop.rst
 .. include:: templates/kafka.rst
+.. include:: templates/script.rst
 .. include:: templates/spark.rst
 .. include:: templates/storm.rst
 .. include:: templates/zookeeper.rst
