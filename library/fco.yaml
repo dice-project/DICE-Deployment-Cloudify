@@ -52,6 +52,12 @@ node_types:
 
   dice.firewall_rules.Base:
     derived_from: dice.firewall_rules.Unimplemented
+    properties:
+      # In order to support creating custom firewalls in blueprints, rules
+      # property needs to be present. Note that this has been added only to
+      # ensure compatibility with blueprints written for OpenStack.
+      rules:
+        default: []
 
   # Dummy floating IP that simply holds copy of VM's IP address
   dice.VirtualIP:
