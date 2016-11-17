@@ -19,4 +19,4 @@
 # Author:
 #     Tadej Borovšak <tadej.borovsak@xlab.si>
 
-__version__ = "0.2.2"
+__version__ = "0.2.3"
