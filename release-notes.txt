@@ -1,3 +1,10 @@
+New in v.0.2.3:
+
+* Added generation templates for Spark, Hadoop, Kafka and script runner TOSCA
+  types.
+* Made sure that apt cache is fresh before any apt operation is started.
+* Made FCO custom firewall rules usable.
+
 New in v.0.2.2:
 
 * Added user's custom script runner TOSCA type and the accompanying
