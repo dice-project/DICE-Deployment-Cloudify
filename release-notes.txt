@@ -1,3 +1,8 @@
+New in v.0.2.4:
+
+* Apache Storm submitter has been fixed and now properly handles topology
+  configuration.
+
 New in v.0.2.3:
 
 * Added generation templates for Spark, Hadoop, Kafka and script runner TOSCA
