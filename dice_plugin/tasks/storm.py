@@ -19,11 +19,8 @@
 # Author:
 #     Tadej Borovšak <tadej.borovsak@xlab.si>
 
-import os
 import json
-import yaml
 import requests
-import tempfile
 import subprocess
 
 from dice_plugin import utils
@@ -39,11 +36,13 @@ def _get_topology_id(url, name):
     return None
 
 
-def _write_tmp_configuration(config):
-    handle = tempfile.NamedTemporaryFile(suffix=".yaml", delete=False)
-    handle.write(yaml.dump(config))
-    handle.close()
-    return handle.name
+def _prepare_config_args(config):
+    # Convert {"a.b": 123, "e": "f"} -> ["-c", "a.b=123", "-c", "e=f"]
+    config_args = []
+    for conf_item in config.items():
+        config_args.append("-c")
+        config_args.append("{}={}".format(*conf_item))
+    return config_args
 
 
 @operation
@@ -55,14 +54,11 @@ def submit_topology(ctx, jar, name, klass, args):
     ctx.logger.info("Preparing topology configuration")
     cfg = ctx.node.properties["configuration"].copy()
     cfg.update(ctx.instance.runtime_properties.get("configuration", {}))
-    cfg_file = _write_tmp_configuration(cfg)
-    ctx.logger.info("Configuration stored in '{}'".format(cfg_file))
+    config_args = _prepare_config_args(cfg)
 
-    ctx.logger.info("Submitting '{}' as '{}'".format(local_jar, name))
-    subprocess.call([
-        "storm", "--config", cfg_file, "jar", local_jar, klass, name
-    ] + args)
-    os.unlink(cfg_file)
+    cmd = ["storm"] + config_args + ["jar", local_jar, klass, name] + args
+    ctx.logger.info("Executing '{}'".format(" ".join(cmd)))
+    subprocess.call(cmd)
 
     ctx.logger.info("Retrieving topology id for '{}'".format(name))
     nimbus_ip = ctx.instance.host_ip
