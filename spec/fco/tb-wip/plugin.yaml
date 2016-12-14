@@ -7,6 +7,7 @@ imports:
   - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/tb-wip/library/common/mock.yaml
   - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/tb-wip/library/common/misc.yaml
   - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/tb-wip/library/common/monitoring.yaml
+  - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/tb-wip/library/common/scylla.yaml
   - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/tb-wip/library/common/spark.yaml
   - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/tb-wip/library/common/storm.yaml
   - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/tb-wip/library/common/zookeeper.yaml
