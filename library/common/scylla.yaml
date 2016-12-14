@@ -1,0 +1,68 @@
+# ScyllaDB
+
+node_types:
+
+  dice.components.scylla.Base:
+    derived_from: dice.chef.SoftwareComponent
+    properties:
+      create_runlist:
+        default:
+          - recipe[dice_common::host]
+          - recipe[scylla::default]
+      configure_runlist:
+        default:
+          - recipe[scylla::configure]
+      start_runlist:
+        default:
+          - recipe[scylla::start]
+      chef_attributes:
+        default:
+          java:
+            jdk_version:    { get_input: java_version }
+            install_flavor: { get_input: java_flavor  }
+
+  # Next two types are present here to make it possible to change them in the
+  # future without breaking our consumers
+  dice.components.scylla.Seed:
+    derived_from: dice.components.scylla.Base
+
+  dice.components.scylla.Worker:
+    derived_from: dice.components.scylla.Base
+
+
+  # Firewall rules that are needed for proper communication in scylla
+  dice.firewall_rules.scylla.Common:
+    derived_from: dice.firewall_rules.Base
+    properties:
+      rules:
+        default:
+          - remote_ip_prefix: 0.0.0.0/0
+            port: 7000
+          - remote_ip_prefix: 0.0.0.0/0
+            port: 7001
+          - remote_ip_prefix: 0.0.0.0/0
+            port: 7199
+          - remote_ip_prefix: 0.0.0.0/0
+            port: 9042
+          - remote_ip_prefix: 0.0.0.0/0
+            port: 9160
+
+  # Next two are present only for convenience, since it may be easier for
+  # generator to generate firewall rules that correspond 1:1 onto TOSCA types.
+  dice.firewall_rules.scylla.Seed:
+    derived_from: dice.firewall_rules.scylla.Common
+
+  dice.firewall_rules.scylla.Worker:
+    derived_from: dice.firewall_rules.scylla.Common
+
+
+relationships:
+
+  dice.relationships.scylla.ConnectedToSeed:
+    derived_from: cloudify.relationships.connected_to
+    properties:
+      connection_type: { default: all_to_one }
+    source_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        preconfigure:
+          implementation: dice.dice_plugin.tasks.cassandra.gather_seeds

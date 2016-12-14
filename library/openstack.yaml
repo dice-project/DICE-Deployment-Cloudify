@@ -58,7 +58,7 @@ node_types:
       flavor: { default: { get_input: small_flavor_id } }
 
   dice.hosts.centos.Medium:
-    derived_from: dice.hosts.centos7.Custom
+    derived_from: dice.hosts.centos.Custom
     properties:
       flavor: { default: { get_input: medium_flavor_id } }
 
