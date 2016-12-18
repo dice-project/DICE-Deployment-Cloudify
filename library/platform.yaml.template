@@ -28,15 +28,29 @@ node_types:
         default:
           user: { get_input: agent_user }
 
-  dice.hosts.Small:
+  # CentOS hosts
+  dice.hosts.centos.Small:
     derived_from: dice.hosts.Custom
     properties:
 
-  dice.hosts.Medium:
+  dice.hosts.centos.Medium:
     derived_from: dice.hosts.Custom
     properties:
 
-  dice.hosts.Large:
+  dice.hosts.centos.Large:
+    derived_from: dice.hosts.Custom
+    properties:
+
+  # Ubuntu hosts
+  dice.hosts.ubuntu.Small:
+    derived_from: dice.hosts.Custom
+    properties:
+
+  dice.hosts.ubuntu.Medium:
+    derived_from: dice.hosts.Custom
+    properties:
+
+  dice.hosts.ubuntu.Large:
     derived_from: dice.hosts.Custom
     properties:
 

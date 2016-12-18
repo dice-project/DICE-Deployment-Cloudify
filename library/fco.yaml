@@ -4,27 +4,36 @@ imports:
 
 inputs:
 
-  agent_user:
+  centos_agent_user:
     description: >-
-      User that can be used to login to cloud image (for Ubuntu images, this
-      should normally be set to ubuntu, for Centos to centos).
+      User that can be used to login to CentOS cloud image (by default, this
+      is set to centos, but can be changed if required).
+    default: centos
 
-  small_image_id:
-    description: FCO image id that should be used on small instances.
+  ubuntu_agent_user:
+    description: >-
+      User that can be used to login to Ubuntu cloud image (by default, this
+      is set to ubuntu, but can be changed if required).
+    default: ubuntu
+
+  centos_image_id:
+    description: >-
+      OpenStack id of the CentOS image that should be used on CentOS instances.
+
+  ubuntu_image_id:
+    description: >-
+      OpenStack id of the Ubuntu image that should be used on Ubuntu instances.
+
   small_server_type:
     description: FCO server type that should be used on small instances.
   small_disk:
     description: FCO disk that should be used on small instances.
 
-  medium_image_id:
-    description: FCO image id that should be used on medium instances.
   medium_server_type:
     description: FCO server type that should be used on medium instances.
   medium_disk:
     description: FCO disk that should be used on medium instances.
 
-  large_image_id:
-    description: FCO image id that should be used on large instances.
   large_server_type:
     description: FCO server type that should be used on large instances.
   large_disk:
@@ -79,39 +88,65 @@ node_types:
         default: { get_input: vdc }
       network:
         default: { get_input: network }
-      cloudify_agent:
-        default:
-          user: { get_input: agent_user }
 
+  # CentOS hosts
+  dice.hosts.centos.Custom:
+    derived_from: dice.hosts.Custom
+    properties:
+      image: { default: { get_input: centos_image_id } }
+      cloudify_agent: { default: { user: { get_input: centos_agent_user } } }
+
+  dice.hosts.centos.Small:
+    derived_from: dice.hosts.centos.Custom
+    properties:
+      server_type: { default: { get_input: small_server_type } }
+      disk:        { default: { get_input: small_disk        } }
+
+  dice.hosts.centos.Medium:
+    derived_from: dice.hosts.centos.Custom
+    properties:
+      server_type: { default: { get_input: medium_server_type } }
+      disk:        { default: { get_input: medium_disk        } }
+
+  dice.hosts.centos.Large:
+    derived_from: dice.hosts.centos.Custom
+    properties:
+      server_type: { default: { get_input: large_server_type } }
+      disk:        { default: { get_input: large_disk        } }
+
+  # Ubuntu hosts
+  dice.hosts.ubuntu.Custom:
+    derived_from: dice.hosts.Custom
+    properties:
+      image: { default: { get_input: ubuntu_image_id } }
+      cloudify_agent: { default: { user: { get_input: ubuntu_agent_user } } }
+
+  dice.hosts.ubuntu.Small:
+    derived_from: dice.hosts.ubuntu.Custom
+    properties:
+      server_type: { default: { get_input: small_server_type } }
+      disk:        { default: { get_input: small_disk        } }
+
+  dice.hosts.ubuntu.Medium:
+    derived_from: dice.hosts.ubuntu.Custom
+    properties:
+      server_type: { default: { get_input: medium_server_type } }
+      disk:        { default: { get_input: medium_disk        } }
+
+  dice.hosts.ubuntu.Large:
+    derived_from: dice.hosts.ubuntu.Custom
+    properties:
+      server_type: { default: { get_input: large_server_type } }
+      disk:        { default: { get_input: large_disk        } }
+
+
+  # Backwards compatibility - remove after some grace period
   dice.hosts.Small:
-    derived_from: dice.hosts.Custom
-    properties:
-      image:
-        default: { get_input: small_image_id }
-      server_type:
-        default: { get_input: small_server_type }
-      disk:
-        default: { get_input: small_disk }
-
+    derived_from: dice.hosts.ubuntu.Small
   dice.hosts.Medium:
-    derived_from: dice.hosts.Custom
-    properties:
-      image:
-        default: { get_input: medium_image_id }
-      server_type:
-        default: { get_input: medium_server_type }
-      disk:
-        default: { get_input: medium_disk }
-
+    derived_from: dice.hosts.ubuntu.Medium
   dice.hosts.Large:
-    derived_from: dice.hosts.Custom
-    properties:
-      image:
-        default: { get_input: large_image_id }
-      server_type:
-        default: { get_input: large_server_type }
-      disk:
-        default: { get_input: large_disk }
+    derived_from: dice.hosts.ubuntu.Large
 
 
 relationships:

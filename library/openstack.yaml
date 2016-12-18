@@ -4,30 +4,33 @@ imports:
 
 inputs:
 
-  agent_user:
+  centos_agent_user:
     description: >-
-      User that can be used to login to cloud image (for Ubuntu images, this
-      should normally be set to ubuntu, for Centos to centos).
+      User that can be used to login to CentOS cloud image (by default, this
+      is set to centos, but can be changed if required).
+    default: centos
 
-  small_image_id:
+  ubuntu_agent_user:
     description: >-
-      OpenStack id of the image that should be used on small instances.
+      User that can be used to login to Ubuntu cloud image (by default, this
+      is set to ubuntu, but can be changed if required).
+    default: ubuntu
+
+  centos_image_id:
+    description: >-
+      OpenStack id of the CentOS image that should be used on CentOS instances.
+
+  ubuntu_image_id:
+    description: >-
+      OpenStack id of the Ubuntu image that should be used on Ubuntu instances.
 
   small_flavor_id:
     description: >-
       OpenStack id of the flavor that should be used on small instances.
 
-  medium_image_id:
-    description: >-
-      OpenStack id of the image that should be used on medium instances.
-
   medium_flavor_id:
     description: >-
       OpenStack id of the flavor that should be used on medium instances.
-
-  large_image_id:
-    description: >-
-      OpenStack id of the image that should be used on large instances.
 
   large_flavor_id:
     description: >-
@@ -42,36 +45,58 @@ node_types:
   dice.VirtualIP:
     derived_from: cloudify.openstack.nodes.FloatingIP
 
-  dice.hosts.Custom:
+  # CentOS hosts
+  dice.hosts.centos.Custom:
     derived_from: cloudify.openstack.nodes.Server
     properties:
-      cloudify_agent:
-        default:
-          user: { get_input: agent_user }
+      image: { default: { get_input: centos_image_id } }
+      cloudify_agent: { default: { user: { get_input: centos_agent_user } } }
 
+  dice.hosts.centos.Small:
+    derived_from: dice.hosts.centos.Custom
+    properties:
+      flavor: { default: { get_input: small_flavor_id } }
+
+  dice.hosts.centos.Medium:
+    derived_from: dice.hosts.centos7.Custom
+    properties:
+      flavor: { default: { get_input: medium_flavor_id } }
+
+  dice.hosts.centos.Large:
+    derived_from: dice.hosts.centos.Custom
+    properties:
+      flavor: { default: { get_input: large_flavor_id } }
+
+  # Ubuntu hosts
+  dice.hosts.ubuntu.Custom:
+    derived_from: cloudify.openstack.nodes.Server
+    properties:
+      image: { default: { get_input: ubuntu_image_id } }
+      cloudify_agent: { default: { user: { get_input: ubuntu_agent_user } } }
+
+  dice.hosts.ubuntu.Small:
+    derived_from: dice.hosts.ubuntu.Custom
+    properties:
+      flavor: { default: { get_input: small_flavor_id } }
+
+  dice.hosts.ubuntu.Medium:
+    derived_from: dice.hosts.ubuntu.Custom
+    properties:
+      flavor: { default: { get_input: medium_flavor_id } }
+
+  dice.hosts.ubuntu.Large:
+    derived_from: dice.hosts.ubuntu.Custom
+    properties:
+      flavor: { default: { get_input: large_flavor_id } }
+
+
+  # Backwards compatibility - remove after some grace period
   dice.hosts.Small:
-    derived_from: dice.hosts.Custom
-    properties:
-      image:
-        default: { get_input: small_image_id }
-      flavor:
-        default: { get_input: small_flavor_id }
-
+    derived_from: dice.hosts.ubuntu.Small
   dice.hosts.Medium:
-    derived_from: dice.hosts.Custom
-    properties:
-      image:
-        default: { get_input: medium_image_id }
-      flavor:
-        default: { get_input: medium_flavor_id }
-
+    derived_from: dice.hosts.ubuntu.Medium
   dice.hosts.Large:
-    derived_from: dice.hosts.Custom
-    properties:
-      image:
-        default: { get_input: large_image_id }
-      flavor:
-        default: { get_input: large_flavor_id }
+    derived_from: dice.hosts.ubuntu.Large
 
 
 relationships:
