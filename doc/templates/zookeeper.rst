@@ -17,7 +17,7 @@ have their default value.
        type: dice.firewall_rules.zookeeper.Server
 
      ${ZOOKEEPER}_vm:
-       type: dice.hosts.${HOST_SIZE}
+       type: dice.hosts.ubuntu.${HOST_SIZE}
        instances:
          deploy: ${ZOOKEEPER_INSTANCE_COUNT}
        relationships:

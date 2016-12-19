@@ -12,7 +12,7 @@ number of worker nodes that run node manager and data node services.
        type: dice.firewall_rules.hadoop.NameNode
 
      ${HADOOP}_namenode_vm:
-       type: dice.hosts.${HOST_SIZE_NAMENODE}
+       type: dice.hosts.ubuntu.${HOST_SIZE_NAMENODE}
        relationships:
          - type: dice.relationships.ProtectedBy
            target: ${HADOOP}_namenode_firewall
@@ -27,7 +27,7 @@ number of worker nodes that run node manager and data node services.
        type: dice.firewall_rules.hadoop.ResourceManager
 
      ${HADOOP}_resourcemanager_vm:
-       type: dice.hosts.${HOST_SIZE_RESOURCEMANAGER}
+       type: dice.hosts.ubuntu.${HOST_SIZE_RESOURCEMANAGER}
        relationships:
          - type: dice.relationships.ProtectedBy
            target: ${HADOOP}_resourcemanager_firewall
@@ -47,7 +47,7 @@ number of worker nodes that run node manager and data node services.
        type: dice.firewall_rules.hadoop.DataNode
 
      ${HADOOP}_worker_vm:
-       type: dice.hosts.${HOST_SIZE_WORKER}
+       type: dice.hosts.ubuntu.${HOST_SIZE_WORKER}
        instances:
          deploy: ${HADOOP_WORKER_COUNT}
        relationships:

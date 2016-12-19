@@ -17,7 +17,7 @@ many worker nodes that all initially connect to seed node.
        type: dice.firewall_rules.cassandra.Seed
 
      ${CASSANDRA}_seed_vm:
-       type: dice.hosts.${HOST_SIZE}
+       type: dice.hosts.ubuntu.${HOST_SIZE}
        relationships:
          - type: dice.relationships.ProtectedBy
            target: ${CASSANDRA}_seed_firewall
@@ -34,7 +34,7 @@ many worker nodes that all initially connect to seed node.
        type: dice.firewall_rules.cassandra.Worker
 
      ${CASSANDRA}_worker_vm:
-       type: dice.hosts.${HOST_SIZE}
+       type: dice.hosts.ubuntu.${HOST_SIZE}
        instances:
          deploy: ${CASSANDRA_INSTANCE_COUNT}
        relationships:

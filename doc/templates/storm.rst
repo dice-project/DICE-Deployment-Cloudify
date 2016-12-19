@@ -20,7 +20,7 @@ associated output fragment.
        type: dice.VirtualIP
 
      ${STORM}_nimbus_vm:
-       type: dice.hosts.${HOST_SIZE_NIMBUS}
+       type: dice.hosts.ubuntu.${HOST_SIZE_NIMBUS}
        relationships:
          - type: dice.relationships.ProtectedBy
            target: ${STORM}_nimbus_firewall
@@ -41,7 +41,7 @@ associated output fragment.
        type: dice.firewall_rules.storm.Worker
 
      ${STORM}_worker_vm:
-       type: dice.hosts.${HOST_SIZE_WORKER}
+       type: dice.hosts.ubuntu.${HOST_SIZE_WORKER}
        instances:
          deploy: ${STORM_INSTANCE_COUNT}
        relationships:

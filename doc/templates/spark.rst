@@ -15,7 +15,7 @@ to submit Spark job into partially prepared cluster).
        type: dice.firewall_rules.spark.Master
 
      ${SPARK}_master_vm:
-       type: dice.hosts.${HOST_SIZE_MASTER}
+       type: dice.hosts.ubuntu.${HOST_SIZE_MASTER}
        relationships:
          - type: dice.relationships.ProtectedBy
            target: ${SPARK}_master_firewall
@@ -30,7 +30,7 @@ to submit Spark job into partially prepared cluster).
        type: dice.firewall_rules.spark.Worker
 
      ${SPARK}_worker_vm:
-       type: dice.hosts.${HOST_SIZE_WORKER}
+       type: dice.hosts.ubuntu.${HOST_SIZE_WORKER}
        instances:
          deploy: ${SPARK_WORKER_COUNT}
        relationships:

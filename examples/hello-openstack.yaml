@@ -11,7 +11,7 @@ node_templates:
     type: dice.firewall_rules.mock.WebServer
 
   vm:
-    type: dice.hosts.Small
+    type: dice.hosts.ubuntu.Small
     relationships:
       - type: dice.relationships.ProtectedBy
         target: firewall

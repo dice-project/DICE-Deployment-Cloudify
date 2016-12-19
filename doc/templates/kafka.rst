@@ -13,7 +13,7 @@ defined somewhere in blueprint.
        type: dice.firewall_rules.kafka.Broker
 
      ${KAFKA}_vm:
-       type: dice.hosts.${HOST_SIZE}
+       type: dice.hosts.ubuntu.${HOST_SIZE}
        instances:
          deploy: ${KAFKA_INSTANCE_COUNT}
        relationships:

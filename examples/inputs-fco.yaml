@@ -1,14 +1,16 @@
-agent_user:       ubuntu
 dns_server:       10.10.43.56
 
+centos_agent_user: centos
+centos_image_id: 840a776a-f077-4360-a6ef-a5a90ca3cdf9
+
+ubuntu_agent_user: ubuntu
+ubuntu_image_id: 03e7505d-1616-339f-951e-d6e815b940da
+
 large_disk: 500 GB Storage Disk
-large_image_id: 03e7505d-1616-339f-951e-d6e815b940da
 large_server_type: 4 GB / 4 CPU
 medium_disk: 100 GB Storage Disk
-medium_image_id: 03e7505d-1616-339f-951e-d6e815b940da
 medium_server_type: 2 GB / 1 CPU
 small_disk: 20 GB Storage Disk
-small_image_id: 03e7505d-1616-339f-951e-d6e815b940da
 small_server_type: 1 GB / 1 CPU
 
 username: username

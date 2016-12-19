@@ -1,9 +1,11 @@
 dns_server:       10.10.43.56
 
-agent_user: ubuntu
-medium_image_id:  ca290f2d-5163-483b-9dd5-fafe21517c0a
+centos_agent_user: centos
+centos_image_id: 840a776a-f077-4360-a6ef-a5a90ca3cdf9
+
+ubuntu_agent_user: ubuntu
+ubuntu_image_id: 03e7505d-1616-339f-951e-d6e815b940da
+
 medium_flavor_id: 93e4960e-9b6d-454f-b422-0d50121b01c6
-small_image_id:   ca290f2d-5163-483b-9dd5-fafe21517c0a
 small_flavor_id:  93e4960e-9b6d-454f-b422-0d50121b01c6
-large_image_id:   ca290f2d-5163-483b-9dd5-fafe21517c0a
 large_flavor_id:  93e4960e-9b6d-454f-b422-0d50121b01c6
