@@ -5,18 +5,27 @@ node_types:
   dice.components.cassandra.Base:
     derived_from: dice.chef.SoftwareComponent
     properties:
+      # NOTE to developers: This property is not defined on root DICE types
+      # because not all types support monitoring and specifying thing on a
+      # more granular level gives blueprint validator additional leverage
+      # when performing checks.
+      monitoring:
+        type: dice.types.MonitoringConfig
       create_runlist:
         default:
           - recipe[apt::default]
           - recipe[dice_common::default]
           - recipe[java::default]
           - recipe[cassandra::default]
+          - recipe[dmon_agent::default]
+          - recipe[dmon_agent::collectd]
       configure_runlist:
         default:
           - recipe[cassandra::configure]
       start_runlist:
         default:
           - recipe[cassandra::start]
+          - recipe[dmon_agent::cassandra]
       chef_attributes:
         default:
           java:
