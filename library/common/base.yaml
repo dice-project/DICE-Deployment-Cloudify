@@ -56,6 +56,11 @@ inputs:
       Flavor of JDK to install. Currently supported flavors: openjdk.
     default: openjdk
 
+  proxy:
+    description: >-
+      Caching proxy to use with Chef
+    default: ""
+
 
 node_types:
 
@@ -130,6 +135,7 @@ node_types:
             stop:      { get_property: [ SELF, stop_runlist      ] }
             delete:    { get_property: [ SELF, delete_runlist    ] }
           attributes: { get_property: [ SELF, chef_attributes ] }
+          http_proxy: { get_input: proxy }
     interfaces: *base_interfaces
 
 
