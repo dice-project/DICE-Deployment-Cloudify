@@ -126,7 +126,7 @@ node_types:
       # Derived types should leave this intact or bad things will happen
       chef_config:
         default:
-          version: 12.11.18
+          version: 12.18.31
           chef_repo: https://github.com/dice-project/DICE-Chef-Repository/archive/develop.tar.gz
           runlists:
             create:    { get_property: [ SELF, create_runlist    ] }
