@@ -78,12 +78,13 @@ def register_topology(ctx, topology_id, monitoring):
         ctx.logger.info("Monitoring is disabled. Skiping registration.")
         return
 
-    dmon_tmpl = "http://{dmon_address}/dmon/v1/overlord/core/ls"
-    dmon_logstash_endpoint = dmon_tmpl.format(**monitoring)
+    dmon_tmpl = "http://{dmon_address}/dmon/{version}/overlord/core/ls"
+    dmon_logstash_endpoint_v1 = dmon_tmpl.format(version="v1", **monitoring)
+    dmon_logstash_endpoint_v2 = dmon_tmpl.format(version="v2", **monitoring)
     nimbus_ip = ctx.instance.host_ip
 
     msg = "Registering topology {} to dmon {}."
-    ctx.logger.info(msg.format(topology_id, dmon_logstash_endpoint))
+    ctx.logger.info(msg.format(topology_id, dmon_logstash_endpoint_v1))
 
     ctx.logger.info("Checking if topology is actually running.")
     topology_url = "http://{}:8080/api/v1/topology/{}".format(nimbus_ip,
@@ -93,7 +94,7 @@ def register_topology(ctx, topology_id, monitoring):
         ctx.operation.retry("Topology is not running yet")
 
     ctx.logger.info("Getting the current configuration from dmon.")
-    r = requests.get(dmon_logstash_endpoint)
+    r = requests.get(dmon_logstash_endpoint_v1)
     if r.status_code != 200:
         msg = "Failed to obtain the configuration: {}\n{}"
         raise NonRecoverableError(msg.format(r.status_code, r.text))
@@ -108,7 +109,7 @@ def register_topology(ctx, topology_id, monitoring):
     }
 
     ctx.logger.info("Registering with: {}".format(json.dumps(topology_cfg)))
-    r = requests.put("{}/config".format(dmon_logstash_endpoint),
+    r = requests.put("{}/config".format(dmon_logstash_endpoint_v1),
                      json=topology_cfg)
     ctx.logger.info("Response: {}".format(r.text))
 
@@ -117,7 +118,7 @@ def register_topology(ctx, topology_id, monitoring):
         raise NonRecoverableError(msg.format(r.status_code, r.text))
 
     ctx.logger.info("Requesting logstash restart.")
-    r = requests.post(dmon_logstash_endpoint)
+    r = requests.post(dmon_logstash_endpoint_v2)
     ctx.logger.info("Response: {0}".format(r.text))
 
 
