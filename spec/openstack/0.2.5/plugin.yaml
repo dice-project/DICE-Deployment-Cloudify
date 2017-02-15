@@ -1,0 +1,13 @@
+imports:
+  - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/0.2.5/library/openstack.yaml
+  - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/0.2.5/library/common/base.yaml
+  - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/0.2.5/library/common/cassandra.yaml
+  - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/0.2.5/library/common/hadoop.yaml
+  - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/0.2.5/library/common/kafka.yaml
+  - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/0.2.5/library/common/mock.yaml
+  - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/0.2.5/library/common/monitoring.yaml
+  - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/0.2.5/library/common/misc.yaml
+  - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/0.2.5/library/common/scylla.yaml
+  - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/0.2.5/library/common/spark.yaml
+  - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/0.2.5/library/common/storm.yaml
+  - https://raw.githubusercontent.com/dice-project/DICE-Deployment-Cloudify/0.2.5/library/common/zookeeper.yaml
