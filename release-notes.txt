@@ -1,3 +1,11 @@
+New in v.0.2.5:
+
+* Support for CentOS 7 hosts was added to the library.
+* TOSCA types supporting ScyllaDB installation were added.
+* Cassandra types gained monitoring support.
+* Chef client version has been increased to the latest stable version.
+* Apache Storm topology registration has been synced with upstream DMon.
+
 New in v.0.2.4:
 
 * Apache Storm submitter has been fixed and now properly handles topology
