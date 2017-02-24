@@ -61,7 +61,12 @@ def update_configuration(ctx, configuration):
 
 
 @operation
-def download_resource(ctx, source, destination_key):
-    ctx.logger.info("Downloading '{}'".format(source))
-    location = utils.obtain_resource(ctx, source)
-    ctx.instance.runtime_properties[destination_key] = location
+def download_resources(ctx, resource_pairs):
+    for destination_key, source in resource_pairs:
+        if source is None or source == "":
+            ctx.logger.info("Skipping key '{}'".format(destination_key))
+            location = None
+        else:
+            ctx.logger.info("Downloading '{}'".format(source))
+            location = utils.obtain_resource(ctx, source)
+        ctx.instance.runtime_properties[destination_key] = location
