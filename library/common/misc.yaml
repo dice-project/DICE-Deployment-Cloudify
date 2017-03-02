@@ -5,6 +5,8 @@ node_types:
   dice.components.misc.ScriptRunner:
     derived_from: dice.chef.SoftwareComponent
     properties:
+      monitoring:
+        type: dice.types.MonitoringConfig
       script:
         description: >-
           Bash script to execute. This can either be relative path, in which
@@ -32,6 +34,9 @@ node_types:
         default:
           - recipe[apt::default]
           - recipe[dice_common::default]
+          - recipe[dmon_agent::default]
+          - recipe[dmon_agent::collectd]
+          - recipe[dmon_agent::lsf]
     interfaces:
       cloudify.interfaces.lifecycle:
         start:
