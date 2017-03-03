@@ -58,3 +58,10 @@ data_types:
       logstash_udp_address:
         type: string
         default: { get_input: logstash_udp_address }
+    roles:
+      description: >-
+        If custom roles need to be assigned to this node, place them into this
+        field. Note that we cannot validate these roles at the moment, so please
+        make sure that roles placed in this list are supported by DMon instance
+        blueprint is using.
+      default: []
