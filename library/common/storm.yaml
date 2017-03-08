@@ -22,6 +22,9 @@ node_types:
           - recipe[storm::configure]
           - recipe[dmon_agent::default]
           - recipe[dmon_agent::collectd]
+      stop_runlist:
+        default:
+          - recipe[dmon_agent::remove_node]
       chef_attributes:
         default:
           java:

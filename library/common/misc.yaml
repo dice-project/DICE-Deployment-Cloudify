@@ -37,6 +37,9 @@ node_types:
           - recipe[dmon_agent::default]
           - recipe[dmon_agent::collectd]
           - recipe[dmon_agent::lsf]
+      stop_runlist:
+        default:
+          - recipe[dmon_agent::remove_node]
     interfaces:
       cloudify.interfaces.lifecycle:
         start:

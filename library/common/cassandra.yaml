@@ -26,6 +26,9 @@ node_types:
         default:
           - recipe[cassandra::start]
           - recipe[dmon_agent::cassandra]
+      stop_runlist:
+        default:
+          - recipe[dmon_agent::remove_node]
       chef_attributes:
         default:
           java:
