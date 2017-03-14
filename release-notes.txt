@@ -1,3 +1,13 @@
+New in v.0.2.6:
+
+* Added monitoring support for script runner.
+* For monitored node templates, it is now possible to assign
+  an arbitrary role to be used when the node registers with
+  the DICE Monitoring.
+* Any node registered with DICE Monitoring will now request
+  a removal from the DICE Monitoring during the uninstallation.
+* Enabled downloading of multiple resource files.
+
 New in v.0.2.5:
 
 * Support for CentOS 7 hosts was added to the library.
