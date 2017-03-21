@@ -19,6 +19,8 @@
 # Author:
 #     Tadej Borovšak <tadej.borovsak@xlab.si>
 
+from __future__ import absolute_import
+
 from cloudify.decorators import operation
 
 
