@@ -20,6 +20,7 @@
 #     Tadej Borovšak <tadej.borovsak@xlab.si>
 
 import os
+import copy
 import shutil
 import socket
 import urlparse
@@ -70,3 +71,13 @@ def call(cmd, run_in_background):
 
 def get_fqdn():
     return socket.getfqdn()
+
+
+def merge_dicts(base, update):
+    result = copy.deepcopy(base)
+    for k, v in update.items():
+        if isinstance(v, collections.Mapping):
+            result[k] = merge_dicts(base.get(k, {}), v)
+        else:
+            result[k] = update[k]
+    return result

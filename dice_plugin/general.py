@@ -13,10 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import yaml
+
 from cloudify.decorators import operation
 from cloudify.exceptions import NonRecoverableError
 
-from dice_plugin import fco
+from dice_plugin import fco, utils
 
 
 PLATFORMS = dict(
@@ -30,12 +32,23 @@ def _get_platform(platform):
     raise NonRecoverableError("Missing platform: {}".format(platform))
 
 
+def _load_plugin_configuration(path=None):
+    path = "/etc/dice/dice.yaml" if path is None else path
+    try:
+        with open(path) as f:
+            return yaml.safe_load(f)
+    except IOError:
+        return {}
+
+
 def _run_command(ctx, properties, stage):
     platform_name = properties["platform"]
-    platform_config = properties["platform_config"][platform_name]
+    file_config = _load_plugin_configuration().get(platform_name, {})
+    user_config = properties.get("platform_config", {}).get(platform_name, {})
+    config = utils.merge_dicts(file_config, user_config)
+
     platform = _get_platform(platform_name)
-    getattr(platform, stage)(ctx, platform_config["auth"],
-                             platform_config["env"])
+    getattr(platform, stage)(ctx, config["auth"], config["env"])
 
 
 def _run_instance_command(ctx, stage):
