@@ -27,20 +27,6 @@ import sys
 import yaml
 import argparse
 
-from string import Template
-
-
-def get_version(root):
-    init = {}
-    with open(os.path.join(root, "dice_plugin", "__init__.py")) as f:
-        exec(f.read(), init)
-    return init["__version__"]
-
-
-def get_repo(repo, version):
-    return Template(repo).substitute(VERSION=version)
-
-
 
 def log(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
@@ -57,35 +43,29 @@ def merge(a, b):
             # Merge lists while removing duplicates (if we need to preserve
             # order, simply casting things to set will ot work).
             a[k] = list(set(a[k]) | set(b[k]))
-        else:
+        elif k not in a:
             a[k] = b[k]
+        else:
+            raise ValueError("Duplicated key: {}".format(k))
 
 
-def process_library(library_path, platform, chef_repo, plugin_repo):
+def process_library(library_path, chef_tar, package):
     library = {}
 
-    # Common types
-    common = os.path.join(library_path, "common")
-    yamls = (os.path.join(dir, f) for dir, _, files in os.walk(common)
-                                  for f in files if f.endswith(".yaml"))
+    yamls = (os.path.join(library_path, f) for f in os.listdir(library_path)
+             if os.path.isfile(os.path.join(library_path, f)))
     for y in yamls:
         log("Processing '{}' ...".format(y))
         with open(y, "r") as input:
             merge(library, yaml.load(input))
 
-    # Platform-dependent types
-    platform = os.path.join(library_path, "{}.yaml".format(platform))
-    log("Processing '{}' ...".format(platform))
-    with open(platform, "r") as input:
-        merge(library, yaml.load(input))
-
     log("Inserting Chef repo location ...")
     chef_component = library["node_types"]["dice.chef.SoftwareComponent"]
     chef_config = chef_component["properties"]["chef_config"]["default"]
-    chef_config["chef_repo"] = chef_repo
+    chef_config["chef_repo"] = chef_tar
 
-    log("Inserting plugin repo location ...")
-    dice_plugin = library["plugins"]["dice"]["source"] = plugin_repo
+    log("Inserting plugin package location ...")
+    library["plugins"]["dice"]["source"] = package
 
     return library
 
@@ -95,46 +75,21 @@ def save_output(library, output):
 
 
 def main():
-    root = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-    library = os.path.realpath(os.path.join(root, "library"))
-    version = get_version(root)
-
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument(
-        "-l", "--library", help="Library path", default=library
+        "-l", "--library", help="Library path", default="library"
     )
     parser.add_argument(
         "-o", "--output", help="Ouptut file location", default=sys.stdout,
         type=argparse.FileType("w")
     )
-    parser.add_argument(
-        "-c", "--chef-repo", help="Path/URL to Chef repo tar.gz.",
-        default=("https://github.com/dice-project/DICE-Chef-Repository/"
-                 "archive/${VERSION}.tar.gz")
-    )
-    parser.add_argument(
-        "-d", "--library-repo", help="Path/URL to DICE TOSCA repo zip.",
-        default=("https://github.com/dice-project/DICE-Deployment-Cloudify/"
-                 "archive/${VERSION}.zip")
-    )
-    parser.add_argument(
-        "-v", "--version", help="Release version to generate", default=version
-    )
-    parser.add_argument(
-        "-k", "--chef-version", help="Release version of Chef repo to use",
-        default=version
-    )
-    parser.add_argument(
-        "platform", help="Platform for which library should be generated"
-    )
+    parser.add_argument("chef", help="URL of Chef repo tar.gz. release")
+    parser.add_argument("package", help="URL to DICE TOSCA repo package.")
     args = parser.parse_args()
 
-    chef = get_repo(args.chef_repo, args.chef_version)
-    dice = get_repo(args.library_repo, args.version)
-
-    library = process_library(args.library, args.platform, chef, dice)
+    library = process_library(args.library, args.chef, args.package)
     save_output(library, args.output)
 
 
