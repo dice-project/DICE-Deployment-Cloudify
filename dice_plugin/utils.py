@@ -23,14 +23,20 @@ import os
 import copy
 import shutil
 import socket
-import urlparse
-import requests
 import tempfile
 import subprocess
+import collections
+
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    from urlparse import urlparse
+
+import requests
 
 
 def parse_resource(path):
-    url = urlparse.urlparse(path)
+    url = urlparse(path)
     return (url.scheme == ""), url.path
 
 
@@ -57,7 +63,7 @@ def obtain_resource(ctx, resource, dir=None, keep_name=False):
 
 
 def call(cmd, run_in_background):
-    cmd = map(str, cmd)
+    cmd = [str(c) for c in cmd]
     if run_in_background:
         cmd.insert(0, "nohup")
 
