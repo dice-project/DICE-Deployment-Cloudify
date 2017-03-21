@@ -41,5 +41,7 @@ setuptools.setup(
         "cloudify-plugins-common>=3.3.1",
         "requests",
         "pyyaml",
+        "openstacksdk",
+        "fcoclient"
     ]
 )

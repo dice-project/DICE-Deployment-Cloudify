@@ -1,0 +1,36 @@
+data_types:
+
+  dice.datatypes.openstack.Config:
+    description: Configuration for OpenStack platform
+    properties:
+      auth:
+        description: Authetication data for OpenStack
+        type: dice.datatypes.openstack.Auth
+        required: false
+      env:
+        description: Environment data for OpenStack
+        type: dice.datatypes.openstack.Env
+        required: false
+
+  dice.datatypes.openstack.Auth:
+    description: OpenStack authentication data
+    properties:
+      connection:
+        description: OpenStck connection parameters.
+        required: false
+      profile:
+        description: OpenStack profile parameters.
+        required: false
+
+  dice.datatypes.openstack.Env:
+    description: OpenStack environment data
+    properties:
+      external_network_id:
+        description: Id of the network that floating ip is attached to
+        required: false
+      internal_network_id:
+        description: Id of the network that VM will be attached to
+        required: false
+      key_name:
+        description: OpenStack key name that is installed on new VMs
+        required: false

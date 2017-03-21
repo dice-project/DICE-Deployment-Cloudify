@@ -6,6 +6,9 @@ data_types:
       fco:
         type: dice.datatypes.fco.Config
         required: false
+      openstack:
+        type: dice.datatypes.openstack.Config
+        required: false
 
 
 inputs:
