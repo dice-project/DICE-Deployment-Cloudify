@@ -1,0 +1,46 @@
+data_types:
+
+  dice.datatypes.fco.Config:
+    description: Configuration for FCO platform
+    properties:
+      auth:
+        description: Authetication data for FCO
+        type: dice.datatypes.fco.Auth
+        required: false
+      env:
+        description: Environment data for FCO (VDC, network, ...)
+        type: dice.datatypes.fco.Env
+        required: false
+
+  dice.datatypes.fco.Auth:
+    description: FCO authentication data
+    properties:
+      customer:
+        description: FCO customer.
+        required: false
+      password:
+        description: FCO password.
+        required: false
+      url:
+        description: FCO REST service base url.
+        required: false
+      username:
+        description: FCO username.
+        required: false
+      verify:
+        description: Verify server certificate
+        required: false
+        type: boolean
+
+  dice.datatypes.fco.Env:
+    description: FCO environment data
+    properties:
+      agent_key_uuid:
+        description: UUID of the key that should be used by plugin.
+        required: false
+      network_uuid:
+        description: UUID of the network that instances should be connected to.
+        required: false
+      vdc_uuid:
+        description: UUID of the VDC that should be used to create instances.
+        required: false
