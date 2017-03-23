@@ -1,3 +1,7 @@
+New in 0.2.7:
+
+* Force ssh to use key-based authentication.
+
 New in v.0.2.6:
 
 * Added monitoring support for script runner.
