@@ -49,20 +49,25 @@ def merge(a, b):
             raise ValueError("Duplicated key: {}".format(k))
 
 
-def process_library(library_path, chef_tar, package):
+def process_library(library_path, chef_tar, package, lite):
     library = {}
 
-    yamls = (os.path.join(library_path, f) for f in os.listdir(library_path)
-             if os.path.isfile(os.path.join(library_path, f)))
+    if lite:
+        items = ("platform.yaml", "openstack.yaml", "fco.yaml")
+    else:
+        items = (f for f in os.listdir(library_path) if f.endswith(".yaml"))
+    yamls = (os.path.join(library_path, f) for f in items)
+
     for y in yamls:
         log("Processing '{}' ...".format(y))
         with open(y, "r") as input:
             merge(library, yaml.load(input))
 
-    log("Inserting Chef repo location ...")
-    chef_component = library["node_types"]["dice.chef.SoftwareComponent"]
-    chef_config = chef_component["properties"]["chef_config"]["default"]
-    chef_config["chef_repo"] = chef_tar
+    if not lite:
+        log("Inserting Chef repo location ...")
+        chef_component = library["node_types"]["dice.chef.SoftwareComponent"]
+        chef_config = chef_component["properties"]["chef_config"]["default"]
+        chef_config["chef_repo"] = chef_tar
 
     log("Inserting plugin package location ...")
     library["plugins"]["dice"]["source"] = package
@@ -85,11 +90,13 @@ def main():
         "-o", "--output", help="Ouptut file location", default=sys.stdout,
         type=argparse.FileType("w")
     )
+    parser.add_argument("--lite", help="Produce lite library import",
+                        action="store_true", default=False)
     parser.add_argument("chef", help="URL of Chef repo tar.gz. release")
     parser.add_argument("package", help="URL to DICE TOSCA repo package.")
     args = parser.parse_args()
 
-    library = process_library(args.library, args.chef, args.package)
+    library = process_library(args.library, args.chef, args.package, args.lite)
     save_output(library, args.output)
 
 
