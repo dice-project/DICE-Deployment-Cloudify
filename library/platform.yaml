@@ -1,3 +1,18 @@
+# This is fixed for DICE library in order to have some control over what
+# capabilities we can expect from Cloudify.
+tosca_definitions_version: cloudify_dsl_1_3
+
+
+imports:
+  - http://www.getcloudify.org/spec/cloudify/3.4.1/types.yaml
+
+
+plugins:
+  dice:
+    source: https://github.com/dice-project/DICE-Deployment-Cloudify/archive/0.2.6.zip
+    executor: host_agent
+
+
 data_types:
 
   dice.datatypes.PlatformConfig:
@@ -9,53 +24,6 @@ data_types:
       openstack:
         type: dice.datatypes.openstack.Config
         required: false
-
-
-inputs:
-
-  centos_agent_user:
-    description: >-
-      User that can be used to login to CentOS cloud image (by default, this
-      is set to centos, but can be changed if required).
-    default: centos
-
-  ubuntu_agent_user:
-    description: >-
-      User that can be used to login to Ubuntu cloud image (by default, this
-      is set to ubuntu, but can be changed if required).
-    default: ubuntu
-
-  centos_image_id:
-    description: >-
-      CentOS image ID that should be used on CentOS instances.
-
-  ubuntu_image_id:
-    description: >-
-      Ubuntu image ID that should be used on Ubuntu instances.
-
-  small_instance_type:
-    description: >-
-      Instance type that should be used on small instances.
-
-  small_disk_type:
-    description: >-
-      Disk type that should be used on small instances.
-
-  medium_instance_type:
-    description: >-
-      Instance type that should be used on medium instances.
-
-  medium_disk_type:
-    description: >-
-      Disk type that should be used on medium instances.
-
-  large_instance_type:
-    description: >-
-      Instance type that should be used on large instances.
-
-  large_disk_type:
-    description: >-
-      Disk type that should be used on large instances.
 
 
 node_types:
@@ -117,6 +85,9 @@ node_types:
       image:
         description: Cloud image of the operating system.
         required: true
+      user:
+        description: User that can be usde to SSH into instance.
+        required: true
       instance_type:
         description: Instance type that should be used.
         required: true
@@ -131,6 +102,12 @@ node_types:
         description: Configuration for underlying platform.
         type: dice.datatypes.PlatformConfig
         required: false
+      # !!! Cloudify implementation detail - should not be altered !!! #
+      agent_config:
+        default:
+          user: { get_property: [ SELF, user ] }
+          key: /root/.ssh/dice.key
+      # !!! End Cloudify implementation detail - should not be altered !!! #
     interfaces:
       cloudify.interfaces.lifecycle:
         create:
@@ -149,56 +126,6 @@ node_types:
         creation:
           implementation: dice.dice_plugin.general.validate_server
           executor: central_deployment_agent
-
-  # CentOS hosts
-  dice.hosts.centos.Custom:
-    derived_from: cloudify.openstack.nodes.Server
-    properties:
-      image: { default: { get_input: centos_image_id } }
-      agent_config: { default: { user: { get_input: centos_agent_user } } }
-
-  dice.hosts.centos.Small:
-    derived_from: dice.hosts.centos.Custom
-    properties:
-      instance_type: { default: { get_input: small_instance_type } }
-      disk_type: { default: { get_input: small_disk_type } }
-
-  dice.hosts.centos.Medium:
-    derived_from: dice.hosts.centos.Custom
-    properties:
-      instance_type: { default: { get_input: medium_instance_type } }
-      disk_type: { default: { get_input: medium_disk_type } }
-
-  dice.hosts.centos.Large:
-    derived_from: dice.hosts.centos.Custom
-    properties:
-      instance_type: { default: { get_input: large_instance_type } }
-      disk_type: { default: { get_input: large_disk_type } }
-
-  # Ubuntu hosts
-  dice.hosts.ubuntu.Custom:
-    derived_from: cloudify.openstack.nodes.Server
-    properties:
-      image: { default: { get_input: ubuntu_image_id } }
-      cloudify_agent: { default: { user: { get_input: ubuntu_agent_user } } }
-
-  dice.hosts.ubuntu.Small:
-    derived_from: dice.hosts.ubuntu.Custom
-    properties:
-      instance_type: { default: { get_input: small_instance_type } }
-      disk_type: { default: { get_input: small_disk_type } }
-
-  dice.hosts.ubuntu.Medium:
-    derived_from: dice.hosts.ubuntu.Custom
-    properties:
-      instance_type: { default: { get_input: medium_instance_type } }
-      disk_type: { default: { get_input: medium_disk_type } }
-
-  dice.hosts.ubuntu.Large:
-    derived_from: dice.hosts.ubuntu.Custom
-    properties:
-      instance_type: { default: { get_input: large_instance_type } }
-      disk_type: { default: { get_input: large_disk_type } }
 
 
 relationships:
