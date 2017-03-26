@@ -15,6 +15,8 @@
 
 from __future__ import absolute_import
 
+import os
+
 import yaml
 
 from cloudify.decorators import operation
@@ -35,8 +37,11 @@ def _get_platform(platform):
     raise NonRecoverableError("Missing platform: {}".format(platform))
 
 
-def _load_plugin_configuration(path=None):
-    path = "/etc/dice/dice.yaml" if path is None else path
+def _load_plugin_configuration():
+    path = "/etc/dice/dice.yaml"
+    if "DICE_PLUGIN_CONFIG" in os.environ:
+        path = os.environ["DICE_PLUGIN_CONFIG"]
+
     try:
         with open(path) as f:
             return yaml.safe_load(f)
