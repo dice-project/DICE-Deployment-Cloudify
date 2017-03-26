@@ -107,6 +107,7 @@ node_types:
         default:
           user: { get_property: [ SELF, user ] }
           key: /root/.ssh/dice.key
+          install_method: remote
       # !!! End Cloudify implementation detail - should not be altered !!! #
     interfaces:
       cloudify.interfaces.lifecycle:

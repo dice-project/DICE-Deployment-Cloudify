@@ -87,6 +87,7 @@ def create_server(ctx, auth, env):
         networks=[
             {"uuid": env["internal_network_id"]}
         ],
+        security_groups=[dict(name=env["default_security_group_name"])],
         key_name=env["key_name"]
     )
     _set_id(ctx, server.id)

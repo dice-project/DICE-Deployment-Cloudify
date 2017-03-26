@@ -85,19 +85,32 @@ def _gather_all_firewall_rules(instance):
     return rules
 
 
-def _inject_handshake_rule(template):
-    template["firewallInRuleList"].append({
-        "action": "ALLOW",
-        "connState": "EXISTING",
-        "direction": "IN",
-        "icmpParam": "ECHO_REPLY_IPv4",
-        "ipAddress": "",
-        "ipCIDRMask": 0,
-        "localPort": 0,
-        "name": "handshake",
-        "protocol": "ANY",
-        "remotePort": 0,
-    })
+def _inject_ssh_rules(template):
+    template["firewallInRuleList"].extend([
+        {
+            "action": "ALLOW",
+            "connState": "ALL",
+            "direction": "IN",
+            "icmpParam": "ECHO_REPLY_IPv4",
+            "ipAddress": "0.0.0.0",
+            "ipCIDRMask": 0,
+            "localPort": 22,
+            "name": "ssh-access",
+            "protocol": "TCP",
+            "remotePort": 0,
+        }, {
+            "action": "ALLOW",
+            "connState": "EXISTING",
+            "direction": "IN",
+            "icmpParam": "ECHO_REPLY_IPv4",
+            "ipAddress": "",
+            "ipCIDRMask": 0,
+            "localPort": 0,
+            "name": "handshake",
+            "protocol": "ANY",
+            "remotePort": 0,
+        }
+    ])
 
 
 def _transform_rules(rules):
@@ -157,7 +170,7 @@ def create_server(ctx, auth, env):
     rules = _gather_all_firewall_rules(ctx.instance)
     fw_name = "{}-{}-firewall".format(ctx.deployment.id, ctx.instance.id)
     firewall_skeleton = _get_firewall_skeleton(fw_name, rules)
-    _inject_handshake_rule(firewall_skeleton)
+    _inject_ssh_rules(firewall_skeleton)
     ctx.logger.debug("Firewall: {}".format(json.dumps(firewall_skeleton)))
 
     job = client.firewalltemplate.create(firewall_skeleton)
