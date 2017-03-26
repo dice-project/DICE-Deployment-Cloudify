@@ -28,7 +28,7 @@ data_types:
 
 node_types:
 
-  dice.firewall_rules.Base:
+  dice.firewall_rules.Raw:
     derived_from: cloudify.nodes.SecurityGroup
     properties:
       rules:
@@ -55,7 +55,7 @@ node_types:
           implementation: dice.dice_plugin.general.validate_firewall
           executor: central_deployment_agent
 
-  dice.VirtualIP:
+  dice.RawVirtualIP:
     derived_from: cloudify.nodes.VirtualIP
     properties:
       platform:
@@ -79,7 +79,7 @@ node_types:
           implementation: dice.dice_plugin.general.validate_virtual_ip
           executor: central_deployment_agent
 
-  dice.hosts.Custom:
+  dice.hosts.Raw:
     derived_from: cloudify.nodes.Compute
     properties:
       image:

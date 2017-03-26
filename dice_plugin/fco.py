@@ -80,7 +80,7 @@ def _gather_all_firewall_rules(instance):
     rules = []
     for rel in instance.relationships:
         node = rel.target.node
-        if "dice.firewall_rules.Base" in node.type_hierarchy:
+        if "dice.firewall_rules.Raw" in node.type_hierarchy:
             rules.extend(node.properties["rules"])
     return rules
 

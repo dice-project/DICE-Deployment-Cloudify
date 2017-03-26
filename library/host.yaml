@@ -1,5 +1,9 @@
 inputs:
 
+  platform:
+    description: >-
+      Selects the platform that blueprint will be deployed to.
+
   centos_agent_user:
     description: >-
       User that can be used to login to CentOS cloud image (by default, this
@@ -47,52 +51,68 @@ inputs:
 
 node_types:
 
+  # Types with plaform obtained from input
+  dice.firewall_rules.Base:
+    derived_from: dice.firewall_rules.Raw
+    properties:
+      platform: { default: { get_input: platform } }
+
+  dice.VirtualIP:
+    derived_from: dice.RawVirtualIP
+    properties:
+      platform: { default: { get_input: platform } }
+
+  dice.hosts.Base:
+    derived_from: dice.hosts.Raw
+    properties:
+      platform: { default: { get_input: platform } }
+
   # CentOS hosts
-  dice.hosts.centos.Custom:
-    derived_from: dice.hosts.Custom
+  dice.hosts.centos.Base:
+    derived_from: dice.hosts.Base
     properties:
       image: { default: { get_input: centos_image_id   } }
       user:  { default: { get_input: centos_agent_user } }
 
   dice.hosts.centos.Small:
-    derived_from: dice.hosts.centos.Custom
+    derived_from: dice.hosts.centos.Base
     properties:
       instance_type: { default: { get_input: small_instance_type } }
       disk_type:     { default: { get_input: small_disk_type     } }
 
   dice.hosts.centos.Medium:
-    derived_from: dice.hosts.centos.Custom
+    derived_from: dice.hosts.centos.Base
     properties:
       instance_type: { default: { get_input: medium_instance_type } }
       disk_type:     { default: { get_input: medium_disk_type     } }
 
   dice.hosts.centos.Large:
-    derived_from: dice.hosts.centos.Custom
+    derived_from: dice.hosts.centos.Base
     properties:
       instance_type: { default: { get_input: large_instance_type } }
       disk_type:     { default: { get_input: large_disk_type     } }
 
   # Ubuntu hosts
-  dice.hosts.ubuntu.Custom:
-    derived_from: dice.hosts.Custom
+  dice.hosts.ubuntu.Base:
+    derived_from: dice.hosts.Base
     properties:
       image: { default: { get_input: ubuntu_image_id   } }
       user:  { default: { get_input: ubuntu_agent_user } }
 
   dice.hosts.ubuntu.Small:
-    derived_from: dice.hosts.ubuntu.Custom
+    derived_from: dice.hosts.ubuntu.Base
     properties:
       instance_type: { default: { get_input: small_instance_type } }
       disk_type:     { default: { get_input: small_disk_type     } }
 
   dice.hosts.ubuntu.Medium:
-    derived_from: dice.hosts.ubuntu.Custom
+    derived_from: dice.hosts.ubuntu.Base
     properties:
       instance_type: { default: { get_input: medium_instance_type } }
       disk_type:     { default: { get_input: medium_disk_type     } }
 
   dice.hosts.ubuntu.Large:
-    derived_from: dice.hosts.ubuntu.Custom
+    derived_from: dice.hosts.ubuntu.Base
     properties:
       instance_type: { default: { get_input: large_instance_type } }
       disk_type:     { default: { get_input: large_disk_type     } }
