@@ -109,9 +109,10 @@ node_types:
     properties:
       rules:
         default:
-          - remote_ip_prefix: 0.0.0.0/0
-            port_range_min: 27017
-            port_range_max: 27019
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
+            from_port: 27017
+            to_port: 27019
 
 
 relationships:

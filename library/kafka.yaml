@@ -29,5 +29,6 @@ node_types:
     properties:
       rules:
         default:
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 9092

@@ -32,7 +32,11 @@ node_types:
     derived_from: cloudify.nodes.SecurityGroup
     properties:
       rules:
-        description: List of firewall rules
+        description: >
+          List of firewall rules. Firewall rules should have the following
+          fields: ip_prefix, protocol, from_port, to_port. If only a single
+          port should be opened, from_port and to_port fields can be replaced
+          by single port field.
         default: []
       platform:
         description: >

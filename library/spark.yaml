@@ -86,12 +86,15 @@ node_types:
     properties:
       rules:
         default:
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 6066
-          - remote_ip_prefix: 0.0.0.0/0
-            port_range_min: 7077
-            port_range_max: 7080
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
+            from_port: 7077
+            to_port: 7080
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 8080
 
   dice.firewall_rules.spark.Worker:
@@ -99,9 +102,10 @@ node_types:
     properties:
       rules:
         default:
-          - remote_ip_prefix: 0.0.0.0/0
-            port_range_min: 7078
-            port_range_max: 7080
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
+            from_port: 7078
+            to_port: 7080
 
 
 relationships:

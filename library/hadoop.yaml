@@ -67,9 +67,11 @@ node_types:
     properties:
       rules:
         default:
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 8020
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 50070
 
   dice.firewall_rules.hadoop.DataNode:
@@ -77,11 +79,14 @@ node_types:
     properties:
       rules:
         default:
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 50010
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 50020
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 50075
 
 
@@ -91,15 +96,20 @@ node_types:
     properties:
       rules:
         default:
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 8030
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 8031
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 8032
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 8033
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 8088
 
   dice.firewall_rules.hadoop.NodeManager:
@@ -107,11 +117,14 @@ node_types:
     properties:
       rules:
         default:
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 8040
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 8042
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 8039
 
 relationships:

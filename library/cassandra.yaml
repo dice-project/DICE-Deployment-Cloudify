@@ -44,15 +44,20 @@ node_types:
     properties:
       rules:
         default:
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 7000
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 7001
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 7199
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 9042
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 9160
 
   # Next two are present only for convenience, since it may be easier for

@@ -87,16 +87,21 @@ node_types:
     properties:
       rules:
         default:
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 6627
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 8080
-          - remote_ip_prefix: 0.0.0.0/0
-            port_range_min: 6700
-            port_range_max: 6703
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
+            from_port: 6700
+            to_port: 6703
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 3773
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 3774
 
   dice.firewall_rules.storm.Worker:
@@ -104,12 +109,15 @@ node_types:
     properties:
       rules:
         default:
-          - remote_ip_prefix: 0.0.0.0/0
-            port_range_min: 6700
-            port_range_max: 6703
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
+            from_port: 6700
+            to_port: 6703
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 3773
-          - remote_ip_prefix: 0.0.0.0/0
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
             port: 3774
 
 
