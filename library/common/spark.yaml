@@ -13,8 +13,6 @@ node_types:
   dice.components.spark.Base:
     derived_from: dice.chef.SoftwareComponent
     properties:
-      monitoring:
-        type: dice.types.MonitoringConfig
       create_runlist:
         default:
           - recipe[apt::default]

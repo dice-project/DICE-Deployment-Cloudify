@@ -5,14 +5,6 @@ node_types:
   dice.components.storm.Base:
     derived_from: dice.chef.SoftwareComponent
     properties:
-      # TODO: Document additional requirements that need to be in place before
-      # using this functionality.
-      # NOTE to developers: This property is not defined on root DICE types
-      # because not all types support monitoring and specifying thing on a
-      # more granular level gives blueprint validator additional leverage
-      # when performing checks.
-      monitoring:
-        type: dice.types.MonitoringConfig
       configure_runlist:
         default:
           - recipe[apt::default]
@@ -50,8 +42,6 @@ node_types:
   dice.components.storm.Topology:
     derived_from: dice.LogicalNode
     properties:
-      monitoring:
-        type: dice.types.MonitoringConfig
       application:
         description: >
           Location of topology jar file. If this is relative path, file is

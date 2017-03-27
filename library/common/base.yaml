@@ -75,6 +75,10 @@ node_types:
       dns_server:
         description: See dns_server input description.
         default: { get_input: dns_server }
+      # TODO: Document additional requirements that need to be in place before
+      # using this functionality.
+      monitoring:
+        type: dice.types.MonitoringConfig
     interfaces: &base_interfaces
       dice.interfaces.reconfiguration:
         update_configuration:

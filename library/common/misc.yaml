@@ -5,8 +5,6 @@ node_types:
   dice.components.misc.ScriptRunner:
     derived_from: dice.chef.SoftwareComponent
     properties:
-      monitoring:
-        type: dice.types.MonitoringConfig
       script:
         description: >-
           Bash script to execute. This can either be relative path, in which
