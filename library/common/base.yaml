@@ -33,7 +33,7 @@ imports:
 
 plugins:
   dice:
-    source: https://github.com/dice-project/DICE-Deployment-Cloudify/releases/download/0.2.7/dice-plugin-0.2.7.tar.gz
+    source: https://github.com/dice-project/DICE-Deployment-Cloudify/releases/download/0.2.8/dice-plugin-0.2.8.tar.gz
     executor: host_agent
 
 

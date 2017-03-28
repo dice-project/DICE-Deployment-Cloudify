@@ -1,3 +1,7 @@
+New in 0.2.8:
+
+* DICER compatibility fixes.
+
 New in 0.2.7:
 
 * Force ssh to use key-based authentication.
