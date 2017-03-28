@@ -75,6 +75,8 @@ node_types:
   dice.hosts.Custom:
     derived_from: cloudify.flexiant.nodes.Server
     properties:
+      user:
+        required: true
       auth:
         default:
           username: { get_input: username }
@@ -88,17 +90,17 @@ node_types:
         default: { get_input: vdc }
       network:
         default: { get_input: network }
+      cloudify_agent:
+        default:
+          user: { get_property: [ SELF, user ] }
+          key: /root/.ssh/agent.key
 
   # CentOS hosts
   dice.hosts.centos.Custom:
     derived_from: dice.hosts.Custom
     properties:
-      image: { default: { get_input: centos_image_id } }
-      cloudify_agent:
-        default:
-          user: { get_input: centos_agent_user }
-          key: /root/.ssh/agent.key
-
+      image: { default: { get_input: centos_image_id   } }
+      user:  { default: { get_input: centos_agent_user } }
 
   dice.hosts.centos.Small:
     derived_from: dice.hosts.centos.Custom
@@ -122,11 +124,8 @@ node_types:
   dice.hosts.ubuntu.Custom:
     derived_from: dice.hosts.Custom
     properties:
-      image: { default: { get_input: ubuntu_image_id } }
-      cloudify_agent:
-        default:
-          user: { get_input: ubuntu_agent_user }
-          key: /root/.ssh/agent.key
+      image: { default: { get_input: ubuntu_image_id   } }
+      user:  { default: { get_input: ubuntu_agent_user } }
 
   dice.hosts.ubuntu.Small:
     derived_from: dice.hosts.ubuntu.Custom

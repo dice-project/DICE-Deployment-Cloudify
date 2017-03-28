@@ -45,12 +45,21 @@ node_types:
   dice.VirtualIP:
     derived_from: cloudify.openstack.nodes.FloatingIP
 
-  # CentOS hosts
-  dice.hosts.centos.Custom:
+  dice.hosts.Custom:
     derived_from: cloudify.openstack.nodes.Server
     properties:
+      user:
+        required: true
+      cloudify_agent:
+        default:
+          user: { get_property: [ SELF, user ] }
+
+  # CentOS hosts
+  dice.hosts.centos.Custom:
+    derived_from: dice.hosts.Custom
+    properties:
       image: { default: { get_input: centos_image_id } }
-      cloudify_agent: { default: { user: { get_input: centos_agent_user } } }
+      user:  { default: { get_input: centos_agent_user } }
 
   dice.hosts.centos.Small:
     derived_from: dice.hosts.centos.Custom
@@ -69,10 +78,10 @@ node_types:
 
   # Ubuntu hosts
   dice.hosts.ubuntu.Custom:
-    derived_from: cloudify.openstack.nodes.Server
+    derived_from: dice.hosts.Custom
     properties:
       image: { default: { get_input: ubuntu_image_id } }
-      cloudify_agent: { default: { user: { get_input: ubuntu_agent_user } } }
+      user:  { default: { get_input: ubuntu_agent_user } }
 
   dice.hosts.ubuntu.Small:
     derived_from: dice.hosts.ubuntu.Custom
