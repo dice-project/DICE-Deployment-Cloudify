@@ -53,6 +53,9 @@ node_types:
       cloudify_agent:
         default:
           user: { get_property: [ SELF, user ] }
+      # FIXME: This is a temporary compatibility shim.
+      monitoring:
+        type: dice.types.MonitoringConfig
 
   # CentOS hosts
   dice.hosts.centos.Custom:

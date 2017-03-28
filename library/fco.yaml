@@ -94,6 +94,9 @@ node_types:
         default:
           user: { get_property: [ SELF, user ] }
           key: /root/.ssh/agent.key
+      # FIXME: This is a temporary compatibility shim.
+      monitoring:
+        type: dice.types.MonitoringConfig
 
   # CentOS hosts
   dice.hosts.centos.Custom:
