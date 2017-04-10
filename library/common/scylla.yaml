@@ -7,7 +7,7 @@ node_types:
     properties:
       create_runlist:
         default:
-          - recipe[dice_common::host]
+          - recipe[dice_common::default]
           - recipe[scylla::default]
       configure_runlist:
         default:

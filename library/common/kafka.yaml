@@ -8,7 +8,7 @@ node_types:
       create_runlist:
         default:
           - recipe[apt::default]
-          - recipe[dice_common::host]
+          - recipe[dice_common::default]
           - recipe[java::default]
           - recipe[kafka::default]
       configure_runlist:
