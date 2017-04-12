@@ -1,0 +1,102 @@
+# MongoDB
+
+node_types:
+
+  dice.components.mongo.Group:
+    derived_from: cloudify.nodes.Root
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        create:
+          implementation: dice.dice_plugin.tasks.base.collect_fqdns_for_type
+          executor: central_deployment_agent
+          inputs:
+            rel_type: { default: dice.relationships.mongo.ComposedOf }
+            prop_name: { default: members }
+
+  dice.components.mongo.Server:
+    derived_from: dice.chef.SoftwareComponent
+    properties:
+      type: { default: standalone }
+      bind_ip:
+        description: >
+          If set to local, mongo binds to internal address. If set to global,
+          mongo binds to 0.0.0.0.
+        default: local
+    properties:
+      create_runlist:
+        default:
+          - recipe[apt::default]
+          - recipe[dice_common::default]
+          - recipe[mongodb::default]
+      configure_runlist:
+        default:
+          - recipe[mongodb::configure]
+      start_runlist:
+        default:
+          - recipe[mongodb::start]
+
+  dice.components.mongo.ConfigServer:
+    derived_from: dice.components.mongo.Server
+    properties:
+      type: { default: config }
+
+  dice.components.mongo.ReplicaServer:
+    derived_from: dice.components.mongo.Server
+    properties:
+      type: { default: replica }
+
+  dice.components.mongo.ShardServer:
+    derived_from: dice.components.mongo.Server
+    properties:
+      type: { default: shard }
+
+  dice.components.mongo.Router:
+    derived_from: dice.components.mongo.Server
+    properties:
+      type: { default: router }
+    properties:
+      configure_runlist:
+        default:
+          - recipe[mongodb::configure_router]
+      chef_attributes:
+        default:
+          mongodb:
+            service: mongos
+
+  # Firewall rules
+  dice.firewall_rules.mongo.Common:
+    derived_from: dice.firewall_rules.Base
+    properties:
+      rules:
+        default:
+          - remote_ip_prefix: 0.0.0.0/0
+            port_range_min: 27017
+            port_range_max: 27019
+
+
+relationships:
+
+  dice.relationships.mongo.ComposedOf:
+    derived_from: cloudify.relationships.depends_on
+    target_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        establish:
+          implementation: dice.dice_plugin.tasks.mongo.establish_replica
+          max_retries: 10
+          retry_interval: 15
+
+  dice.relationships.mongo.RoutesTo:
+    derived_from: cloudify.relationships.depends_on
+    source_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        establish:
+          implementation: dice.dice_plugin.tasks.mongo.add_shard
+          max_retries: 10
+          retry_interval: 15
+
+  dice.relationships.mongo.ConfigurationStoredIn:
+    derived_from: cloudify.relationships.depends_on
+    source_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        preconfigure:
+          implementation: dice.dice_plugin.tasks.mongo.get_replica_data

@@ -70,3 +70,15 @@ def download_resources(ctx, resource_pairs):
             ctx.logger.info("Downloading '{}'".format(source))
             location = utils.obtain_resource(ctx, source)
         ctx.instance.runtime_properties[destination_key] = location
+
+
+@operation
+def collect_fqdns_for_type(ctx, rel_type, prop_name):
+    msg = "Collecting FQDNs for nodes, related by {}"
+    ctx.logger.info(msg.format(rel_type))
+
+    fqdns = [rel.target.instance.runtime_properties["fqdn"]
+             for rel in ctx.instance.relationships
+             if rel_type == rel.type]
+
+    ctx.instance.runtime_properties[prop_name] = fqdns
