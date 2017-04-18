@@ -63,6 +63,35 @@ node_types:
           mongodb:
             service: mongos
 
+  dice.components.mongo.DB:
+    derived_from: cloudify.nodes.Root
+    properties:
+      name:
+        description: Database name
+        required: true
+
+  dice.components.mongo.User:
+    derived_from: cloudify.nodes.Root
+    properties:
+      username:
+        description: Desired username
+        required: true
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        create:
+          implementation: dice.dice_plugin.tasks.base.collect_data_for_rel_type
+          executor: central_deployment_agent
+          inputs:
+            rel_type: { default: dice.relationships.mongo.HasRightsToUse }
+            dest_attr: { default: databases }
+            selector:
+              default:
+                properties:
+                  name: db_name
+        start:
+          implementation: dice.dice_plugin.tasks.mongo.create_user
+          executor: host_agent
+
   # Firewall rules
   dice.firewall_rules.mongo.Common:
     derived_from: dice.firewall_rules.Base
@@ -100,3 +129,6 @@ relationships:
       cloudify.interfaces.relationship_lifecycle:
         preconfigure:
           implementation: dice.dice_plugin.tasks.mongo.get_replica_data
+
+  dice.relationships.mongo.HasRightsToUse:
+    derived_from: cloudify.relationships.depends_on

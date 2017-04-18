@@ -20,6 +20,8 @@
 #     Tadej Borovšak <tadej.borovsak@xlab.si>
 
 from cloudify.decorators import operation
+from cloudify.exceptions import NonRecoverableError
+
 from dice_plugin import utils
 
 
@@ -82,3 +84,30 @@ def collect_fqdns_for_type(ctx, rel_type, prop_name):
              if rel_type == rel.type]
 
     ctx.instance.runtime_properties[prop_name] = fqdns
+
+
+def _collect_item(source, item_mappings):
+    return {v: source[k] for k, v in item_mappings.items()}
+
+
+@operation
+def collect_data_for_rel_type(ctx, rel_type, dest_attr, selector):
+    invalid_selectors = set(selector.keys()) - {"attributes", "properties"}
+    if len(invalid_selectors) > 0:
+        raise NonRecoverableError(
+            "Unknown selector(s): {}".format(invalid_selectors)
+        )
+
+    msg = "Collecting data from nodes, related by {}"
+    ctx.logger.info(msg.format(rel_type))
+
+    data = []
+    rels = (rel for rel in ctx.instance.relationships if rel.type == rel_type)
+    for rel in rels:
+        item = _collect_item(rel.target.node.properties,
+                             selector.get("properties", {}))
+        item.update(_collect_item(rel.target.instance.runtime_properties,
+                                  selector.get("attributes", {})))
+        data.append(item)
+
+    ctx.instance.runtime_properties[dest_attr] = data

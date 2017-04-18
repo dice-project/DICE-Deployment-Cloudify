@@ -17,10 +17,11 @@
 # under the License.
 
 import json
+import random
+import string
 import tempfile
 
 from cloudify.decorators import operation
-from cloudify.exceptions import NonRecoverableError
 
 from dice_plugin import utils
 
@@ -104,3 +105,41 @@ def get_replica_data(ctx):
 
     members = ctx.target.instance.runtime_properties["members"]
     ctx.source.instance.runtime_properties["members"] = members
+
+
+def _prepare_add_user_script(username, password, dbs):
+    roles = [dict(role="readWrite", db=db["db_name"]) for db in dbs]
+    user = dict(user=username, pwd=password, roles=roles)
+    return 'db.getSiblingDB("admin").createUser({})'.format(json.dumps(user))
+
+
+@operation
+def create_user(ctx):
+    props = ctx.node.properties
+    attrs = ctx.instance.runtime_properties
+
+    ctx.logger.info("Creating user {}".format(props["username"]))
+
+    host = next(rel for rel in ctx.instance.relationships
+                if rel.type == "dice.relationships.ContainedIn").target
+    admin_user = host.instance.runtime_properties["admin_user"]
+    admin_pass = host.instance.runtime_properties["admin_pass"]
+
+    chars = string.letters + string.digits
+    user_pass = ''.join(random.choice(chars) for _ in range(30))
+    script = _prepare_add_user_script(props["username"], user_pass,
+                                      attrs["databases"])
+
+    cmd = ["mongo", "-u", admin_user, "-p", admin_pass,
+           "--authenticationDatabase", "admin", "--eval", script]
+    proc, log = utils.call(cmd, run_in_background=False)
+    proc.wait()
+    with open(log, "r") as f:
+        ctx.logger.debug("Mongo output:")
+        ctx.logger.debug(f.read())
+
+    if proc.returncode != 0:
+        # We rety here because mongo is a bit slow when it comes to starting
+        ctx.operation.retry("Mongo failed to add user")
+
+    attrs["password"] = user_pass

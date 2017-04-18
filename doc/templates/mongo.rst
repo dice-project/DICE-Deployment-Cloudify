@@ -5,7 +5,12 @@ DICE TOSCA library supports three MongoDB configurations: standalone,
 replicated cluster and sharded cluster.
 
 Standalone server is the simplest option. We only need a VM that will host the
-mongo:
+mongo. By default, mongo installation does not allow unauthenticated access
+and in order to start using the installation we need to define some databases
+and users that can use the databases.
+
+In the example below, we defined mongo instance with two databases that can be
+used by user single user:
 
 .. code-block:: yaml
 
@@ -25,6 +30,34 @@ mongo:
        relationships:
          - type: dice.relationships.ContainedIn
            target: ${MONGO}_vm
+
+     ${MONGO}_db1:
+       type: dice.components.mongo.DB
+       properties:
+         name: ${MONGO_DB_NAME_1}
+       relationships:
+         - type: dice.relationships.ContainedIn
+           target: ${MONGO}
+
+     ${MONGO}_db2:
+       type: dice.components.mongo.DB
+       properties:
+         name: ${MONGO_DB_NAME_2}
+       relationships:
+         - type: dice.relationships.ContainedIn
+           target: ${MONGO}
+
+     ${MONGO}_user:
+       type: dice.components.mongo.User
+       properties:
+         username: ${MONGO_USER}
+       relationships:
+         - type: dice.relationships.mongo.HasRightsToUse
+           target: ${MONGO}_db1
+         - type: dice.relationships.mongo.HasRightsToUse
+           target: ${MONGO}_db2
+         - type: dice.relationships.ContainedIn
+           target: ${MONGO}
 
 
 Preparing replicated cluster is a bit more complicated, since we need to
@@ -161,6 +194,12 @@ relationships.
   REPLICA_SERVER_COUNT, SHARD_n_SERVER_COUNT, CONFIG_SERVER_COUNT
     Number of mongo workers that should be used to create
     replica/shard/configuration replica.
+
+  MONGO_DB_NAME_n
+    Name of the mongo database that should be created.
+
+  MONGO_USER
+    Name of the user that should be added to mongo.
 
   HOST_SIZE
     Size of the host virtual machine. Available values are *Small*, *Medium*
