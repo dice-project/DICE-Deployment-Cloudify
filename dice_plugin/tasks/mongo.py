@@ -18,6 +18,7 @@
 
 import json
 import random
+import re
 import string
 import tempfile
 
@@ -143,3 +144,26 @@ def create_user(ctx):
         ctx.operation.retry("Mongo failed to add user")
 
     attrs["password"] = user_pass
+
+
+@operation
+def monitor_db(ctx):
+    if not ctx.node.properties["monitoring"]["enabled"]:
+        ctx.logger.info("Monitoring is disabled. Skiping registration.")
+        return
+
+    config_file = "/etc/collectd/collectd.conf.d/mongo.conf"
+    name = ctx.node.properties["name"]
+    ctx.logger.info("Adding {} to monitored database list".format(name))
+
+    with open(config_file) as c:
+        config = c.read()
+
+    if re.search(r"Database[^\n]*{}".format(name), config) is not None:
+        return  # Database already monitored
+
+    with tempfile.NamedTemporaryFile(delete=False) as f:
+        f.write(re.sub(r"(Database.*)\n", r'\1 "{}"\n'.format(name), config))
+
+    utils.call(["sudo", "cp", f.name, config_file], False)[0].wait()
+    utils.call(["sudo", "systemctl", "restart", "collectd"], False)[0].wait()

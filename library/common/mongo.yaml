@@ -71,9 +71,15 @@ node_types:
   dice.components.mongo.DB:
     derived_from: cloudify.nodes.Root
     properties:
+      monitoring:
+        type: dice.types.MonitoringConfig
       name:
         description: Database name
         required: true
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        configure:
+          implementation: dice.dice_plugin.tasks.mongo.monitor_db
 
   dice.components.mongo.User:
     derived_from: cloudify.nodes.Root
