@@ -22,18 +22,24 @@ node_types:
           If set to local, mongo binds to internal address. If set to global,
           mongo binds to 0.0.0.0.
         default: local
-    properties:
       create_runlist:
         default:
           - recipe[apt::default]
           - recipe[dice_common::default]
           - recipe[mongodb::default]
+          - recipe[dmon_agent::default]
+          - recipe[dmon_agent::collectd]
+          - recipe[dmon_agent::pymongo]
       configure_runlist:
         default:
           - recipe[mongodb::configure]
       start_runlist:
         default:
           - recipe[mongodb::start]
+          - recipe[dmon_agent::mongo]
+      stop_runlist:
+        default:
+          - recipe[dmon_agent::remove_node]
 
   dice.components.mongo.ConfigServer:
     derived_from: dice.components.mongo.Server
@@ -54,7 +60,6 @@ node_types:
     derived_from: dice.components.mongo.Server
     properties:
       type: { default: router }
-    properties:
       configure_runlist:
         default:
           - recipe[mongodb::configure_router]
