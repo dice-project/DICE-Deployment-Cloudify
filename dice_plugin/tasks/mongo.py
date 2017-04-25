@@ -159,7 +159,7 @@ def monitor_db(ctx):
     with open(config_file) as c:
         config = c.read()
 
-    if re.search(r"Database[^\n]*{}".format(name), config) is not None:
+    if re.search(r'Database[^\n]*"{}"'.format(name), config) is not None:
         return  # Database already monitored
 
     with tempfile.NamedTemporaryFile(delete=False) as f:
