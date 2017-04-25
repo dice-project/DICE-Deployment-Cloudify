@@ -9,8 +9,16 @@ mongo. By default, mongo installation does not allow unauthenticated access
 and in order to start using the installation we need to define some databases
 and users that can use the databases.
 
+Mongo types also support DMon monitoring. In order to monitor the mongo
+instance, simply set ``monitoring.enabled`` property to ``true``. Note that
+no user database is monitored automatically. If database should be monitored,
+we need to explicitly enabled monitoring on it. Note that database cannot be
+monitored if mongo that contains the database is not monitored. By default,
+monitoring is disabled.
+
 In the example below, we defined mongo instance with two databases that can be
-used by user single user:
+used by user single user. The first database is monitored while the second one
+is not.
 
 .. code-block:: yaml
 
@@ -27,6 +35,9 @@ used by user single user:
 
      ${MONGO}:
        type: dice.components.mongo.Server
+       properties:
+         monitoring:
+           enabled: true
        relationships:
          - type: dice.relationships.ContainedIn
            target: ${MONGO}_vm
@@ -35,6 +46,8 @@ used by user single user:
        type: dice.components.mongo.DB
        properties:
          name: ${MONGO_DB_NAME_1}
+         monitoring:
+           enabled: true
        relationships:
          - type: dice.relationships.ContainedIn
            target: ${MONGO}
