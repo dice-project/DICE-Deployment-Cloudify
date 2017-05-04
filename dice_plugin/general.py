@@ -22,12 +22,13 @@ import yaml
 from cloudify.decorators import operation
 from cloudify.exceptions import NonRecoverableError
 
-from dice_plugin import fco, openstack, utils
+from dice_plugin import aws, fco, openstack, utils
 
 
 PLATFORMS = dict(
     fco=fco,
-    openstack=openstack
+    openstack=openstack,
+    aws=aws,
 )
 
 

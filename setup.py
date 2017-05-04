@@ -42,6 +42,7 @@ setuptools.setup(
         "requests",
         "pyyaml",
         "openstacksdk",
-        "fcoclient"
+        "fcoclient",
+        "boto3",
     ]
 )

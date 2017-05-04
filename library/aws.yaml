@@ -1,0 +1,42 @@
+data_types:
+
+  dice.datatypes.aws.Config:
+    description: Configuration for AWS platform
+    properties:
+      auth:
+        description: Authentication data for AWS
+        type: dice.datatypes.aws.Auth
+        required: false
+      env:
+        description: Environment data for AWS
+        type: dice.datatypes.aws.Env
+        required: false
+
+  dice.datatypes.aws.Auth:
+    description: AWS authentication data
+    properties:
+      aws_access_key:
+        description: API access key for AWS
+        required: false
+      aws_secret_access_key:
+        description: Secret key for API access
+        required: false
+      region_name:
+        description: AWS region that should be used
+        required: false
+
+  dice.datatypes.aws.Env:
+    description: AWS environment data
+    properties:
+      vpc_id:
+        description: Id of the VPC that will be used to house instances
+        required: false
+      subnet_id:
+        description: Id of the subnet that VMs will be attached to
+        required: false
+      key_name:
+        description: AWS key name that is installed on new VMs
+        required: false
+      default_security_group_id:
+        description: AWS security group that is attached to all instances
+        required: false

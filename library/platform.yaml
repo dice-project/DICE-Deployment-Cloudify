@@ -9,7 +9,7 @@ imports:
 
 plugins:
   dice:
-    source: https://github.com/dice-project/DICE-Deployment-Cloudify/archive/0.2.6.zip
+    source: this://is.invalid.address.that.marks.field.set.by.generator
     executor: host_agent
 
 
@@ -18,6 +18,9 @@ data_types:
   dice.datatypes.PlatformConfig:
     description: Configuration for all platform
     properties:
+      aws:
+        type: dice.datatypes.aws.Config
+        required: false
       fco:
         type: dice.datatypes.fco.Config
         required: false
