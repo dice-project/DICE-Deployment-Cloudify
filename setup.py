@@ -33,9 +33,6 @@ setuptools.setup(
     version=dice_plugin.__version__,
 
     packages=setuptools.find_packages(exclude=["*.tests"]),
-    package_data={
-        "dice_plugin.tasks.data": ["index.html"],
-    },
     zip_safe=False,
     install_requires=[
         "cloudify-plugins-common>=3.3.1",
