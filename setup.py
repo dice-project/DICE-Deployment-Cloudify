@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Copyright (C) 2016 XLAB d.o.o.
 #
 # This file is part of dice-plugin.
@@ -15,31 +13,7 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. * See the
 # License for the specific language governing permissions and * limitations
 # under the License.
-#
-# Author:
-#     Tadej Borovšak <tadej.borovsak@xlab.si>
 
-import setuptools
-import dice_plugin
+from setuptools import setup
 
-setuptools.setup(
-    name="dice-plugin",
-
-    author="Tadej Borovšak",
-    author_email="tadej.borovsak@xlab.si",
-    description="DICE TOSCA library",
-    license="LICENSE",
-
-    version=dice_plugin.__version__,
-
-    packages=setuptools.find_packages(exclude=["*.tests"]),
-    zip_safe=False,
-    install_requires=[
-        "cloudify-plugins-common>=3.3.1",
-        "requests",
-        "pyyaml",
-        "openstacksdk",
-        "fcoclient",
-        "boto3",
-    ]
-)
+setup(setup_requires=["pbr>=2.0.0"], pbr=True)
