@@ -23,7 +23,7 @@ Let us now write a simple blueprint that can be used to deploy minimalistic
 web server that will serve static web page. First thing we need to do is
 define ``tosca_definitions_version`` and import plugins that we will be using.
 
-.. literalinclude:: ../examples/hello-openstack.yaml
+.. literalinclude:: ../../examples/hello-openstack.yaml
    :language: yaml
    :lines: 1-4
 
@@ -45,7 +45,7 @@ values, which makes it easy to start writing blueprints. In our case, we only
 need to list all four nodes that are present in deployment and connect them
 using relationships.
 
-.. literalinclude:: ../examples/hello-openstack.yaml
+.. literalinclude:: ../../examples/hello-openstack.yaml
    :language: yaml
    :lines: 6-25
 

@@ -1,5 +1,5 @@
 Script runner
--------------
+=============
 
 Script runner can be used to perform user defined customizations on target
 node.
@@ -19,7 +19,8 @@ node.
          - type: dice.relationships.ContainedIn
            target: ${TARGET_VM}
 
-**Template variables:**
+Template variables
+------------------
 
   SCRIPT
     Unique name for this script node.

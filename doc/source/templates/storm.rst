@@ -1,5 +1,5 @@
 Apache Storm
-------------
+============
 
 Before we can deploy Storm cluster, we need to have access to Zookeeper
 quorum, since Storm stores most of it's configuration there. In this template,
@@ -93,7 +93,8 @@ associated output fragment.
        value:
          get_attribute: [ ${STORM_TOPOLOGY}, topology_id ]
 
-**Template variables:**
+Template variables
+------------------
 
   ZOOKEEPER
     The name of the Zookeeper cluster that this Storm cluster will use.

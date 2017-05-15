@@ -1,5 +1,5 @@
 Apache Spark (standalone)
--------------------------
+=========================
 
 Using Apache Spark in standalone mode is quite simple. We need to have one
 Spark master node and multiple Spark worker nodes. Spark jobs are separate
@@ -58,7 +58,8 @@ to submit Spark job into partially prepared cluster).
          - type: dice.relationships.Needs
            target: ${SPARK}_worker
 
-**Template variables:**
+Template variables
+------------------
 
   SPARK
     The name of the Spark cluster. This is usually set to *spark*, which gives

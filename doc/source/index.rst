@@ -1,10 +1,18 @@
-Welcome to DICE TOSCA Library's documentation!
-==============================================
+==================
+DICE TOSCA Library
+==================
+
+.. include:: ../../README.rst
+
+
+Documentation Contents
+======================
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
 
+   quickstart
+   developing
+   templates
 
 
 Indices and tables

@@ -1,5 +1,5 @@
 Apache Cassandra
-----------------
+================
 
 Supported Cassandra cluster is composed of a single seed node and arbitrary
 many worker nodes that all initially connect to seed node.
@@ -51,7 +51,8 @@ many worker nodes that all initially connect to seed node.
          - type: dice.relationships.cassandra.ConnectedToSeed
            target: ${CASSANDRA}_seed
 
-**Template variables:**
+Template variables
+------------------
 
   CASSANDRA
     The name of the Cassandra cluster, usually set to *cassandra*.

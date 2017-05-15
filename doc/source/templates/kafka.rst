@@ -1,5 +1,5 @@
 Apache Kafka
-------------
+============
 
 Before we can deploy Kafka cluster, we need to have access to Zookeeper
 cluster. we will assume in this template that Zookeeper quorum is already
@@ -28,7 +28,8 @@ defined somewhere in blueprint.
          - type: dice.relationships.zookeeper.ConnectedToZookeeperQuorum
            target: ${ZOOKEEPER}_quorum
 
-**Template variables:**
+Template variables
+------------------
 
   KAFKA
     Unique name of the Kafka cluster. If there is a single Kafka cluster

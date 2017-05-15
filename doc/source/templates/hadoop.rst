@@ -1,5 +1,5 @@
 Apache Hadoop
--------------
+=============
 
 Basic Hadoop cluster consists of name node, resource manager and a variable
 number of worker nodes that run node manager and data node services.
@@ -72,7 +72,8 @@ number of worker nodes that run node manager and data node services.
          - type: dice.relationships.hadoop.ConnectedToNameNode
            target: ${HADOOP}_namenode
 
-**Template variables:**
+Template variables
+------------------
 
   HADOOP
     The prefix that is used to make cluster names unique. If there is only a

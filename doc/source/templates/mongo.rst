@@ -1,5 +1,5 @@
 MongoDB
--------
+=======
 
 DICE TOSCA library supports three MongoDB configurations: standalone,
 replicated cluster and sharded cluster.
@@ -199,7 +199,8 @@ relationships.
            target: ${MONGO}_shard_2_replica
 
 
-**Template variables:**
+Template variables
+------------------
 
   MONGO
     The name of the MongoDB cluster, usually set to *mongo*.

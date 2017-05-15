@@ -1,5 +1,5 @@
 Apache Zookeeper
-----------------
+================
 
 In order to setup Zookeeper cluster, we need to prepare virtual machines and
 group them into quorum. We need to do this because Zookeeper insists on having
@@ -40,7 +40,8 @@ have their default value.
          - type: dice.relationships.zookeeper.MemberOfQuorum
            target: ${ZOOKEEPER}_quorum
 
-**Template variables:**
+Template variables
+------------------
 
   ZOOKEEPER
     The name of the Zookeeper instance. This is usually set to *zookeeper* or
