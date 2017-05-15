@@ -1,4 +1,5 @@
-extensions = []
+extensions = ["sphinx_tosca"]
+primary_domain = "tosca"
 source_suffix = ".rst"
 master_doc = "index"
 

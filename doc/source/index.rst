@@ -9,10 +9,12 @@ Documentation Contents
 ======================
 
 .. toctree::
+   :maxdepth: 2
 
    quickstart
    developing
    templates
+   api
 
 
 Indices and tables

@@ -49,6 +49,18 @@ def merge(a, b):
             raise ValueError("Duplicated key: {}".format(k))
 
 
+def remove_unsupported_fields(library):
+    def clean(node):
+        node.pop("description", None)
+        node.pop("attributes", None)
+        node.pop("requirements", None)
+
+    for node_type in library.get("node_types", {}).values():
+        clean(node_type)
+    for rel_type in library.get("relationships", {}).values():
+        clean(rel_type)
+
+
 def process_library(library_path, chef_tar, package, lite):
     library = {}
 
@@ -71,6 +83,8 @@ def process_library(library_path, chef_tar, package, lite):
 
     log("Inserting plugin package location ...")
     library["plugins"]["dice"]["source"] = package
+
+    remove_unsupported_fields(library)
 
     return library
 

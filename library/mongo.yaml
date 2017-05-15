@@ -1,9 +1,22 @@
 # MongoDB
+# =======
+#
+# Types and relationships that are described in this document can be used to
+# construct MongoDB clusters. For more information on how to assemble those
+# types into clusters, consult :doc:`MongoDB templates </templates/mongo>`.
+
 
 node_types:
 
   dice.components.mongo.Group:
+    description: >
+      Collection of MongoDB instances that form a replica or shard.
     derived_from: cloudify.nodes.Root
+    attributes:
+      members:
+        description: List of replica/shard members FQDNs.
+    requirements:
+      - dice.relationships.mongo.ComposedOf
     interfaces:
       cloudify.interfaces.lifecycle:
         create:
@@ -14,13 +27,17 @@ node_types:
             prop_name: { default: members }
 
   dice.components.mongo.Server:
+    description: >
+      Standalone instance of MongoDB. This is a base type for all other
+      MongoDB server types and should not be used in production environments,
+      where replicated setup should be used.
     derived_from: dice.chef.SoftwareComponent
     properties:
       type: { default: standalone }
       bind_ip:
         description: >
-          If set to local, mongo binds to internal address. If set to global,
-          mongo binds to 0.0.0.0.
+          If set to ``local``, mongo binds to internal address. If set to
+          ``global``, mongo binds to 0.0.0.0.
         default: local
       create_runlist:
         default:
@@ -40,23 +57,39 @@ node_types:
       stop_runlist:
         default:
           - recipe[dmon_agent::remove_node]
+    attributes:
+      ip:
+        description: Private IP address of the MongoDB instance.
+      fqdn:
+        description: FQDN of the MongoDB instance.
+    requirements:
+      - dice.relationships.ContainedIn
 
   dice.components.mongo.ConfigServer:
+    description: >
+      MongoDB instance that is part of the configuration replica in sharded
+      setup.
     derived_from: dice.components.mongo.Server
     properties:
       type: { default: config }
 
   dice.components.mongo.ReplicaServer:
+    description: >
+      MongoDB instance that is part of the replica in replicated setup.
     derived_from: dice.components.mongo.Server
     properties:
       type: { default: replica }
 
   dice.components.mongo.ShardServer:
+    description: >
+      MongoDB instance that is part of the shard replica in sharded setup.
     derived_from: dice.components.mongo.Server
     properties:
       type: { default: shard }
 
   dice.components.mongo.Router:
+    description: >
+      MongoDB router that should be used to server queries in sharded setup.
     derived_from: dice.components.mongo.Server
     properties:
       type: { default: router }
@@ -67,14 +100,20 @@ node_types:
         default:
           mongodb:
             service: mongos
+    requirements:
+      - dice.relationships.mongo.ConfigurationStoredIn
+      - dice.relationships.mongo.RoutesTo
 
   dice.components.mongo.DB:
+    description: >
+      MongoDB database.
     derived_from: cloudify.nodes.Root
     properties:
       monitoring:
+        description: Monitoring configuration.
         type: dice.types.MonitoringConfig
       name:
-        description: Database name
+        description: Database name.
         required: true
     interfaces:
       cloudify.interfaces.lifecycle:
@@ -82,10 +121,12 @@ node_types:
           implementation: dice.dice_plugin.tasks.mongo.monitor_db
 
   dice.components.mongo.User:
+    description: >
+      MongoDB database user.
     derived_from: cloudify.nodes.Root
     properties:
       username:
-        description: Desired username
+        description: Desired username.
         required: true
     interfaces:
       cloudify.interfaces.lifecycle:
@@ -105,6 +146,7 @@ node_types:
 
   # Firewall rules
   dice.firewall_rules.mongo.Common:
+    description: Firewall rules that should be used on VMs that host MongoDB.
     derived_from: dice.firewall_rules.Base
     properties:
       rules:
@@ -118,6 +160,11 @@ node_types:
 relationships:
 
   dice.relationships.mongo.ComposedOf:
+    description: >
+      Adds :node_type:`dice.components.mongo.ConfigServer`,
+      :node_type:`dice.components.mongo.ReplicaServer` or
+      :node_type:`dice.components.mongo.ShardServer` instances to the
+      replica/shard.
     derived_from: cloudify.relationships.depends_on
     target_interfaces:
       cloudify.interfaces.relationship_lifecycle:
@@ -127,6 +174,7 @@ relationships:
           retry_interval: 15
 
   dice.relationships.mongo.RoutesTo:
+    description: Adds MongoDB shard to the router.
     derived_from: cloudify.relationships.depends_on
     source_interfaces:
       cloudify.interfaces.relationship_lifecycle:
@@ -136,6 +184,7 @@ relationships:
           retry_interval: 15
 
   dice.relationships.mongo.ConfigurationStoredIn:
+    description: Connects MongoDB router to the configuration replica.
     derived_from: cloudify.relationships.depends_on
     source_interfaces:
       cloudify.interfaces.relationship_lifecycle:
@@ -143,4 +192,5 @@ relationships:
           implementation: dice.dice_plugin.tasks.mongo.get_replica_data
 
   dice.relationships.mongo.HasRightsToUse:
+    description: Grants user permissions to use target database.
     derived_from: cloudify.relationships.depends_on
