@@ -1,7 +1,11 @@
 # Basic types
-
-# REASONS FOR DUPLICATION IN NODE TYPES DEFINITIONS
-# =================================================
+# ===========
+#
+# This file contains basic definitions that are used across the library.
+#
+#
+# Reasons for duplication in node types definitions
+# -------------------------------------------------
 #
 # Currently, there is no way of reparenting built-in cloudify types, so we
 # basically need to define three base types:

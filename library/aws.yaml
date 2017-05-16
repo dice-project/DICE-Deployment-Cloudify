@@ -1,3 +1,6 @@
+# AWS
+# ===
+
 data_types:
 
   dice.datatypes.aws.Config:

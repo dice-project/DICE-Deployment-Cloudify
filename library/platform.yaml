@@ -1,3 +1,6 @@
+# Basic types that are platform dependent
+# =======================================
+
 # This is fixed for DICE library in order to have some control over what
 # capabilities we can expect from Cloudify.
 tosca_definitions_version: cloudify_dsl_1_3
