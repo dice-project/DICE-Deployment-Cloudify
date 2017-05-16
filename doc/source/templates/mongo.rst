@@ -4,6 +4,14 @@ MongoDB
 DICE TOSCA library supports three MongoDB configurations: standalone,
 replicated cluster and sharded cluster.
 
+.. note::
+
+   Currently, only standalone MongoDB setup is fully supported. Replicated
+   and sharded setups require that inter-cluster authentication is properly
+   configured and we are missing a few crucial pieces of infrastructure that
+   would allow us to configure it (most critical is component that can
+   produce server certificates on demand, like Hashicorp Vault).
+
 Standalone server is the simplest option. We only need a VM that will host the
 mongo. By default, mongo installation does not allow unauthenticated access
 and in order to start using the installation we need to define some databases

@@ -4,6 +4,14 @@
 # Types and relationships that are described in this document can be used to
 # construct MongoDB clusters. For more information on how to assemble those
 # types into clusters, consult :doc:`MongoDB templates </templates/mongo>`.
+#
+# .. note::
+#
+#    Currently, only standalone MongoDB setup is fully supported. Replicated
+#    and sharded setups require that inter-cluster authentication is properly
+#    configured and we are missing a few crucial pieces of infrastructure that
+#    would allow us to configure it (most critical is component that can
+#    produce server certificates on demand, like Hashicorp Vault).
 
 
 node_types:
