@@ -1,3 +1,12 @@
+New in 0.7.0:
+
+* Library is no longer split into per-platform components, since we now
+  use custom plugin for provisioning instances on supported platforms.
+* Addition of EC2 platform.
+* Added MongoDB TOSCA types.
+* Low-level API has been changed and blueprint authors need to update their
+  blueprints. High level API stayed the same.
+
 New in 0.2.8:
 
 * DICER compatibility fixes.
