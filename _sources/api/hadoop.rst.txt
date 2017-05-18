@@ -1,0 +1,90 @@
+Apache Hadoop
+=============
+
+
+Components
+----------
+
+.. node_type:: dice.components.hadoop.Base
+
+  MISSING DESCRIPTION
+
+  :parent: :node_type:`dice.chef.SoftwareComponent`
+
+
+.. node_type:: dice.components.hadoop.DataNode
+
+  MISSING DESCRIPTION
+
+  :parent: :node_type:`dice.components.hadoop.Base`
+
+
+.. node_type:: dice.components.hadoop.NameNode
+
+  MISSING DESCRIPTION
+
+  :parent: :node_type:`dice.components.hadoop.Base`
+
+
+.. node_type:: dice.components.hadoop.NodeManager
+
+  MISSING DESCRIPTION
+
+  :parent: :node_type:`dice.components.hadoop.Base`
+
+
+.. node_type:: dice.components.hadoop.ResourceManager
+
+  MISSING DESCRIPTION
+
+  :parent: :node_type:`dice.components.hadoop.Base`
+
+
+Firewall rules
+--------------
+
+.. node_type:: dice.firewall_rules.hadoop.DataNode
+
+  MISSING DESCRIPTION
+
+  :parent: :node_type:`dice.firewall_rules.Base`
+
+
+.. node_type:: dice.firewall_rules.hadoop.NameNode
+
+  MISSING DESCRIPTION
+
+  :parent: :node_type:`dice.firewall_rules.Base`
+
+
+.. node_type:: dice.firewall_rules.hadoop.NodeManager
+
+  MISSING DESCRIPTION
+
+  :parent: :node_type:`dice.firewall_rules.Base`
+
+
+.. node_type:: dice.firewall_rules.hadoop.ResourceManager
+
+  MISSING DESCRIPTION
+
+  :parent: :node_type:`dice.firewall_rules.Base`
+
+
+Relationships
+-------------
+
+.. relationship:: dice.relationships.hadoop.ConnectedToNameNode
+
+  MISSING DESCRIPTION
+
+  :parent: :relationship:`cloudify.relationships.connected_to`
+
+
+.. relationship:: dice.relationships.hadoop.ConnectedToResourceManager
+
+  MISSING DESCRIPTION
+
+  :parent: :relationship:`cloudify.relationships.connected_to`
+
+

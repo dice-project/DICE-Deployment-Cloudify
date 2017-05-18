@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Apache Spark (standalone) &#8212; dice-plugin 0.7.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.7.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Apache Storm" href="storm.html" />
+    <link rel="prev" title="Script runner" href="script.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="apache-spark-standalone">
+<h1>Apache Spark (standalone)<a class="headerlink" href="#apache-spark-standalone" title="Permalink to this headline">¶</a></h1>
+<p>Using Apache Spark in standalone mode is quite simple. We need to have one
+Spark master node and multiple Spark worker nodes. Spark jobs are separate
+node that related to master and worker nodes (master will submit this
+application, worker relationships are only there for ordering - we do not want
+to submit Spark job into partially prepared cluster).</p>
+<div class="highlight-yaml"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">node_templates</span><span class="p p-Indicator">:</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">${SPARK}_master_firewall</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.firewall_rules.spark.Master</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">${SPARK}_master_vm</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.hosts.ubuntu.${HOST_SIZE_MASTER}</span>
+    <span class="l l-Scalar l-Scalar-Plain">relationships</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.relationships.ProtectedBy</span>
+        <span class="l l-Scalar l-Scalar-Plain">target</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${SPARK}_master_firewall</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">${SPARK}_master</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.components.spark.Master</span>
+    <span class="l l-Scalar l-Scalar-Plain">relationships</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.relationships.ContainedIn</span>
+        <span class="l l-Scalar l-Scalar-Plain">target</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${SPARK}_master_vm</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">${SPARK}_worker_firewall</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.firewall_rules.spark.Worker</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">${SPARK}_worker_vm</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.hosts.ubuntu.${HOST_SIZE_WORKER}</span>
+    <span class="l l-Scalar l-Scalar-Plain">instances</span><span class="p p-Indicator">:</span>
+      <span class="l l-Scalar l-Scalar-Plain">deploy</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${SPARK_WORKER_COUNT}</span>
+    <span class="l l-Scalar l-Scalar-Plain">relationships</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.relationships.ProtectedBy</span>
+        <span class="l l-Scalar l-Scalar-Plain">target</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${SPARK}_worker_firewall</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">${SPARK}_worker</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.components.spark.Worker</span>
+    <span class="l l-Scalar l-Scalar-Plain">relationships</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.relationships.ContainedIn</span>
+        <span class="l l-Scalar l-Scalar-Plain">target</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${SPARK}_worker_vm</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.relationships.spark.ConnectedToMaster</span>
+        <span class="l l-Scalar l-Scalar-Plain">target</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${SPARK}_master</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">${SPARK_JOB}</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.components.spark.Application</span>
+    <span class="l l-Scalar l-Scalar-Plain">properties</span><span class="p p-Indicator">:</span>
+      <span class="l l-Scalar l-Scalar-Plain">jar</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${SPARK_JOB_JAR_LOCATION}</span>
+      <span class="l l-Scalar l-Scalar-Plain">class</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${SPARK_JOB_CLASS}</span>
+      <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${SPARK_JOB_NAME}</span>
+      <span class="l l-Scalar l-Scalar-Plain">args</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${SPARK_JOB_ARGUMENTS}</span>
+    <span class="l l-Scalar l-Scalar-Plain">relationships</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.relationships.spark.SubmittedBy</span>
+        <span class="l l-Scalar l-Scalar-Plain">target</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${SPARK}_master</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.relationships.Needs</span>
+        <span class="l l-Scalar l-Scalar-Plain">target</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${SPARK}_worker</span>
+</pre></div>
+</div>
+<div class="section" id="template-variables">
+<h2>Template variables<a class="headerlink" href="#template-variables" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><dl class="docutils">
+<dt>SPARK</dt>
+<dd>The name of the Spark cluster. This is usually set to <em>spark</em>, which gives
+us <em>spark_master</em> and <em>spark_worker</em> nodes.</dd>
+<dt>SPARK_WORKER_COUNT</dt>
+<dd>Number of Spark worker instances that should be created when deploying
+cluster.</dd>
+<dt>SPARK_JOB</dt>
+<dd>The name of the Spark job that we wish to submit.</dd>
+<dt>SPARK_JOB_JAR_LOCATION</dt>
+<dd>Location of the Spark job jar. This can be either URL or relative path, in
+which case jar needs to be bundled with blueprint.</dd>
+<dt>SPARK_JOB_CLASS</dt>
+<dd>Name of the class that should be executed when submitting Spark job.</dd>
+<dt>SPARK_JOB_NAME</dt>
+<dd>Name that should be used for application when jar is submitted. This name
+can be seen in Spark UI.</dd>
+<dt>SPARK_JOB_ARGUMENTS</dt>
+<dd>Array of arguments that should be passed to jar when being submitted. If
+application takes no additional arguments, set this to <code class="docutils literal"><span class="pre">[]</span></code>.</dd>
+<dt>HOST_SIZE_MASTER, HOST_SIZE_WORKER</dt>
+<dd>Sizes of the master and worker virtual machines. Available values are
+<em>Small</em>, <em>Medium</em> and <em>Large</em>.</dd>
+</dl>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">dice-plugin</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../templates.html">Blueprint generation templates</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../templates.html#common-parts">Common parts</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../templates.html#component-specific-templates">Component-specific templates</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../developing.html">Developer information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../templates.html">Blueprint generation templates</a><ul>
+      <li>Previous: <a href="script.html" title="previous chapter">Script runner</a></li>
+      <li>Next: <a href="storm.html" title="next chapter">Apache Storm</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, XLAB d.o.o..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/templates/spark.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Quickstart &#8212; dice-plugin 0.7.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.7.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Blueprint generation templates" href="templates.html" />
+    <link rel="prev" title="DICE TOSCA Library" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="quickstart">
+<h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
+<p>In this kick-start document, we will write blueprint for minimalistic web
+server using built-in mock server type.</p>
+<div class="section" id="preprequisites">
+<h2>Preprequisites<a class="headerlink" href="#preprequisites" title="Permalink to this headline">¶</a></h2>
+<p>First, we will assume that we have Cloudify Manager installed and configured.
+If this is not the case, consult official documentation on how to
+<a class="reference external" href="http://docs.getcloudify.org/3.4.0/manager/bootstrapping/">bootstrap the manager</a>.</p>
+</div>
+<div class="section" id="writing-blueprint">
+<h2>Writing blueprint<a class="headerlink" href="#writing-blueprint" title="Permalink to this headline">¶</a></h2>
+<p>Let us now write a simple blueprint that can be used to deploy minimalistic
+web server that will serve static web page. First thing we need to do is
+define <code class="docutils literal"><span class="pre">tosca_definitions_version</span></code> and import plugins that we will be using.</p>
+<div class="highlight-yaml"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tosca_definitions_version</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">cloudify_dsl_1_3</span>
+
+<span class="l l-Scalar l-Scalar-Plain">imports</span><span class="p p-Indicator">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">http://dice-project.github.io/DICE-Deployment-Cloudify/spec/openstack/0.2.1/plugin.yaml</span>
+</pre></div>
+</div>
+<p>All blueprints need the imports section - this is where basic type definitions
+are found. Since we are preparing blueprint for OpenStack, we included
+OpenStack plugin that will make sure we can create new virtual machines. If
+you wish to deploy to FCO, simply replace <code class="docutils literal"><span class="pre">openstack</span></code> in URL with <code class="docutils literal"><span class="pre">fco</span></code>.</p>
+<p>Next section of the blueprint specifies actually topology of our application.
+In our example, topology is simple and consists of:</p>
+<blockquote>
+<div><ul class="simple">
+<li>single virtual machine to host web server (<em>vm</em>),</li>
+<li>actual web server (<em>server</em>),</li>
+<li>virtual ip that allows us to access virtual machine from outside and</li>
+<li>firewall that protects the whole thing.</li>
+</ul>
+</div></blockquote>
+<p>All of the predefined types have all of their properties set to sane default
+values, which makes it easy to start writing blueprints. In our case, we only
+need to list all four nodes that are present in deployment and connect them
+using relationships.</p>
+<div class="highlight-yaml"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">node_templates</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">virtual_ip</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.VirtualIP</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">firewall</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.firewall_rules.mock.WebServer</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">vm</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.hosts.ubuntu.Small</span>
+    <span class="l l-Scalar l-Scalar-Plain">relationships</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.relationships.ProtectedBy</span>
+        <span class="l l-Scalar l-Scalar-Plain">target</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">firewall</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.relationships.IPAvailableFrom</span>
+        <span class="l l-Scalar l-Scalar-Plain">target</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">virtual_ip</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">server</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.components.mock.WebServer</span>
+    <span class="l l-Scalar l-Scalar-Plain">relationships</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.relationships.ContainedIn</span>
+        <span class="l l-Scalar l-Scalar-Plain">target</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">vm</span>
+</pre></div>
+</div>
+<p>And that is basically all that we need to write. Complete blueprints (with some
+additional stuff that is not directly relevant to our goal of getting
+something up and running) are available in examples folder for OpenStack and
+FCO platforms.</p>
+<p>Last thing before we can attempt to deploy our server is to prepare some
+inputs. TOSCA types that are defined by this library require some
+configuration in order to be able to use them on various platforms. There are
+input files present in example folder that should server as a reference and
+starting point.</p>
+<p>Deploying our server is now as simple as</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>cfy blueprint upload -p hello-openstack.yaml -b hello
+cfy deployments create -b hello -d hello -i inputs.openstack
+cfy executions start -w install -d hello -l
+</pre></div>
+</div>
+<p>After a couple of minutes, we should have our server up. Tearing it down is
+again simple. Executing</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>cfy executions start -w uninstall -d hello -l
+cfy deployments delete -d hello
+cfy blueprints delete -b hello
+</pre></div>
+</div>
+<p>And that is basically all there is to creating and deploying simple static web
+server. For more examples visit <a class="reference external" href="https://github.com/dice-project/DICE-Deployment-Examples">Github repo with examples</a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">dice-plugin</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#preprequisites">Preprequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#writing-blueprint">Writing blueprint</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="templates.html">Blueprint generation templates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developing.html">Developer information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">DICE TOSCA Library</a></li>
+      <li>Next: <a href="templates.html" title="next chapter">Blueprint generation templates</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, XLAB d.o.o..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/quickstart.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

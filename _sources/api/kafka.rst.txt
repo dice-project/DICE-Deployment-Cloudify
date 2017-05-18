@@ -1,0 +1,24 @@
+Apache Kafka
+============
+
+
+Components
+----------
+
+.. node_type:: dice.components.kafka.Broker
+
+  MISSING DESCRIPTION
+
+  :parent: :node_type:`dice.chef.SoftwareComponent`
+
+
+Firewall rules
+--------------
+
+.. node_type:: dice.firewall_rules.kafka.Broker
+
+  MISSING DESCRIPTION
+
+  :parent: :node_type:`dice.firewall_rules.Base`
+
+

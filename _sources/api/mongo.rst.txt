@@ -1,0 +1,126 @@
+MongoDB
+=======
+
+Types and relationships that are described in this document can be used to
+construct MongoDB clusters. For more information on how to assemble those
+types into clusters, consult :doc:`MongoDB templates </templates/mongo>`.
+
+.. note::
+
+   Currently, only standalone MongoDB setup is fully supported. Replicated
+   and sharded setups require that inter-cluster authentication is properly
+   configured and we are missing a few crucial pieces of infrastructure that
+   would allow us to configure it (most critical is component that can
+   produce server certificates on demand, like Hashicorp Vault).
+
+
+Components
+----------
+
+.. node_type:: dice.components.mongo.ConfigServer
+
+  MongoDB instance that is part of the configuration replica in sharded setup.
+
+  :parent: :node_type:`dice.components.mongo.Server`
+
+
+.. node_type:: dice.components.mongo.DB
+
+  MongoDB database.
+
+  :parent: :node_type:`cloudify.nodes.Root`
+  :property monitoring: Monitoring configuration.
+  :property name: Database name.
+
+
+.. node_type:: dice.components.mongo.Group
+
+  Collection of MongoDB instances that form a replica or shard.
+
+  :parent: :node_type:`cloudify.nodes.Root`
+  :attribute members: List of replica/shard members FQDNs.
+  :requirements: :relationship:`dice.relationships.mongo.ComposedOf`
+
+
+.. node_type:: dice.components.mongo.ReplicaServer
+
+  MongoDB instance that is part of the replica in replicated setup.
+
+  :parent: :node_type:`dice.components.mongo.Server`
+
+
+.. node_type:: dice.components.mongo.Router
+
+  MongoDB router that should be used to server queries in sharded setup.
+
+  :parent: :node_type:`dice.components.mongo.Server`
+  :requirements: :relationship:`dice.relationships.mongo.ConfigurationStoredIn`, :relationship:`dice.relationships.mongo.RoutesTo`
+
+
+.. node_type:: dice.components.mongo.Server
+
+  Standalone instance of MongoDB. This is a base type for all other MongoDB server types and should not be used in production environments, where replicated setup should be used.
+
+  :parent: :node_type:`dice.chef.SoftwareComponent`
+  :property bind_ip: If set to ``local``, mongo binds to internal address. If set to ``global``, mongo binds to 0.0.0.0. (default: ``local``)
+  :attribute ip: Private IP address of the MongoDB instance.
+  :attribute fqdn: FQDN of the MongoDB instance.
+  :requirements: :relationship:`dice.relationships.ContainedIn`
+
+
+.. node_type:: dice.components.mongo.ShardServer
+
+  MongoDB instance that is part of the shard replica in sharded setup.
+
+  :parent: :node_type:`dice.components.mongo.Server`
+
+
+.. node_type:: dice.components.mongo.User
+
+  MongoDB database user.
+
+  :parent: :node_type:`cloudify.nodes.Root`
+  :property username: Desired username.
+
+
+Firewall rules
+--------------
+
+.. node_type:: dice.firewall_rules.mongo.Common
+
+  Firewall rules that should be used on VMs that host MongoDB.
+
+  :parent: :node_type:`dice.firewall_rules.Base`
+
+
+Relationships
+-------------
+
+.. relationship:: dice.relationships.mongo.ComposedOf
+
+  Adds :node_type:`dice.components.mongo.ConfigServer`, :node_type:`dice.components.mongo.ReplicaServer` or :node_type:`dice.components.mongo.ShardServer` instances to the replica/shard.
+
+  :parent: :relationship:`cloudify.relationships.depends_on`
+
+
+.. relationship:: dice.relationships.mongo.ConfigurationStoredIn
+
+  Connects MongoDB router to the configuration replica.
+
+  :parent: :relationship:`cloudify.relationships.depends_on`
+
+
+.. relationship:: dice.relationships.mongo.HasRightsToUse
+
+  Grants user permissions to use target database.
+
+  :parent: :relationship:`cloudify.relationships.depends_on`
+
+
+.. relationship:: dice.relationships.mongo.RoutesTo
+
+  Adds MongoDB shard to the router.
+
+  :parent: :relationship:`cloudify.relationships.depends_on`
+
+

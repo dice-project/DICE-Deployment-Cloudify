@@ -1,0 +1,73 @@
+Apache Spark
+============
+
+
+Components
+----------
+
+.. node_type:: dice.components.spark.Application
+
+  MISSING DESCRIPTION
+
+  :parent: :node_type:`dice.LogicalNode`
+  :property args: Arguments that should be passed to application on submission. Note that when jar is executed, first argument is always application name.  Arguments in this property are passed as an additional arguments after name.[]
+  :property jar: Location of application's jar file. If this is relative path, file is assumed to be part of the blueprint package. If this URL, file will be downloaded.
+  :property class: Class that should be executed.
+  :property name: Name of the application that is being submitted.
+
+
+.. node_type:: dice.components.spark.Base
+
+  MISSING DESCRIPTION
+
+  :parent: :node_type:`dice.chef.SoftwareComponent`
+
+
+.. node_type:: dice.components.spark.Master
+
+  MISSING DESCRIPTION
+
+  :parent: :node_type:`dice.components.spark.Base`
+
+
+.. node_type:: dice.components.spark.Worker
+
+  MISSING DESCRIPTION
+
+  :parent: :node_type:`dice.components.spark.Base`
+
+
+Firewall rules
+--------------
+
+.. node_type:: dice.firewall_rules.spark.Master
+
+  MISSING DESCRIPTION
+
+  :parent: :node_type:`dice.firewall_rules.Base`
+
+
+.. node_type:: dice.firewall_rules.spark.Worker
+
+  MISSING DESCRIPTION
+
+  :parent: :node_type:`dice.firewall_rules.Base`
+
+
+Relationships
+-------------
+
+.. relationship:: dice.relationships.spark.ConnectedToMaster
+
+  MISSING DESCRIPTION
+
+  :parent: :relationship:`cloudify.relationships.connected_to`
+
+
+.. relationship:: dice.relationships.spark.SubmittedBy
+
+  MISSING DESCRIPTION
+
+  :parent: :relationship:`cloudify.relationships.contained_in`
+
+

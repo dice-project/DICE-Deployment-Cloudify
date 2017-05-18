@@ -1,0 +1,14 @@
+Hosts
+=====
+
+
+Firewall rules
+--------------
+
+.. node_type:: dice.firewall_rules.Base
+
+  MISSING DESCRIPTION
+
+  :parent: :node_type:`dice.firewall_rules.Raw`
+
+

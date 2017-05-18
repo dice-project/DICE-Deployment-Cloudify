@@ -1,0 +1,62 @@
+ScyllaDB
+========
+
+
+Components
+----------
+
+.. node_type:: dice.components.scylla.Base
+
+  MISSING DESCRIPTION
+
+  :parent: :node_type:`dice.chef.SoftwareComponent`
+
+
+.. node_type:: dice.components.scylla.Seed
+
+  MISSING DESCRIPTION
+
+  :parent: :node_type:`dice.components.scylla.Base`
+
+
+.. node_type:: dice.components.scylla.Worker
+
+  MISSING DESCRIPTION
+
+  :parent: :node_type:`dice.components.scylla.Base`
+
+
+Firewall rules
+--------------
+
+.. node_type:: dice.firewall_rules.scylla.Common
+
+  MISSING DESCRIPTION
+
+  :parent: :node_type:`dice.firewall_rules.Base`
+
+
+.. node_type:: dice.firewall_rules.scylla.Seed
+
+  MISSING DESCRIPTION
+
+  :parent: :node_type:`dice.firewall_rules.scylla.Common`
+
+
+.. node_type:: dice.firewall_rules.scylla.Worker
+
+  MISSING DESCRIPTION
+
+  :parent: :node_type:`dice.firewall_rules.scylla.Common`
+
+
+Relationships
+-------------
+
+.. relationship:: dice.relationships.scylla.ConnectedToSeed
+
+  MISSING DESCRIPTION
+
+  :parent: :relationship:`cloudify.relationships.connected_to`
+
+

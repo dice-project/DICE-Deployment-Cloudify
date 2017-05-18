@@ -1,0 +1,34 @@
+Basic types that are platform dependent
+=======================================
+
+
+Firewall rules
+--------------
+
+.. node_type:: dice.firewall_rules.Raw
+
+  MISSING DESCRIPTION
+
+  :parent: :node_type:`cloudify.nodes.SecurityGroup`
+  :property rules: List of firewall rules. Firewall rules should have the following fields: ip_prefix, protocol, from_port, to_port. If only a single port should be opened, from_port and to_port fields can be replaced by single port field.[]
+  :property platform: Specifies what platform will host blueprint.
+  :property platform_config: Configuration for underlying platform.
+
+
+Relationships
+-------------
+
+.. relationship:: dice.relationships.IPAvailableFrom
+
+  MISSING DESCRIPTION
+
+  :parent: :relationship:`cloudify.relationships.connected_to`
+
+
+.. relationship:: dice.relationships.ProtectedBy
+
+  MISSING DESCRIPTION
+
+  :parent: :relationship:`cloudify.relationships.depends_on`
+
+

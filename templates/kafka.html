@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Apache Kafka &#8212; dice-plugin 0.7.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.7.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="MongoDB" href="mongo.html" />
+    <link rel="prev" title="Apache Hadoop" href="hadoop.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="apache-kafka">
+<h1>Apache Kafka<a class="headerlink" href="#apache-kafka" title="Permalink to this headline">¶</a></h1>
+<p>Before we can deploy Kafka cluster, we need to have access to Zookeeper
+cluster. we will assume in this template that Zookeeper quorum is already
+defined somewhere in blueprint.</p>
+<div class="highlight-yaml"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">node_templates</span><span class="p p-Indicator">:</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">${KAFKA}_firewall</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.firewall_rules.kafka.Broker</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">${KAFKA}_vm</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.hosts.ubuntu.${HOST_SIZE}</span>
+    <span class="l l-Scalar l-Scalar-Plain">instances</span><span class="p p-Indicator">:</span>
+      <span class="l l-Scalar l-Scalar-Plain">deploy</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${KAFKA_INSTANCE_COUNT}</span>
+    <span class="l l-Scalar l-Scalar-Plain">relationships</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.relationships.ProtectedBy</span>
+        <span class="l l-Scalar l-Scalar-Plain">target</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${KAFKA}_firewall</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">${KAFKA}</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.components.kafka.Broker</span>
+    <span class="l l-Scalar l-Scalar-Plain">relationships</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.relationships.ContainedIn</span>
+        <span class="l l-Scalar l-Scalar-Plain">target</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${KAFKA}_vm</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.relationships.zookeeper.ConnectedToZookeeperQuorum</span>
+        <span class="l l-Scalar l-Scalar-Plain">target</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${ZOOKEEPER}_quorum</span>
+</pre></div>
+</div>
+<div class="section" id="template-variables">
+<h2>Template variables<a class="headerlink" href="#template-variables" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><dl class="docutils">
+<dt>KAFKA</dt>
+<dd>Unique name of the Kafka cluster. If there is a single Kafka cluster
+described in blueprint, this can be set to anything, but usually to
+<em>kafka</em>.</dd>
+<dt>KAFKA_INSTANCE_COUNT</dt>
+<dd>Number of Kafka brokers to include in cluster.</dd>
+<dt>ZOOKEEPER</dt>
+<dd>Name of the Zookeeper cluster that should be used by Kafka to coordinate
+work between worker instances.</dd>
+<dt>HOST_SIZE</dt>
+<dd>Size of the host virtual machine. Available values are <em>Small</em>, <em>Medium</em>
+and <em>Large</em>.</dd>
+</dl>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">dice-plugin</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../templates.html">Blueprint generation templates</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../templates.html#common-parts">Common parts</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../templates.html#component-specific-templates">Component-specific templates</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../developing.html">Developer information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../templates.html">Blueprint generation templates</a><ul>
+      <li>Previous: <a href="hadoop.html" title="previous chapter">Apache Hadoop</a></li>
+      <li>Next: <a href="mongo.html" title="next chapter">MongoDB</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, XLAB d.o.o..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/templates/kafka.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

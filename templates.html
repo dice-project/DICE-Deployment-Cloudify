@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Blueprint generation templates &#8212; dice-plugin 0.7.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.7.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Apache Cassandra" href="templates/cassandra.html" />
+    <link rel="prev" title="Quickstart" href="quickstart.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="blueprint-generation-templates">
+<h1>Blueprint generation templates<a class="headerlink" href="#blueprint-generation-templates" title="Permalink to this headline">¶</a></h1>
+<p>This part of documentation contains the templates for generating TOSCA
+documents, which work with DICE Deployment Service. In this context, the word
+&#8220;template&#8221; means a string of text with interchangeable variables.</p>
+<p>The TOSCA blueprint is composed of several parts (version definition, imports,
+node templates, outputs, etc.), the contents of which depend on the platform
+used and the technologies appearing in the blueprint. Conversely, this
+document presents relevant parts of the templates.</p>
+<p>In each section, there are the mandatory contents, which all have to be in
+place for the blueprint to work. Optional parts depend on the users&#8217;
+preferences.</p>
+<div class="section" id="common-parts">
+<h2>Common parts<a class="headerlink" href="#common-parts" title="Permalink to this headline">¶</a></h2>
+<p>Each blueprint needs to have a header section where language version is
+specified and proper DICE TOSCA library plugin description is imported.</p>
+<div class="highlight-yaml"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">tosca_definitions_version</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">cloudify_dsl_1_3</span>
+
+<span class="l l-Scalar l-Scalar-Plain">imports</span><span class="p p-Indicator">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">http://dice-project.github.io/DICE-Deployment-Cloudify/spec/${PLATFORM}/${LIBRARY_VERSION}/plugin.yaml</span>
+</pre></div>
+</div>
+<p><strong>Template variables</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt>PLATFORM</dt>
+<dd>Specifies the platform to deploy the application to. Currently supported
+platforms are <em>fco</em> and <em>openstack</em>.</dd>
+<dt>LIBRARY_VERSION</dt>
+<dd>Specifies the version of the plugin containing the DICE technology library
+definitions.</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="component-specific-templates">
+<h2>Component-specific templates<a class="headerlink" href="#component-specific-templates" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="templates/cassandra.html">Apache Cassandra</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="templates/cassandra.html#template-variables">Template variables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="templates/hadoop.html">Apache Hadoop</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="templates/hadoop.html#template-variables">Template variables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="templates/kafka.html">Apache Kafka</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="templates/kafka.html#template-variables">Template variables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="templates/mongo.html">MongoDB</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="templates/mongo.html#template-variables">Template variables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="templates/script.html">Script runner</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="templates/script.html#template-variables">Template variables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="templates/spark.html">Apache Spark (standalone)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="templates/spark.html#template-variables">Template variables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="templates/storm.html">Apache Storm</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="templates/storm.html#template-variables">Template variables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="templates/zookeeper.html">Apache Zookeeper</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="templates/zookeeper.html#template-variables">Template variables</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">dice-plugin</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Blueprint generation templates</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#common-parts">Common parts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#component-specific-templates">Component-specific templates</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="developing.html">Developer information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="quickstart.html" title="previous chapter">Quickstart</a></li>
+      <li>Next: <a href="templates/cassandra.html" title="next chapter">Apache Cassandra</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, XLAB d.o.o..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/templates.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Apache Storm &#8212; dice-plugin 0.7.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.7.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Apache Zookeeper" href="zookeeper.html" />
+    <link rel="prev" title="Apache Spark (standalone)" href="spark.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="apache-storm">
+<h1>Apache Storm<a class="headerlink" href="#apache-storm" title="Permalink to this headline">¶</a></h1>
+<p>Before we can deploy Storm cluster, we need to have access to Zookeeper
+quorum, since Storm stores most of it&#8217;s configuration there. In this template,
+we will assume that Zookeeper cluster is already defined and available to us.</p>
+<p>If we only wish to prepare cluster without submitting any jobs,
+<code class="docutils literal"><span class="pre">${STORM_TOPOLOGY}</span></code> parts of the template can be removed, along with it&#8217;s
+associated output fragment.</p>
+<div class="highlight-yaml"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">node_templates</span><span class="p p-Indicator">:</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">${STORM}_nimbus_firewall</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.firewall_rules.storm.Nimbus</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">${STORM}_virtual_ip</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.VirtualIP</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">${STORM}_nimbus_vm</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.hosts.ubuntu.${HOST_SIZE_NIMBUS}</span>
+    <span class="l l-Scalar l-Scalar-Plain">relationships</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.relationships.ProtectedBy</span>
+        <span class="l l-Scalar l-Scalar-Plain">target</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${STORM}_nimbus_firewall</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.relationships.IpAvailableFrom</span>
+        <span class="l l-Scalar l-Scalar-Plain">target</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${STORM}_virtual_ip</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">${STORM}_nimbus</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.components.storm.Nimbus</span>
+    <span class="l l-Scalar l-Scalar-Plain">properties</span><span class="p p-Indicator">:</span>
+      <span class="l l-Scalar l-Scalar-Plain">configuration</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${STORM_CONFIGURATION}</span>
+    <span class="l l-Scalar l-Scalar-Plain">relationships</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.relationships.ContainedIn</span>
+        <span class="l l-Scalar l-Scalar-Plain">target</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${STORM}_nimbus_vm</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.relationships.storm.ConnectedToZookeeperQuorum</span>
+        <span class="l l-Scalar l-Scalar-Plain">target</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${ZOOKEEPER}_quorum</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">${STORM}_worker_firewall</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.firewall_rules.storm.Worker</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">${STORM}_worker_vm</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.hosts.ubuntu.${HOST_SIZE_WORKER}</span>
+    <span class="l l-Scalar l-Scalar-Plain">instances</span><span class="p p-Indicator">:</span>
+      <span class="l l-Scalar l-Scalar-Plain">deploy</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${STORM_INSTANCE_COUNT}</span>
+    <span class="l l-Scalar l-Scalar-Plain">relationships</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.relationships.ProtectedBy</span>
+        <span class="l l-Scalar l-Scalar-Plain">target</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${STORM}_worker_firewall</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">${STORM}_worker</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.components.storm.Worker</span>
+    <span class="l l-Scalar l-Scalar-Plain">properties</span><span class="p p-Indicator">:</span>
+      <span class="l l-Scalar l-Scalar-Plain">configuration</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${STORM_CONFIGURATION}</span>
+    <span class="l l-Scalar l-Scalar-Plain">relationships</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.relationships.ContainedIn</span>
+        <span class="l l-Scalar l-Scalar-Plain">target</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${STORM}_worker_vm</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.relationships.storm.ConnectedToZookeeperQuorum</span>
+        <span class="l l-Scalar l-Scalar-Plain">target</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${ZOOKEEPER}_quorum</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.relationships.storm.ConnectedToNimbus</span>
+        <span class="l l-Scalar l-Scalar-Plain">target</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${STORM}_nimbus</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">${STORM_TOPOLOGY}</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.components.storm.Topology</span>
+    <span class="l l-Scalar l-Scalar-Plain">properties</span><span class="p p-Indicator">:</span>
+      <span class="l l-Scalar l-Scalar-Plain">application</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${STORM_TOPOLOGY_JAR_LOCATION}</span>
+      <span class="l l-Scalar l-Scalar-Plain">topology_name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${STORM_TOPOLOGY_NAME}</span>
+      <span class="l l-Scalar l-Scalar-Plain">topology_class</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${STORM_TOPOLOGY_CLASS}</span>
+      <span class="l l-Scalar l-Scalar-Plain">configuration</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${STORM_TOPOLOGY_CONFIGURATION}</span>
+  <span class=" -Error"> </span><span class="l l-Scalar l-Scalar-Plain">relationships</span><span class="p p-Indicator">:</span>
+     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.relationships.storm.SubmitTopologyFromVM</span>
+       <span class="l l-Scalar l-Scalar-Plain">target</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${STORM}_nimbus_vm</span>
+     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">dice.relationships.Needs</span>
+       <span class="l l-Scalar l-Scalar-Plain">target</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">${STORM}</span>
+
+<span class="l l-Scalar l-Scalar-Plain">outputs</span><span class="p p-Indicator">:</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">${STORM}_nimbus_address</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">description</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Nimbus address as used by storm client.</span>
+    <span class="l l-Scalar l-Scalar-Plain">value</span><span class="p p-Indicator">:</span>
+      <span class="l l-Scalar l-Scalar-Plain">get_attribute</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">[</span> <span class="nv">$</span><span class="p p-Indicator">{</span><span class="nv">STORM</span><span class="p p-Indicator">}</span><span class="nv">_virtual_ip</span><span class="p p-Indicator">,</span> <span class="nv">virtual_ip</span> <span class="p p-Indicator">]</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">${STORM}_nimbus_gui</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">description</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">URL of the Storm nimbus gui of &quot;${STORM}&quot;</span>
+    <span class="l l-Scalar l-Scalar-Plain">value</span><span class="p p-Indicator">:</span>
+      <span class="l l-Scalar l-Scalar-Plain">concat</span><span class="p p-Indicator">:</span>
+        <span class="p p-Indicator">-</span> <span class="s">&#39;http://&#39;</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">get_attribute</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">[</span> <span class="nv">$</span><span class="p p-Indicator">{</span><span class="nv">STORM</span><span class="p p-Indicator">}</span><span class="nv">_virtual_ip</span><span class="p p-Indicator">,</span> <span class="nv">virtual_ip</span><span class="p p-Indicator">]</span>
+        <span class="p p-Indicator">-</span> <span class="s">&#39;:8080&#39;</span>
+
+  <span class="l l-Scalar l-Scalar-Plain">${STORM_TOPOLOGY}_id</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">description</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Unique Storm topology ID for &quot;${STORM_TOPOLOGY}&quot;</span>
+    <span class="l l-Scalar l-Scalar-Plain">value</span><span class="p p-Indicator">:</span>
+      <span class="l l-Scalar l-Scalar-Plain">get_attribute</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">[</span> <span class="nv">$</span><span class="p p-Indicator">{</span><span class="nv">STORM_TOPOLOGY</span><span class="p p-Indicator">},</span> <span class="nv">topology_id</span> <span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+<div class="section" id="template-variables">
+<h2>Template variables<a class="headerlink" href="#template-variables" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><dl class="docutils">
+<dt>ZOOKEEPER</dt>
+<dd>The name of the Zookeeper cluster that this Storm cluster will use.</dd>
+<dt>STORM</dt>
+<dd>The name of the Storm cluster. Usually, this is set to <em>storm</em> for the
+sake of simplicity.</dd>
+<dt>STORM_CONFIGURATION</dt>
+<dd>A dictionary containing the configuration of the <code class="docutils literal"><span class="pre">${STORM}</span></code> instance.</dd>
+<dt>STORM_INSTANCE_COUNT</dt>
+<dd>Number of Storm worker instances to deploy.</dd>
+<dt>STORM_TOPOLOGY</dt>
+<dd>The name of the Storm topology. Can be anything, but general advice is to
+set to something that describes functionality of the topology being
+submitted.</dd>
+<dt>STORM_TOPOLOGY_JAR_LOCATION</dt>
+<dd>The URL or the filename where the user&#8217;s Storm topology can be obtained. If
+the location starts with a protocol designation such as &#8216;https&#8217;, then the
+jar needs to be available for download from the provided URL. If no
+protocol designation is provided, the deployment tools assume a file
+packaged with the blueprint.</dd>
+<dt>STORM_TOPOLOGY_NAME</dt>
+<dd>The name of the user&#8217;s Storm topology as it will be used in the Storm.</dd>
+<dt>STORM_TOPOLOGY_CLASS</dt>
+<dd>The class name with the main function, which implements the Storm
+topology.</dd>
+<dt>STORM_TOPOLOGY_CONFIGURATION</dt>
+<dd>A dictionary containing the configuration that will be used when
+submitting the topology jar to the nimbus. If no special configuration is
+needed, use <code class="docutils literal"><span class="pre">{}</span></code> here.</dd>
+<dt>HOST_SIZE_NIMBUS, HOST_SIZE_WORKER</dt>
+<dd>Sizes of the nimbus and worker virtual machines. Available values are
+<em>Small</em>, <em>Medium</em> and <em>Large</em>.</dd>
+</dl>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">dice-plugin</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../templates.html">Blueprint generation templates</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../templates.html#common-parts">Common parts</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../templates.html#component-specific-templates">Component-specific templates</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../developing.html">Developer information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../templates.html">Blueprint generation templates</a><ul>
+      <li>Previous: <a href="spark.html" title="previous chapter">Apache Spark (standalone)</a></li>
+      <li>Next: <a href="zookeeper.html" title="next chapter">Apache Zookeeper</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, XLAB d.o.o..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/templates/storm.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

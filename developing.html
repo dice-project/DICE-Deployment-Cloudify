@@ -1,0 +1,253 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Developer information &#8212; dice-plugin 0.7.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.7.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Documentation" href="api.html" />
+    <link rel="prev" title="Apache Zookeeper" href="templates/zookeeper.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="developer-information">
+<h1>Developer information<a class="headerlink" href="#developer-information" title="Permalink to this headline">¶</a></h1>
+<p>Main audience for this part of documentation are developers who would like to
+and/or are being tasked to work on DICE TOSCA library.</p>
+<div class="section" id="source-code-layout">
+<h2>Source code layout<a class="headerlink" href="#source-code-layout" title="Permalink to this headline">¶</a></h2>
+<p>Various TOSCA type definitions are stored inside <code class="file docutils literal"><span class="pre">library</span></code> folder.
+Platform dependent definitions should be placed inside <code class="file docutils literal"><span class="pre">PLATFORM.yaml</span></code>.</p>
+<p>Layout of the <code class="file docutils literal"><span class="pre">library</span></code> folder is free-form. Just make sure files with
+type definitions inside end with <code class="docutils literal"><span class="pre">.yaml</span></code> and the tool that produces final,
+&#8220;includable&#8221; plugin description will take care of traversing the folder
+structure:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>library
+├── base.yaml
+├── cassandra.yaml
+├── mock.yaml
+├── storm.yaml
+├── ...
+├── fco.yaml
+├── openstack.yaml
+└── zookeeper.yaml
+</pre></div>
+</div>
+<p>Tasks that can be used in type definitions are defined inside
+<code class="file docutils literal"><span class="pre">dice_plugin</span></code> python package. This is a standard python package, so if
+you ever worked on package before, you should feel right at home.</p>
+<p>Last component are the tools that take the various library files and produce
+end results. Currently available tools are:</p>
+<dl class="docutils">
+<dt><strong class="program">gen-plugin-yaml.py</strong></dt>
+<dd>Tool that takes complete library folder as an input and produces plugin
+definition that can be included in blueprints. For more information, run
+script with no parameters and read help text.</dd>
+<dt><strong class="program">extract-api-docs.py</strong></dt>
+<dd>Tool that takes yaml file with TOSCA definitions as an input and produces
+API docs that can be included in final documentation.</dd>
+</dl>
+</div>
+<div class="section" id="developing-plug-in">
+<h2>Developing plug-in<a class="headerlink" href="#developing-plug-in" title="Permalink to this headline">¶</a></h2>
+<p>Plugin development should be done in feature branches. When the feature is
+complete, feature branch should be rebased onto develop branch and then merge
+request should be submitted.</p>
+<p>When adding new functionality, it is useful to be able to test changes before
+pushing anything to remote git repository. Assuming that we have a development
+blueprint inside <code class="file docutils literal"><span class="pre">dev</span></code> subfolder of the TOSCA library plugin, general
+steps that need to be taken when doing off-line development are:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Create new <code class="file docutils literal"><span class="pre">plugins</span></code> subfolder inside <code class="file docutils literal"><span class="pre">dev</span></code>.</li>
+<li>Make changes to plugin and/or chef cookbooks.</li>
+<li>Create package zip and copy it to <code class="file docutils literal"><span class="pre">plugins</span></code> subfolder.</li>
+<li>Create tarball of chef repo and copy it to <code class="file docutils literal"><span class="pre">dev</span></code> folder.</li>
+<li>Generate local plugin description and use it in blueprint.</li>
+<li>Deploy blueprint.</li>
+<li>Go back to 1 because something went wrong;).</li>
+</ol>
+</div></blockquote>
+<p>Commands that one usually executes during the session would look something
+like this:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>mkdir -p dev/plugins
+<span class="c1"># Do some developing</span>
+rm -f dist/*.zip <span class="o">&amp;&amp;</span> python setup.py sdist --formats<span class="o">=</span>zip
+cp dist/dice-plugin-*.zip dev/plugins/dice-plugin.zip
+tar -cvzf dev/repo.tar.gz -C /path/to/chef/repo --exclude<span class="o">=</span>.git repo
+tools/gen-plugin-yaml.py -o dev/include.yaml chef.tar.gz dice-plugin
+<span class="nb">cd</span> dev
+cfy ... <span class="c1"># Do cloduify testing of blueprint</span>
+<span class="nb">cd</span> .. <span class="c1"># Now go to line 2 and start again</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="adding-new-platform-to-library">
+<h2>Adding new platform to library<a class="headerlink" href="#adding-new-platform-to-library" title="Permalink to this headline">¶</a></h2>
+<p>In order to make adding new platform to library as painless as possible,
+simply copy the <code class="file docutils literal"><span class="pre">dice_plugin/openstack.py</span></code> and adapt the function
+definitions. In order to register new platform, open
+<code class="file docutils literal"><span class="pre">dice_plugn/general.py</span></code> and add new platform to <code class="docutils literal"><span class="pre">PLATFORMS</span></code>
+dictionary. Last thing is to add any additional libraries to
+<code class="file docutils literal"><span class="pre">requirements.txt</span></code> file.</p>
+</div>
+<div class="section" id="creating-release">
+<h2>Creating release<a class="headerlink" href="#creating-release" title="Permalink to this headline">¶</a></h2>
+<p>Tasks that need to be done when creating release are:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Take note of Chef repo version that this release of library will use and
+get URl address of it&#8217;s <code class="docutils literal"><span class="pre">tar.gz</span></code> archive (most likely Github download
+link).</li>
+<li>Tag the current git HEAD with proper version number and prepare Github
+release.</li>
+<li>Prepare python package by running <code class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">sdist</span> <span class="pre">--formats=zip</span></code>.</li>
+<li>Upload produced package to the Github release page and take note of the
+url that serves the uploaded zip.</li>
+<li>Generate lite library import by running
+<code class="docutils literal"><span class="pre">tools/gen-plugin-yaml.py</span> <span class="pre">--lite</span> <span class="pre">-o</span> <span class="pre">lite.yaml</span> <span class="pre">CHEF_URL</span> <span class="pre">LIB_URL</span></code>, where
+<code class="docutils literal"><span class="pre">CHEF_URL</span></code> is the address that we took note of in step 1 and <code class="docutils literal"><span class="pre">LIB_URL</span></code>
+is the address of the uploaded zip file from step 4.</li>
+<li>Generate full library import by running
+<code class="docutils literal"><span class="pre">tools/gen-plugin-yaml.py</span> <span class="pre">-o</span> <span class="pre">full.yaml</span> <span class="pre">CHEF_URL</span> <span class="pre">LIB_URL</span></code>, where
+<code class="docutils literal"><span class="pre">CHEF_URL</span></code> is the address that we took note of in step 1 and <code class="docutils literal"><span class="pre">LIB_URL</span></code>
+is the address of the uploaded zip file from step 4.</li>
+<li>Publish generated plug-in descriptions on Github release page.</li>
+</ol>
+</div></blockquote>
+</div>
+<div class="section" id="generating-docs">
+<h2>Generating docs<a class="headerlink" href="#generating-docs" title="Permalink to this headline">¶</a></h2>
+<p>Parts of the documentation are extracted from library definitions and needs to
+be placed into proper place before we gan generate the final document. In
+order to extract the docs, we must run:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>rm -rf doc/source/api
+mkdir doc/source/api
+<span class="k">for</span> comp in library/*.yaml
+<span class="k">do</span>
+  tools/extract-api-docs.py <span class="nv">$comp</span> -o doc/source/api/<span class="k">$(</span>basename <span class="nv">$comp</span> yaml<span class="k">)</span>rst
+<span class="k">done</span>
+</pre></div>
+</div>
+<p>Documentation is generated using Sphinx, which means that it needs to be
+installed first. The simplest way of installing it is to create new virtual
+environment and execute <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements-dev.txt</span></code>.
+Documentation can now be generated by running
+<strong class="command">python setup.py build_sphinx</strong>.</p>
+<p>Generated documentation can be viewed by pointing web browser to
+<code class="file docutils literal"><span class="pre">doc/build/html/index.html</span></code> file.</p>
+<p>Documentation can also be hosted on <a class="reference external" href="https://readthedocs.org/">readthedocs</a> page. Simply create new
+account and add project. Additionally, one can setup more tight Github
+integration that makes it possible to rebuild documentation when repo content
+changes.</p>
+</div>
+<div class="section" id="reporting-bugs">
+<h2>Reporting bugs<a class="headerlink" href="#reporting-bugs" title="Permalink to this headline">¶</a></h2>
+<p>Visit <a class="reference external" href="https://github.com/dice-project/DICE-Deployment-Cloudify/issues">project&#8217;s Github issues page</a> and file a bug.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">dice-plugin</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="templates.html">Blueprint generation templates</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Developer information</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#source-code-layout">Source code layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#developing-plug-in">Developing plug-in</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#adding-new-platform-to-library">Adding new platform to library</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-release">Creating release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#generating-docs">Generating docs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reporting-bugs">Reporting bugs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="templates/zookeeper.html" title="previous chapter">Apache Zookeeper</a></li>
+      <li>Next: <a href="api.html" title="next chapter">API Documentation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, XLAB d.o.o..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/developing.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

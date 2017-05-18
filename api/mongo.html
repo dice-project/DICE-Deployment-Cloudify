@@ -1,0 +1,400 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>MongoDB &#8212; dice-plugin 0.7.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.7.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Monitoring support" href="monitoring.html" />
+    <link rel="prev" title="Miscellaneous components that are useful on its own" href="misc.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="mongodb">
+<h1>MongoDB<a class="headerlink" href="#mongodb" title="Permalink to this headline">¶</a></h1>
+<p>Types and relationships that are described in this document can be used to
+construct MongoDB clusters. For more information on how to assemble those
+types into clusters, consult <a class="reference internal" href="../templates/mongo.html"><span class="doc">MongoDB templates</span></a>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Currently, only standalone MongoDB setup is fully supported. Replicated
+and sharded setups require that inter-cluster authentication is properly
+configured and we are missing a few crucial pieces of infrastructure that
+would allow us to configure it (most critical is component that can
+produce server certificates on demand, like Hashicorp Vault).</p>
+</div>
+<div class="section" id="components">
+<h2>Components<a class="headerlink" href="#components" title="Permalink to this headline">¶</a></h2>
+<dl class="node_type">
+<dt id="dice.components.mongo.ConfigServer">
+<!--[dice.components.mongo.ConfigServer]--><code class="descname">dice.components.mongo.ConfigServer</code><dd><p>MongoDB instance that is part of the configuration replica in sharded setup.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parent:</th><td class="field-body"><a class="reference internal" href="#dice.components.mongo.Server" title="dice.components.mongo.Server"><code class="xref tosca tosca-node_type docutils literal"><span class="pre">dice.components.mongo.Server</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd><a class="headerlink" href="#dice.components.mongo.ConfigServer" title="Permalink to this definition">¶</a></dt>
+</dl>
+
+<dl class="node_type">
+<dt id="dice.components.mongo.DB">
+<!--[dice.components.mongo.DB]--><code class="descname">dice.components.mongo.DB</code><dd><p>MongoDB database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parent:</th><td class="field-body"><p class="first"><code class="xref tosca tosca-node_type docutils literal"><span class="pre">cloudify.nodes.Root</span></code></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Properties:</th><td class="field-body"><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">monitoring:</th><td class="field-body">Monitoring configuration.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">name:</th><td class="field-body">Database name.</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</dd><a class="headerlink" href="#dice.components.mongo.DB" title="Permalink to this definition">¶</a></dt>
+</dl>
+
+<dl class="node_type">
+<dt id="dice.components.mongo.Group">
+<!--[dice.components.mongo.Group]--><code class="descname">dice.components.mongo.Group</code><dd><p>Collection of MongoDB instances that form a replica or shard.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parent:</th><td class="field-body"><p class="first"><code class="xref tosca tosca-node_type docutils literal"><span class="pre">cloudify.nodes.Root</span></code></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"><table class="first docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">members:</th><td class="field-body">List of replica/shard members FQDNs.</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Relationships:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#dice.relationships.mongo.ComposedOf" title="dice.relationships.mongo.ComposedOf"><code class="xref tosca tosca-relationship docutils literal"><span class="pre">dice.relationships.mongo.ComposedOf</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd><a class="headerlink" href="#dice.components.mongo.Group" title="Permalink to this definition">¶</a></dt>
+</dl>
+
+<dl class="node_type">
+<dt id="dice.components.mongo.ReplicaServer">
+<!--[dice.components.mongo.ReplicaServer]--><code class="descname">dice.components.mongo.ReplicaServer</code><dd><p>MongoDB instance that is part of the replica in replicated setup.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parent:</th><td class="field-body"><a class="reference internal" href="#dice.components.mongo.Server" title="dice.components.mongo.Server"><code class="xref tosca tosca-node_type docutils literal"><span class="pre">dice.components.mongo.Server</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd><a class="headerlink" href="#dice.components.mongo.ReplicaServer" title="Permalink to this definition">¶</a></dt>
+</dl>
+
+<dl class="node_type">
+<dt id="dice.components.mongo.Router">
+<!--[dice.components.mongo.Router]--><code class="descname">dice.components.mongo.Router</code><dd><p>MongoDB router that should be used to server queries in sharded setup.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parent:</th><td class="field-body"><a class="reference internal" href="#dice.components.mongo.Server" title="dice.components.mongo.Server"><code class="xref tosca tosca-node_type docutils literal"><span class="pre">dice.components.mongo.Server</span></code></a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Relationships:</th><td class="field-body"><a class="reference internal" href="#dice.relationships.mongo.ConfigurationStoredIn" title="dice.relationships.mongo.ConfigurationStoredIn"><code class="xref tosca tosca-relationship docutils literal"><span class="pre">dice.relationships.mongo.ConfigurationStoredIn</span></code></a>, <a class="reference internal" href="#dice.relationships.mongo.RoutesTo" title="dice.relationships.mongo.RoutesTo"><code class="xref tosca tosca-relationship docutils literal"><span class="pre">dice.relationships.mongo.RoutesTo</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd><a class="headerlink" href="#dice.components.mongo.Router" title="Permalink to this definition">¶</a></dt>
+</dl>
+
+<dl class="node_type">
+<dt id="dice.components.mongo.Server">
+<!--[dice.components.mongo.Server]--><code class="descname">dice.components.mongo.Server</code><dd><p>Standalone instance of MongoDB. This is a base type for all other MongoDB server types and should not be used in production environments, where replicated setup should be used.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parent:</th><td class="field-body"><p class="first"><code class="xref tosca tosca-node_type docutils literal"><span class="pre">dice.chef.SoftwareComponent</span></code></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Properties:</th><td class="field-body"><table class="first docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">bind_ip:</th><td class="field-body">If set to <code class="docutils literal"><span class="pre">local</span></code>, mongo binds to internal address. If set to <code class="docutils literal"><span class="pre">global</span></code>, mongo binds to 0.0.0.0. (default: <code class="docutils literal"><span class="pre">local</span></code>)</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"><table class="first docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">ip:</th><td class="field-body">Private IP address of the MongoDB instance.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">fqdn:</th><td class="field-body">FQDN of the MongoDB instance.</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Relationships:</th><td class="field-body"><p class="first last"><a class="reference internal" href="base.html#dice.relationships.ContainedIn" title="dice.relationships.ContainedIn"><code class="xref tosca tosca-relationship docutils literal"><span class="pre">dice.relationships.ContainedIn</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd><a class="headerlink" href="#dice.components.mongo.Server" title="Permalink to this definition">¶</a></dt>
+</dl>
+
+<dl class="node_type">
+<dt id="dice.components.mongo.ShardServer">
+<!--[dice.components.mongo.ShardServer]--><code class="descname">dice.components.mongo.ShardServer</code><dd><p>MongoDB instance that is part of the shard replica in sharded setup.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parent:</th><td class="field-body"><a class="reference internal" href="#dice.components.mongo.Server" title="dice.components.mongo.Server"><code class="xref tosca tosca-node_type docutils literal"><span class="pre">dice.components.mongo.Server</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd><a class="headerlink" href="#dice.components.mongo.ShardServer" title="Permalink to this definition">¶</a></dt>
+</dl>
+
+<dl class="node_type">
+<dt id="dice.components.mongo.User">
+<!--[dice.components.mongo.User]--><code class="descname">dice.components.mongo.User</code><dd><p>MongoDB database user.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parent:</th><td class="field-body"><p class="first"><code class="xref tosca tosca-node_type docutils literal"><span class="pre">cloudify.nodes.Root</span></code></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Properties:</th><td class="field-body"><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">username:</th><td class="field-body">Desired username.</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</dd><a class="headerlink" href="#dice.components.mongo.User" title="Permalink to this definition">¶</a></dt>
+</dl>
+
+</div>
+<div class="section" id="firewall-rules">
+<h2>Firewall rules<a class="headerlink" href="#firewall-rules" title="Permalink to this headline">¶</a></h2>
+<dl class="node_type">
+<dt id="dice.firewall_rules.mongo.Common">
+<!--[dice.firewall_rules.mongo.Common]--><code class="descname">dice.firewall_rules.mongo.Common</code><dd><p>Firewall rules that should be used on VMs that host MongoDB.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parent:</th><td class="field-body"><a class="reference internal" href="host.html#dice.firewall_rules.Base" title="dice.firewall_rules.Base"><code class="xref tosca tosca-node_type docutils literal"><span class="pre">dice.firewall_rules.Base</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd><a class="headerlink" href="#dice.firewall_rules.mongo.Common" title="Permalink to this definition">¶</a></dt>
+</dl>
+
+</div>
+<div class="section" id="relationships">
+<h2>Relationships<a class="headerlink" href="#relationships" title="Permalink to this headline">¶</a></h2>
+<dl class="relationship">
+<dt id="dice.relationships.mongo.ComposedOf">
+<!--[dice.relationships.mongo.ComposedOf]--><code class="descname">dice.relationships.mongo.ComposedOf</code><dd><p>Adds <a class="reference internal" href="#dice.components.mongo.ConfigServer" title="dice.components.mongo.ConfigServer"><code class="xref tosca tosca-node_type docutils literal"><span class="pre">dice.components.mongo.ConfigServer</span></code></a>, <a class="reference internal" href="#dice.components.mongo.ReplicaServer" title="dice.components.mongo.ReplicaServer"><code class="xref tosca tosca-node_type docutils literal"><span class="pre">dice.components.mongo.ReplicaServer</span></code></a> or <a class="reference internal" href="#dice.components.mongo.ShardServer" title="dice.components.mongo.ShardServer"><code class="xref tosca tosca-node_type docutils literal"><span class="pre">dice.components.mongo.ShardServer</span></code></a> instances to the replica/shard.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parent:</th><td class="field-body"><code class="xref tosca tosca-relationship docutils literal"><span class="pre">cloudify.relationships.depends_on</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd><a class="headerlink" href="#dice.relationships.mongo.ComposedOf" title="Permalink to this definition">¶</a></dt>
+</dl>
+
+<dl class="relationship">
+<dt id="dice.relationships.mongo.ConfigurationStoredIn">
+<!--[dice.relationships.mongo.ConfigurationStoredIn]--><code class="descname">dice.relationships.mongo.ConfigurationStoredIn</code><dd><p>Connects MongoDB router to the configuration replica.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parent:</th><td class="field-body"><code class="xref tosca tosca-relationship docutils literal"><span class="pre">cloudify.relationships.depends_on</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd><a class="headerlink" href="#dice.relationships.mongo.ConfigurationStoredIn" title="Permalink to this definition">¶</a></dt>
+</dl>
+
+<dl class="relationship">
+<dt id="dice.relationships.mongo.HasRightsToUse">
+<!--[dice.relationships.mongo.HasRightsToUse]--><code class="descname">dice.relationships.mongo.HasRightsToUse</code><dd><p>Grants user permissions to use target database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parent:</th><td class="field-body"><code class="xref tosca tosca-relationship docutils literal"><span class="pre">cloudify.relationships.depends_on</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd><a class="headerlink" href="#dice.relationships.mongo.HasRightsToUse" title="Permalink to this definition">¶</a></dt>
+</dl>
+
+<dl class="relationship">
+<dt id="dice.relationships.mongo.RoutesTo">
+<!--[dice.relationships.mongo.RoutesTo]--><code class="descname">dice.relationships.mongo.RoutesTo</code><dd><p>Adds MongoDB shard to the router.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parent:</th><td class="field-body"><code class="xref tosca tosca-relationship docutils literal"><span class="pre">cloudify.relationships.depends_on</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd><a class="headerlink" href="#dice.relationships.mongo.RoutesTo" title="Permalink to this definition">¶</a></dt>
+</dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">dice-plugin</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../templates.html">Blueprint generation templates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developing.html">Developer information</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="aws.html">AWS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="base.html">Basic types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cassandra.html">Apache Cassandra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fco.html">FCO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hadoop.html">Apache Hadoop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="host.html">Hosts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kafka.html">Apache Kafka</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.html">Miscellaneous components that are useful on its own</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">MongoDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitoring.html">Monitoring support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="openstack.html">OpenStack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="platform.html">Basic types that are platform dependent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scylla.html">ScyllaDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spark.html">Apache Spark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="storm.html">Apache Storm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zookeeper.html">Apache Zookeeper</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../api.html">API Documentation</a><ul>
+      <li>Previous: <a href="misc.html" title="previous chapter">Miscellaneous components that are useful on its own</a></li>
+      <li>Next: <a href="monitoring.html" title="next chapter">Monitoring support</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, XLAB d.o.o..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/api/mongo.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
