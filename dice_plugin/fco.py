@@ -15,12 +15,34 @@
 
 from __future__ import absolute_import
 
+import contextlib
+import fcntl
 import itertools
 import json
+import os
+import tempfile
+import time
 
 from cloudify.exceptions import NonRecoverableError
 
 from fcoclient import Client, resources
+
+
+@contextlib.contextmanager
+def lock():
+    path = os.path.join(tempfile.gettempdir(), "dice-fco-server.lock")
+    fd = open(path, "w+")
+    while True:
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            break
+        except IOError:
+            time.sleep(1)
+
+    yield fd
+
+    fcntl.flock(fd, fcntl.LOCK_UN)
+    fd.close()
 
 
 def _get_client(config):
@@ -151,7 +173,8 @@ def create_server(ctx, auth, env):
     ctx.logger.debug("Server skeleton: {}".format(json.dumps(server)))
 
     client = _get_client(auth)
-    job = client.server.create(server, [env["agent_key_uuid"]])
+    with lock():
+        job = client.server.create(server, [env["agent_key_uuid"]])
     job = client.job.wait(job.uuid)
     _set_rt_prop(ctx, "server_uuid", job.monitored_item_uuid)
 
