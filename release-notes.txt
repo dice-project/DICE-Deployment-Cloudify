@@ -1,3 +1,9 @@
+New in 0.7.2:
+
+* FCO server creation process on FCO is now serialized. This is a work-around
+  for the FCO's random failures of server creation when 4 or more servers are
+  requested in a short time.
+
 New in 0.7.1:
 
 * Use of DICE Chef Repository v.0.1.13.
