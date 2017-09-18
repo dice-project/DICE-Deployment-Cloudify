@@ -37,7 +37,7 @@ def lock():
             fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
             break
         except IOError:
-            time.sleep(1)
+            time.sleep(10)
 
     yield fd
 
