@@ -125,7 +125,7 @@ node_types:
       chef_config:
         default:
           version: 12.18.31
-          chef_repo: https://github.com/dice-project/DICE-Chef-Repository/releases/download/0.1.13/chef-repository-0.1.13.tar.gz
+          chef_repo: https://github.com/dice-project/DICE-Chef-Repository/releases/download/0.1.14/chef-repository-0.1.14.tar.gz
           runlists:
             create:    { get_property: [ SELF, create_runlist    ] }
             configure: { get_property: [ SELF, configure_runlist ] }
