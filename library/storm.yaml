@@ -31,6 +31,7 @@ node_types:
         default:
           - recipe[storm::start_supervisor]
           - recipe[dmon_agent::storm]
+          - recipe[dmon_agent::start]
 
   dice.components.storm.Nimbus:
     derived_from: dice.components.storm.Base
@@ -39,6 +40,7 @@ node_types:
         default:
           - recipe[storm::start_nimbus]
           - recipe[dmon_agent::storm]
+          - recipe[dmon_agent::start]
 
   dice.components.storm.Topology:
     derived_from: dice.LogicalNode
@@ -104,6 +106,10 @@ node_types:
           - ip_prefix: 0.0.0.0/0
             protocol: tcp
             port: 3774
+            # DMon agent port (monitoring)
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
+            port: 5222
 
   dice.firewall_rules.storm.Worker:
     derived_from: dice.firewall_rules.Base
@@ -120,6 +126,10 @@ node_types:
           - ip_prefix: 0.0.0.0/0
             protocol: tcp
             port: 3774
+            # DMon agent port (monitoring)
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
+            port: 5222
 
 
 relationships:
