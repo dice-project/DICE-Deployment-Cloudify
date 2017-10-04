@@ -1,3 +1,7 @@
+New in 0.7.3:
+
+* DMon agent is now installed on nodes that are hosting Apache Spark components.
+
 New in 0.7.2:
 
 * FCO server creation process on FCO is now serialized. This is a work-around
