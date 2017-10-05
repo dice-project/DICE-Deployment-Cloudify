@@ -77,9 +77,7 @@ def process_library(library_path, chef_tar, package, lite):
 
     if not lite:
         log("Inserting Chef repo location ...")
-        chef_component = library["node_types"]["dice.chef.SoftwareComponent"]
-        chef_config = chef_component["properties"]["chef_config"]["default"]
-        chef_config["chef_repo"] = chef_tar
+        library["inputs"]["chef_repo"]["default"] = chef_tar
 
     log("Inserting plugin package location ...")
     library["plugins"]["dice"]["source"] = package

@@ -55,6 +55,14 @@ inputs:
       Caching proxy to use with Chef
     default: ""
 
+  chef_repo:
+    description: Location of the tarball that contains DICE Chef repository.
+    default: THIS SHOULD BE REPLACED IN RELEASED VERSION
+
+  chef_version:
+    description: Chef version that should be used when converging the node.
+    default: 12.18.31
+
 
 node_types:
 
@@ -120,20 +128,24 @@ node_types:
         description: >
           Chef attributes that are supplied to all runlists
         default: {}
+      chef_repo:
+        description: >
+          Location of the tarball that contains DICE Chef repository.
+        default: { get_input: chef_repo }
 
       # Derived types should leave this intact or bad things will happen
       chef_config:
         default:
-          version: 12.18.31
-          chef_repo: https://github.com/dice-project/DICE-Chef-Repository/releases/download/0.1.14/chef-repository-0.1.14.tar.gz
+          version:     { get_input: chef_version }
+          http_proxy:  { get_input: proxy        }
+          chef_repo:   { get_property: [ SELF, chef_repo         ] }
+          attributes:  { get_property: [ SELF, chef_attributes   ] }
           runlists:
             create:    { get_property: [ SELF, create_runlist    ] }
             configure: { get_property: [ SELF, configure_runlist ] }
             start:     { get_property: [ SELF, start_runlist     ] }
             stop:      { get_property: [ SELF, stop_runlist      ] }
             delete:    { get_property: [ SELF, delete_runlist    ] }
-          attributes: { get_property: [ SELF, chef_attributes ] }
-          http_proxy: { get_input: proxy }
     interfaces: *base_interfaces
 
 
