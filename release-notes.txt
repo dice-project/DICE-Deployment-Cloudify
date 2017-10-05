@@ -1,3 +1,7 @@
+New in 0.7.4:
+
+* Refactored dice.chef node types.
+
 New in 0.7.3:
 
 * DMon agent is now installed on nodes that are hosting Apache Spark components.
