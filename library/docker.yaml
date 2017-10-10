@@ -1,0 +1,137 @@
+# Docker
+# ======
+#
+# Types and relationships that make it possible to create Docker hosts and run
+# containers on them.
+
+
+node_types:
+
+  dice.components.docker.Server:
+    description: Docker instance that can host containers.
+    derived_from: dice.chef.SoftwareComponent
+    properties:
+      create_runlist:
+        default:
+          - recipe[apt::default]
+          - recipe[dice_common::default]
+          - recipe[docker::default]
+      configure_runlist:
+        default:
+          - recipe[docker::configure]
+      start_runlist:
+        default:
+          - recipe[docker::start]
+    attributes:
+      address:
+        description: >
+          Address that can be passed to clients when connecting to docker
+          server. Typically, this will be set to something like
+          tcp://1.2.3.4:2375.
+
+  dice.components.docker.Container:
+    description: Docker container that should be run.
+    derived_from: cloudify.nodes.Root
+    properties:
+      command:
+        description: Command that should be run in container.
+        required: false
+        default: null
+      image:
+        description: Name of the image that should be run.
+        required: true
+      tag:
+        description: Image tag that should be run.
+        required: true
+      port_mapping:
+        description: >
+          Map of container ports to host ports. If host port is set to
+          ``null``, random port will be used for binding. Actual runtime
+          mapping can be retrieved from ``port_mapping`` attribute. Typical
+          examples of mapping would be ``80/tcp: 9876``, which will bind port
+          80 from the container to host port 9876, and ``80/tcp: null``, which
+          will bind container port 80 to random ephemeral port on host.
+        required: false
+        default: {}
+      host:
+        description: >
+          Address of the docker host. If container is already connected to
+          docker node, this property can be left out.
+        required: false
+        default: null
+    attributes:
+      id:
+        description: Id of the container that has been created.
+      name:
+        description: Name of the container that has been created.
+      port_mapping:
+        description: >
+          Instantiated port mapping. Any ports that were allowed to be mapped
+          to random port in port_mapping property are in this mapping fixed to
+          specific port.
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        configure:
+          # We execute container creation in configure because host attribute
+          # gets set in preconfigure stage of relationship lifecycle.
+          implementation: dice.dice_plugin.tasks.docker.create
+          executor: central_deployment_agent
+          inputs:
+            host:    { default: { get_attribute: [ SELF, host         ] } }
+            command: { default: { get_property:  [ SELF, command      ] } }
+            image:   { default: { get_property:  [ SELF, image        ] } }
+            tag:     { default: { get_property:  [ SELF, tag          ] } }
+            ports:   { default: { get_property:  [ SELF, port_mapping ] } }
+        start:
+          implementation: dice.dice_plugin.tasks.docker.start
+          executor: central_deployment_agent
+          inputs:
+            host:         { default: { get_attribute: [ SELF, host ] } }
+            container_id: { default: { get_attribute: [ SELF, id   ] } }
+        stop:
+          implementation: dice.dice_plugin.tasks.docker.stop
+          executor: central_deployment_agent
+          inputs:
+            host:         { default: { get_attribute: [ SELF, host ] } }
+            container_id: { default: { get_attribute: [ SELF, id   ] } }
+        delete:
+          implementation: dice.dice_plugin.tasks.docker.delete
+          executor: central_deployment_agent
+          inputs:
+            host:         { default: { get_attribute: [ SELF, host ] } }
+            container_id: { default: { get_attribute: [ SELF, id   ] } }
+    requirements:
+      - dice.relationships.docker.HostedOn
+
+
+  # Firewall rules for docker
+  dice.firewall_rules.docker.Server:
+    derived_from: dice.firewall_rules.Base
+    description: >
+      Firewall rules for basic docker setup. Note that this only opens ports
+      for docker client-server communication, all other ports that containers
+      might use need to be opened separately.
+    properties:
+      rules:
+        default:
+          - ip_prefix: 0.0.0.0/0
+            protocol: tcp
+            port: 2375
+
+
+relationships:
+
+  dice.relationships.docker.HostedOn:
+    derived_from: cloudify.relationships.connected_to
+    description: >
+      Informs deployment services what docker instance will host current
+      container. If this relationship is not set, container needs to have its
+      host property set.
+    source_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        preconfigure:
+          implementation: dice.dice_plugin.tasks.base.copy_attr_from_target
+          executor: central_deployment_agent
+          inputs:
+            source_name: { default: host    }
+            target_name: { default: address }
