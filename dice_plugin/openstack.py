@@ -21,6 +21,8 @@ from functools import wraps
 
 from openstack import connection, profile
 
+from dice_plugin import utils
+
 
 def _get_client(auth):
     prof = profile.Profile()
@@ -199,3 +201,26 @@ def disconnect_virtual_ip(ctx, auth, env):
         ctx.source.instance.runtime_properties["openstack_id"],
         ctx.target.instance.runtime_properties["address"]
     )
+
+
+def create_image(ctx, auth, env):
+    ctx.logger.info("Downloading image data")
+    img_file = utils.obtain_resource(ctx, ctx.node.properties["image"])
+
+    ctx.logger.info("Creating image")
+    client = _get_client(auth)
+    with open(img_file, "rb") as fd:
+        image = client.image.upload_image(
+            container_format=ctx.node.properties["container_format"],
+            disk_format=ctx.node.properties["disk_format"],
+            data=fd, name=ctx.node.properties["name"]
+        )
+    _set_id(ctx, image.id)
+
+
+@skip_if_missing
+def delete_image(ctx, id, auth, env):
+    ctx.logger.info("Deleting image")
+    client = _get_client(auth)
+    client.image.delete_image(id)
+    _remove_id(ctx)

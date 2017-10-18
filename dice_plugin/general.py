@@ -57,7 +57,11 @@ def _run_command(ctx, properties, stage):
     config = utils.merge_dicts(file_config, user_config)
 
     platform = _get_platform(platform_name)
-    getattr(platform, stage)(ctx, config["auth"], config["env"])
+    try:
+        getattr(platform, stage)(ctx, config["auth"], config["env"])
+    except AttributeError:
+        msg = "Operation {} not implemented for {}"
+        raise NonRecoverableError(msg.format(stage, platform))
 
 
 def _run_instance_command(ctx, stage):
@@ -177,3 +181,15 @@ def disconnect_virtual_ip(ctx):
     ctx.logger.info(msg.format(ctx.source.instance.id, ctx.target.instance.id))
     _run_source_command(ctx, "disconnect_virtual_ip")
     ctx.logger.info("Host and virtual ip disconnected")
+
+
+@operation
+def create_image(ctx):
+    ctx.logger.info("Creating image")
+    _run_instance_command(ctx, "create_image")
+
+
+@operation
+def delete_image(ctx):
+    ctx.logger.info("Deleting image {}".format(ctx.instance.id))
+    _run_instance_command(ctx, "delete_image")

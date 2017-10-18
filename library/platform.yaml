@@ -89,6 +89,42 @@ node_types:
           implementation: dice.dice_plugin.general.validate_virtual_ip
           executor: central_deployment_agent
 
+  dice.RawImage:
+    derived_from: cloudify.nodes.Root
+    properties:
+      name:
+        description: >
+          The name that platform should assign to image
+        required: true
+      image:
+        description: >
+          Image source (URL or blueprint-relative path).
+        required: true
+      container_format:
+        description: Container format
+        required: false
+        default: bare
+      disk_format:
+        description: Disk format
+        required: false
+        default: qcow2
+      platform:
+        description: >
+          Specifies what platform will host blueprint.
+        required: true
+      platform_config:
+        description: Configuration for underlying platform.
+        type: dice.datatypes.PlatformConfig
+        required: false
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        create:
+          implementation: dice.dice_plugin.general.create_image
+          executor: central_deployment_agent
+        delete:
+          implementation: dice.dice_plugin.general.delete_image
+          executor: central_deployment_agent
+
   dice.hosts.Raw:
     derived_from: cloudify.nodes.Compute
     properties:
