@@ -24,7 +24,7 @@ associated output fragment.
        relationships:
          - type: dice.relationships.ProtectedBy
            target: ${STORM}_nimbus_firewall
-         - type: dice.relationships.IpAvailableFrom
+         - type: dice.relationships.IPAvailableFrom
            target: ${STORM}_virtual_ip
 
      ${STORM}_nimbus:
