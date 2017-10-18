@@ -5,7 +5,12 @@ DICE TOSCA library supports running docker containers as well as setting up
 simple docker host. For the moment, we assume that all images that will be
 used to create containers are public and hosted on docker hub.
 
-Minimal blueprint that deploys selected image would look like this:
+
+Existing docker host
+--------------------
+
+Minimal blueprint that deploys selected image to preexisting docker host would
+look like this:
 
 .. code-block:: yaml
 
@@ -22,7 +27,13 @@ Minimal blueprint that deploys selected image would look like this:
            81/tcp: null
 
 Note that we need to set ``host`` property on the container, since there is no
-relationships to connect container with docker host.
+relationships to connect container with docker host. It is also worth
+mentioning that docker daemon should listen on tcp socket in order to be able
+to serve as a host for DICE TOSCA library.
+
+
+Create docker host
+------------------
 
 In order to deploy docker host, we need to prepare blueprint, similar to this:
 
@@ -75,7 +86,9 @@ In order to deploy docker host, we need to prepare blueprint, similar to this:
            target: ${DOCKER}
 
 No ``host`` property needs to be set on the container in this case, since
-relationship will properly connect the container to docker host.
+relationship will properly connect the container to docker host. Installation
+procedure also takes care of configuring docker daemon properly, so no manual
+intervention is needed.
 
 
 Template variables
