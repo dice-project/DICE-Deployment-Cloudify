@@ -66,7 +66,7 @@ def process_library(library_path, chef_tar, package, lite):
 
     if lite:
         items = ("platform.yaml", "openstack.yaml", "fco.yaml", "aws.yaml",
-                 "docker")
+                 "docker", "osv.yaml")
     else:
         items = (f for f in os.listdir(library_path) if f.endswith(".yaml"))
     yamls = (os.path.join(library_path, f) for f in items)
