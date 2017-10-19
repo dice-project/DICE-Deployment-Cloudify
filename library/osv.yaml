@@ -1,7 +1,9 @@
 # OSv
 # ===
 #
-# Currently, only OpenStack supports running OSv applications.
+# Currently, only OpenStack supports uploading OSv images. All platforms
+# can create new OSv applications from images that are already uploaded (for
+# example, from AMIs on AWS).
 
 
 node_types:
@@ -16,6 +18,12 @@ node_types:
       instance_type:
         description: Instance type that should be used.
         required: true
+      use_existing:
+        description: >
+          Set this to true if OSv image is already present on platform and use
+          ID of the image in the image property.
+        required: false
+        default: false
     interfaces:
       cloudify.interfaces.lifecycle:
         create:

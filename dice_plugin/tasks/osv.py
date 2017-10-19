@@ -27,11 +27,12 @@ from dice_plugin import general
 
 @operation
 def create(ctx):
-    general.create_image(ctx)
-    rtprops = ctx.instance.runtime_properties
     props = ctx.node.properties
-    rtprops["_image"] = rtprops.copy()
-    dict.__setitem__(props, "image", rtprops["openstack_id"])
+    if not props["use_existing"]:
+        general.create_image(ctx)
+        rtprops = ctx.instance.runtime_properties
+        rtprops["_image"] = rtprops.copy()
+        dict.__setitem__(props, "image", rtprops["openstack_id"])
     general.create_server(ctx)
 
 
@@ -39,5 +40,6 @@ def create(ctx):
 def delete(ctx):
     general.delete_server(ctx)
     rtprops = ctx.instance.runtime_properties
-    rtprops.update(rtprops["_image"])
-    general.delete_image(ctx)
+    if "_image" in rtprops:
+        rtprops.update(rtprops["_image"])
+        general.delete_image(ctx)
