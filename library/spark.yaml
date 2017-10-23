@@ -25,10 +25,10 @@ node_types:
       configure_runlist:
         default:
           - recipe[spark::configure]
+          - recipe[dmon_agent::spark]
       start_runlist:
         default:
           - recipe[spark::start]
-          - recipe[dmon_agent::spark]
       stop_runlist:
         default:
           - recipe[dmon_agent::remove_node]
