@@ -18,6 +18,8 @@
 
 from __future__ import absolute_import
 
+import string
+
 from cloudify.decorators import operation
 
 import docker
@@ -27,19 +29,32 @@ def _get_docker_client(host):
     return docker.DockerClient(base_url=host)
 
 
+def _expand_command(command, rt_props):
+    formatter = string.Formatter()
+    values = {}
+    for item in formatter.parse(command):
+        if item[1]:
+            values[item[1]] = rt_props[item[1]]
+    return formatter.format(command, **values)
+
+
 @operation
 def create(ctx, command, host, image, tag, ports):
     """
     Create new docker container from image.
     """
+    rt_props = ctx.instance.runtime_properties
+
     ctx.logger.info("Creating new container from image {}.".format(image))
     client = _get_docker_client(host)
     client.images.pull(image, tag=tag)
     img = "{}:{}".format(image, tag)
-    container = client.containers.create(img, command=command, detach=True,
-                                         ports=ports)
-    ctx.instance.runtime_properties["id"] = container.id
-    ctx.instance.runtime_properties["name"] = container.name
+    container = client.containers.create(
+        img, detach=True, ports=ports,
+        command=_expand_command(command, rt_props)
+    )
+    rt_props["id"] = container.id
+    rt_props["name"] = container.name
 
 
 def _get_ports(container):

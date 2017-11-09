@@ -34,7 +34,11 @@ node_types:
     derived_from: cloudify.nodes.Root
     properties:
       command:
-        description: Command that should be run in container.
+        description: >
+          Command that should be run in container. Note that command is a
+          template that is expanded just before the container is started. All
+          occurences of ``{attr_name}`` in this template will be replaced by
+          the value of ``attr_name`` attribute.
         required: false
         default: null
       image:

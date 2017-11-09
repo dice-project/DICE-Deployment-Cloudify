@@ -22,6 +22,7 @@ look like this:
          host: ${DOCKER_HOST}
          image: ${IMAGE_NAME}
          tag: ${IMAGE_TAG}
+         command: ${COMMAND}
          port_mapping:
            80/tcp: 9876
            81/tcp: null
@@ -78,6 +79,7 @@ In order to deploy docker host, we need to prepare blueprint, similar to this:
        properties:
          image: ${IMAGE_NAME}
          tag: ${IMAGE_TAG}
+         command: ${COMMAND}
          port_mapping:
            80/tcp: 9876
            81/tcp: null
@@ -93,6 +95,9 @@ intervention is needed.
 
 Template variables
 ------------------
+
+  COMMAND
+    Command to execute inside the container.
 
   CONTAINER
     Name of the container we are creating.
