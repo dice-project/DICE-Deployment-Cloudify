@@ -43,11 +43,17 @@ def create(ctx, command, host, image, tag, ports):
     """
     Create new docker container from image.
     """
+    props = ctx.node.properties
     rt_props = ctx.instance.runtime_properties
 
     ctx.logger.info("Creating new container from image {}.".format(image))
     client = _get_docker_client(host)
-    client.images.pull(image, tag=tag)
+
+    kwargs = {}
+    if props["registry_auth"] is not None:
+        kwargs["auth_config"] = props["registry_auth"]
+
+    client.images.pull(image, tag=tag, **kwargs)
     img = "{}:{}".format(image, tag)
     container = client.containers.create(
         img, detach=True, ports=ports,

@@ -5,6 +5,15 @@
 # containers on them.
 
 
+data_types:
+
+  dice.datatypes.docker.RegistryAuth:
+    description: Authentication data for docker registry
+    properties:
+      username: { required: false }
+      password: { required: false }
+
+
 node_types:
 
   dice.components.docker.Server:
@@ -47,6 +56,12 @@ node_types:
       tag:
         description: Image tag that should be run.
         required: true
+      registry_auth:
+        description: >
+          Username and password for private registry. If image is from public
+          registry, this property can be omitted.
+        type: dice.datatypes.docker.RegistryAuth
+        required: false
       port_mapping:
         description: >
           Map of container ports to host ports. If host port is set to
