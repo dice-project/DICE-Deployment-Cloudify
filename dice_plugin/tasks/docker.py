@@ -30,6 +30,9 @@ def _get_docker_client(host):
 
 
 def _expand_command(command, rt_props):
+    if command is None:
+        return None
+
     formatter = string.Formatter()
     values = {}
     for item in formatter.parse(command):
