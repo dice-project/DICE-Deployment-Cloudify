@@ -1,3 +1,9 @@
+New in 0.7.5:
+
+* Add support for creating docker host and running docker containers.
+* Add support for running OSv applications.
+* Fix Apache Spark monitoring configuration.
+
 New in 0.7.4:
 
 * Refactored dice.chef node types.
