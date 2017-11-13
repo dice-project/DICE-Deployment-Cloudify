@@ -1,6 +1,13 @@
 # Apache Zookeeper
 # ================
 
+inputs:
+
+  zookeeper.tarball:
+    default: "http://www.apache.si/zookeeper/zookeeper-3.4.11/zookeeper-3.4.11.tar.gz"
+  zookeeper.checksum:
+    default: "f6bd68a1c8f7c13ea4c2c99f13082d0d71ac464ffaf3bf7a365879ab6ad10e84"
+
 node_types:
 
   dice.components.zookeeper.Server:
@@ -23,6 +30,9 @@ node_types:
           java:
             jdk_version:    { get_input: java_version }
             install_flavor: { get_input: java_flavor  }
+          zookeeper:
+            tarball:  { get_input: zookeeper.tarball  }
+            checksum: { get_input: zookeeper.checksum }
 
   dice.components.zookeeper.Quorum:
     derived_from: cloudify.nodes.Root
