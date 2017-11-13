@@ -29,8 +29,13 @@ node_types:
     interfaces:
       cloudify.interfaces.lifecycle:
         configure:
-          implementation: dice.dice_plugin.tasks.zookeeper.merge_config
+          implementation: dice.dice_plugin.tasks.base.collect_data_for_rel
           executor: central_deployment_agent
+          inputs:
+            rel_type: { default: dice.relationships.zookeeper.QuorumContains }
+            dest_attr: { default: zookeeper_quorum }
+            selector: { default: { attributes: { ip: ip } } }
+            container: { default: list }
 
   # Firewall rules
   dice.firewall_rules.zookeeper.Server:
@@ -53,13 +58,6 @@ relationships:
 
   dice.relationships.zookeeper.QuorumContains:
     derived_from: cloudify.relationships.depends_on
-    source_interfaces:
-      cloudify.interfaces.relationship_lifecycle:
-        preconfigure:
-          implementation: dice.dice_plugin.tasks.zookeeper.gather_config
-          executor: central_deployment_agent
-          max_retries: -1
-          retry_interval: 2
 
   dice.relationships.zookeeper.MemberOfQuorum:
     derived_from: cloudify.relationships.depends_on
@@ -72,11 +70,4 @@ relationships:
             target_name: { default: zookeeper_quorum }
 
   dice.relationships.zookeeper.ConnectedToZookeeperQuorum:
-    derived_from: cloudify.relationships.connected_to
-    source_interfaces:
-      cloudify.interfaces.relationship_lifecycle:
-        preconfigure:
-          implementation: dice.dice_plugin.tasks.base.copy_attr_from_target
-          inputs:
-            source_name: { default: zookeeper_quorum }
-            target_name: { default: zookeeper_quorum }
+    derived_from: dice.relationships.zookeeper.MemberOfQuorum
