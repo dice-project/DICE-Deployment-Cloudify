@@ -76,35 +76,19 @@ def download_resources(ctx, resource_pairs):
         ctx.instance.runtime_properties[destination_key] = location
 
 
-@operation
-def collect_fqdns_for_type(ctx, rel_type, prop_name):
-    msg = "Collecting FQDNs for nodes, related by {}"
-    ctx.logger.info(msg.format(rel_type))
-
-    fqdns = [rel.target.instance.runtime_properties["fqdn"]
-             for rel in ctx.instance.relationships
-             if rel_type == rel.type]
-
-    ctx.instance.runtime_properties[prop_name] = fqdns
-
-
 def _collect_item(source, item_mappings):
     return {v: source[k] for k, v in item_mappings.items()}
 
 
-@operation
-def collect_data_for_rel_type(ctx, rel_type, dest_attr, selector):
+def _collect_data(instance, rel_type, selector):
     invalid_selectors = set(selector.keys()) - {"attributes", "properties"}
     if len(invalid_selectors) > 0:
         raise NonRecoverableError(
             "Unknown selector(s): {}".format(invalid_selectors)
         )
 
-    msg = "Collecting data from nodes, related by {}"
-    ctx.logger.info(msg.format(rel_type))
-
     data = []
-    rels = (rel for rel in ctx.instance.relationships if rel.type == rel_type)
+    rels = (rel for rel in instance.relationships if rel.type == rel_type)
     for rel in rels:
         item = _collect_item(rel.target.node.properties,
                              selector.get("properties", {}))
@@ -112,4 +96,27 @@ def collect_data_for_rel_type(ctx, rel_type, dest_attr, selector):
                                   selector.get("attributes", {})))
         data.append(item)
 
-    ctx.instance.runtime_properties[dest_attr] = data
+    return data
+
+
+def _get_instance(ctx):
+    return ctx.instance if ctx.type == "node-instance" else ctx.source.instance
+
+
+@operation
+def collect_data_for_rel(ctx, rel_type, dest_attr, selector, container="dict"):
+    msg = "Collecting data from nodes, related by {}, into {}"
+    ctx.logger.info(msg.format(rel_type, dest_attr))
+
+    instance = _get_instance(ctx)
+    data = _collect_data(instance, rel_type, selector)
+
+    if container == "list":
+        if len(data[0]) != 1:
+            msg = "Cannot select more than one piece of data from targets"
+            raise NonRecoverableError(msg)
+        ctx.logger.info("Converting data to list")
+        data = [i.popitem()[1] for i in data]
+
+    rt_props = instance.runtime_properties
+    rt_props[dest_attr] = data

@@ -28,11 +28,13 @@ node_types:
     interfaces:
       cloudify.interfaces.lifecycle:
         create:
-          implementation: dice.dice_plugin.tasks.base.collect_fqdns_for_type
+          implementation: dice.dice_plugin.tasks.base.collect_data_for_rel
           executor: central_deployment_agent
           inputs:
             rel_type: { default: dice.relationships.mongo.ComposedOf }
-            prop_name: { default: members }
+            dest_attr: { default: members }
+            selector: { default: { attributes: { fqdn: fqdn } } }
+            container: { default: list }
 
   dice.components.mongo.Server:
     description: >
@@ -139,7 +141,7 @@ node_types:
     interfaces:
       cloudify.interfaces.lifecycle:
         create:
-          implementation: dice.dice_plugin.tasks.base.collect_data_for_rel_type
+          implementation: dice.dice_plugin.tasks.base.collect_data_for_rel
           executor: central_deployment_agent
           inputs:
             rel_type: { default: dice.relationships.mongo.HasRightsToUse }
