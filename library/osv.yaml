@@ -18,6 +18,9 @@ node_types:
       instance_type:
         description: Instance type that should be used.
         required: true
+      user_data:
+        description: User data (cloud init) to use when booting
+        default: null
       use_existing:
         description: >
           Set this to true if OSv image is already present on platform and use

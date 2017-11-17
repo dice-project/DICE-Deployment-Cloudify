@@ -19,6 +19,8 @@ from functools import wraps
 
 import boto3
 
+from dice_plugin import utils
+
 
 def _get_session(auth):
     return boto3.session.Session(**auth)
@@ -88,14 +90,20 @@ def create_server(ctx, auth, env):
     groups.append(env["default_security_group_id"])
 
     resource = _get_resource(auth)
-    server = resource.create_instances(
+    args = dict(
         ImageId=ctx.node.properties["image"],
         InstanceType=ctx.node.properties["instance_type"],
         SubnetId=env["subnet_id"],
         SecurityGroupIds=groups,
         KeyName=env["key_name"],
         MinCount=1, MaxCount=1
-    )[0]
+    )
+    if ctx.node.properties["user_data"]:
+        user_data = utils.expand_template(ctx.node.properties["user_data"],
+                                          ctx.instance.runtime_properties,
+                                          ctx.node.properties)
+        args["user_data"] = user_data
+    server = resource.create_instances(**args)[0]
     _set_id(ctx, server.id)
     server.create_tags(Tags=[dict(Key="Name", Value=name)])
 

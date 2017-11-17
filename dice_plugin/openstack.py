@@ -17,6 +17,8 @@
 
 from __future__ import absolute_import
 
+import base64
+
 from functools import wraps
 
 from openstack import connection, profile
@@ -82,7 +84,7 @@ def create_server(ctx, auth, env):
     ctx.logger.info("Creating server {}".format(name))
 
     client = _get_client(auth)
-    server = client.compute.create_server(
+    args = dict(
         name=name,
         image_id=ctx.node.properties["image"],
         flavor_id=ctx.node.properties["instance_type"],
@@ -92,6 +94,12 @@ def create_server(ctx, auth, env):
         security_groups=[dict(name=env["default_security_group_name"])],
         key_name=env["key_name"]
     )
+    if ctx.node.properties["user_data"]:
+        user_data = utils.expand_template(ctx.node.properties["user_data"],
+                                          ctx.instance.runtime_properties,
+                                          ctx.node.properties)
+        args["user_data"] = base64.b64encode(user_data)
+    server = client.compute.create_server(**args)
     _set_id(ctx, server.id)
 
     server = client.compute.wait_for_server(server)

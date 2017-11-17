@@ -140,6 +140,9 @@ node_types:
       disk_type:
         description: Disk type to be used.
         required: true
+      user_data:
+        description: User data (cloud init) to use when booting
+        default: null
       platform:
         description: >
           Specifies what platform will host blueprint.
