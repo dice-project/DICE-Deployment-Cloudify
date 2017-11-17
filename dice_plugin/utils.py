@@ -25,6 +25,7 @@ import os
 import copy
 import shutil
 import socket
+import string
 import tempfile
 import subprocess
 import collections
@@ -102,3 +103,19 @@ def get_monitoring_vars(monitoring):
         GRAPHITE_PORT=monitoring["logstash_graphite_address"].split(":")[1],
         COLLECTD_PORT=monitoring["logstash_udp_address"].split(":")[1],
     )
+
+
+def expand_template(template, mapping):
+    """
+    Exands placeholders in template using value is mapping dict. Entries from
+    mapping dict that are not part of the template are ignored.
+    """
+    if template is None:
+        return None
+
+    formatter = string.Formatter()
+    values = {}
+    for item in formatter.parse(template):
+        if item[1]:
+            values[item[1]] = mapping[item[1]]
+    return formatter.format(template, **values)

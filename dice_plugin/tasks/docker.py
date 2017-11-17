@@ -18,27 +18,15 @@
 
 from __future__ import absolute_import
 
-import string
-
 from cloudify.decorators import operation
 
 import docker
 
+from dice_plugin import utils
+
 
 def _get_docker_client(host):
     return docker.DockerClient(base_url=host)
-
-
-def _expand_command(command, rt_props):
-    if command is None:
-        return None
-
-    formatter = string.Formatter()
-    values = {}
-    for item in formatter.parse(command):
-        if item[1]:
-            values[item[1]] = rt_props[item[1]]
-    return formatter.format(command, **values)
 
 
 @operation
@@ -59,7 +47,7 @@ def create(ctx, command, host, image, tag, ports, environ, network):
     client.images.pull(image, tag=tag, **kwargs)
     img = "{}:{}".format(image, tag)
     args = dict(image=img, detach=True, ports=ports, environment=environ,
-                command=_expand_command(command, rt_props))
+                command=utils.expand_template(command, rt_props))
     if network is not None:
         args["network"] = network
     if props["monitoring"]["enabled"]:
