@@ -1,12 +1,45 @@
 # Apache Spark
 # ============
 
+inputs:
+
+  spark.1.tarball:
+    default: "http://d3kbcqa49mib13.cloudfront.net/spark-1.6.2-bin-hadoop2.6.tgz"
+  spark.1.checksum:
+    default: "bddeccec0fb8ac9491cbb4e320467e9263bcc1caf9b45466164f8ae2d97de710"
+
+  spark.2.tarball:
+    default: "http://d3kbcqa49mib13.cloudfront.net/spark-2.2.0-bin-hadoop2.7.tgz"
+  spark.2.checksum:
+    default: "97fd2cc58e08975d9c4e4ffa8d7f8012c0ac2792bcd9945ce2a561cf937aebcc"
+
+
 dsl_definitions:
 
-  - &default_chef_attributes
+  - &java_attributes
     java:
       jdk_version:    { get_input: java_version }
       install_flavor: { get_input: java_flavor  }
+
+  - &spark_tarballs
+    "1.6":
+      tarball:  { get_input: spark.1.tarball  }
+      checksum: { get_input: spark.1.checksum }
+    "2.0":
+      tarball:  { get_input: spark.2.tarball  }
+      checksum: { get_input: spark.2.checksum }
+
+  - &spark_master_attributes
+    <<: *java_attributes
+    spark:
+      <<: *spark_tarballs
+      type: master
+
+  - &spark_worker_attributes
+    <<: *java_attributes
+    spark:
+      <<: *spark_tarballs
+      type: worker
 
 
 node_types:
@@ -37,19 +70,13 @@ node_types:
     derived_from: dice.components.spark.Base
     properties:
       chef_attributes:
-        default:
-          <<: *default_chef_attributes
-          spark:
-            type: master
+        default: *spark_master_attributes
 
   dice.components.spark.Worker:
     derived_from: dice.components.spark.Base
     properties:
       chef_attributes:
-        default:
-          <<: *default_chef_attributes
-          spark:
-            type: worker
+        default: *spark_worker_attributes
 
   dice.components.spark.Application:
     derived_from: dice.LogicalNode
