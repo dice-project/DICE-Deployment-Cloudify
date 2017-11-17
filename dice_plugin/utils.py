@@ -105,14 +105,27 @@ def get_monitoring_vars(monitoring):
     )
 
 
-def expand_template(template, mapping):
+def _merge_mappings(*mappings):
     """
-    Exands placeholders in template using value is mapping dict. Entries from
+    Mappings are merged in reverse order. This ensures that running
+    _merge_mappings(*maps)["key"] will return the value from the leftmost map
+    that contains key.
+    """
+    mapping = {}
+    for m in reversed(mappings):
+        mapping.update(m)
+    return mapping
+
+
+def expand_template(template, *mappings):
+    """
+    Exands placeholders in template using value in mapping dict. Entries from
     mapping dict that are not part of the template are ignored.
     """
     if template is None:
         return None
 
+    mapping = _merge_mappings(*mappings)
     formatter = string.Formatter()
     values = {}
     for item in formatter.parse(template):

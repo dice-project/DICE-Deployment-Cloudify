@@ -47,7 +47,7 @@ def create(ctx, command, host, image, tag, ports, environ, network):
     client.images.pull(image, tag=tag, **kwargs)
     img = "{}:{}".format(image, tag)
     args = dict(image=img, detach=True, ports=ports, environment=environ,
-                command=utils.expand_template(command, rt_props))
+                command=utils.expand_template(command, rt_props, props))
     if network is not None:
         args["network"] = network
     if props["monitoring"]["enabled"]:
