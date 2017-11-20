@@ -13,7 +13,7 @@ node_types:
     # for doing this is to bypass Cloudify agent installation that is done by
     # default on types that derive from Compute node. Other reason is the fact
     # that we cannot remove attributes of parent type when deriving new type.
-    derived_from: dice.RawImage
+    derived_from: dice.images.Base
     properties:
       instance_type:
         description: Instance type that should be used.
@@ -29,7 +29,7 @@ node_types:
         default: false
     interfaces:
       cloudify.interfaces.lifecycle:
-        create:
+        configure:
           implementation: dice.dice_plugin.tasks.osv.create
           executor: central_deployment_agent
         start:

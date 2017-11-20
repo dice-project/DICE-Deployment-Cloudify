@@ -119,3 +119,9 @@ node_types:
     properties:
       instance_type: { default: { get_input: large_instance_type } }
       disk_type:     { default: { get_input: large_disk_type     } }
+
+  # Base image
+  dice.images.Base:
+    derived_from: dice.images.Raw
+    properties:
+      platform: { default: { get_input: platform } }

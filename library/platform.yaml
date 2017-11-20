@@ -89,7 +89,7 @@ node_types:
           implementation: dice.dice_plugin.general.validate_virtual_ip
           executor: central_deployment_agent
 
-  dice.RawImage:
+  dice.images.Raw:
     derived_from: cloudify.nodes.Root
     properties:
       name:
@@ -118,7 +118,7 @@ node_types:
         required: false
     interfaces:
       cloudify.interfaces.lifecycle:
-        create:
+        configure:
           implementation: dice.dice_plugin.general.create_image
           executor: central_deployment_agent
         delete:
