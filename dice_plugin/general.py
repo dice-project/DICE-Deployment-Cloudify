@@ -58,10 +58,11 @@ def _run_command(ctx, properties, stage):
 
     platform = _get_platform(platform_name)
     try:
-        getattr(platform, stage)(ctx, config["auth"], config["env"])
+        func = getattr(platform, stage)
     except AttributeError:
         msg = "Operation {} not implemented for {}"
         raise NonRecoverableError(msg.format(stage, platform))
+    func(ctx, config["auth"], config["env"])
 
 
 def _run_instance_command(ctx, stage):
