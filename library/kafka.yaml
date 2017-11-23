@@ -1,6 +1,14 @@
 # Apache Kafka
 # ============
 
+inputs:
+
+  kafka.tarball:
+    default: "http://www.apache.si/kafka/1.0.0/kafka_2.11-1.0.0.tgz"
+  kafka.checksum:
+    default: "b5b535f8db770cda8513e391917d0f5a35ef24c537ef3d29dcd9aa287da529f5"
+
+
 node_types:
 
   dice.components.kafka.Broker:
@@ -23,6 +31,9 @@ node_types:
           java:
             jdk_version:    { get_input: java_version }
             install_flavor: { get_input: java_flavor  }
+          kafka:
+            tarball:  { get_input: kafka.tarball  }
+            checksum: { get_input: kafka.checksum }
 
   # Firewall rules
   dice.firewall_rules.kafka.Broker:
