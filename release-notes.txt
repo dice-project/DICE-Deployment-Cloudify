@@ -1,3 +1,8 @@
+New in 0.7.6:
+
+* Remove retry hacks around multi-node data gathering.
+* Expose Apache Zookeeper source in TOSCA library.
+
 New in 0.7.5:
 
 * Add support for creating docker host and running docker containers.
