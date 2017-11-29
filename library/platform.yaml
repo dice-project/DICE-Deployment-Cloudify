@@ -92,10 +92,6 @@ node_types:
   dice.images.Raw:
     derived_from: cloudify.nodes.Root
     properties:
-      name:
-        description: >
-          The name that platform should assign to image
-        required: true
       image:
         description: >
           Image source (URL or blueprint-relative path).

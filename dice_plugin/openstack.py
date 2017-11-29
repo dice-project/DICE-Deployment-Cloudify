@@ -220,8 +220,7 @@ def create_image(ctx, auth, env):
     with open(img_file, "rb") as fd:
         image = client.image.upload_image(
             container_format=ctx.node.properties["container_format"],
-            disk_format=ctx.node.properties["disk_format"],
-            data=fd, name=ctx.node.properties["name"]
+            disk_format=ctx.node.properties["disk_format"], data=fd,
         )
     _set_id(ctx, image.id)
 
