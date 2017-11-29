@@ -62,6 +62,9 @@ def create(ctx, command, host, image, tag, ports, environ, network):
                 command=_expand_command(command, rt_props))
     if network is not None:
         args["network"] = network
+    if props["monitoring"]["enabled"]:
+        mon_vars = utils.get_monitoring_vars(props["monitoring"])
+        args["environment"].update(mon_vars)
     container = client.containers.create(**args)
     rt_props["id"] = container.id
     rt_props["name"] = container.name

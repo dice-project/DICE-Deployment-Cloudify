@@ -89,3 +89,16 @@ def merge_dicts(base, update):
         else:
             result[k] = update[k]
     return result
+
+
+def get_monitoring_vars(monitoring):
+    """
+    Extracts environment variables that applications can use to register with
+    DMon from monitoring configuration.
+    """
+    return dict(
+        DMON_HOST=monitoring["dmon_address"].split(":")[0],
+        DMON_PORT=monitoring["dmon_address"].split(":")[1],
+        GRAPHITE_PORT=monitoring["logstash_graphite_address"].split(":")[1],
+        COLLECTD_PORT=monitoring["logstash_udp_address"].split(":")[1],
+    )

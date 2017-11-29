@@ -88,6 +88,8 @@ node_types:
           docker node, this property can be left out.
         required: false
         default: null
+      monitoring:
+        type: dice.types.MonitoringConfig
     attributes:
       id:
         description: Id of the container that has been created.
