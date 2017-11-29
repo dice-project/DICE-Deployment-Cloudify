@@ -27,6 +27,8 @@ node_types:
           ID of the image in the image property.
         required: false
         default: false
+      monitoring:
+        type: dice.types.MonitoringConfig
     interfaces:
       cloudify.interfaces.lifecycle:
         configure:

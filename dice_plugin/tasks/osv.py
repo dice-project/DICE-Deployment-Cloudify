@@ -17,13 +17,35 @@ from __future__ import absolute_import
 
 from cloudify.decorators import operation
 
-from dice_plugin import general
+import yaml
+
+from dice_plugin import general, utils
 
 
 # This module contains some ugly hacks around the inflexibility of cloudify.
 # It would be possible to refactor the core and avoid this monstrosity, but
 # since we may need to migrate to aria soon-ish, we will do the cleanup at a
 # later time.
+
+def _inject_monitoring_vars(props):
+    if not props["monitoring"]["enabled"]:
+        return
+
+    user_data = props.get("user_data", "")
+    data = {} if user_data == "" else yaml.safe_load(user_data)
+
+    vars = utils.get_monitoring_vars(props["monitoring"])
+    cmds = [dict(POST="/env/{}".format(name), val=value)
+            for name, value in vars.items()]
+
+    # Variables are added at the start of the run list. This ensures that all
+    # commands that follow have access to their values.
+    cmds.extend(data.get("run", []))
+    data["run"] = cmds
+
+    dict.__setitem__(props, "user_data",
+                     yaml.safe_dump(data, default_flow_style=False))
+
 
 @operation
 def create(ctx):
@@ -33,6 +55,7 @@ def create(ctx):
         rtprops = ctx.instance.runtime_properties
         rtprops["_image"] = rtprops.copy()
         dict.__setitem__(props, "image", rtprops["openstack_id"])
+    _inject_monitoring_vars(props)
     general.create_server(ctx)
 
 
