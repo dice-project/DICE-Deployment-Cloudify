@@ -47,3 +47,18 @@ node_types:
         delete:
           implementation: dice.dice_plugin.tasks.osv.delete
           executor: central_deployment_agent
+
+  dice.components.osv.Application.Small:
+    derived_from: dice.components.osv.Application
+    properties:
+      instance_type: { default: { get_input: small_instance_type } }
+
+  dice.components.osv.Application.Medium:
+    derived_from: dice.components.osv.Application
+    properties:
+      instance_type: { default: { get_input: medium_instance_type } }
+
+  dice.components.osv.Application.Large:
+    derived_from: dice.components.osv.Application
+    properties:
+      instance_type: { default: { get_input: large_instance_type } }
