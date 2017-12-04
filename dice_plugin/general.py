@@ -50,7 +50,7 @@ def _load_plugin_configuration():
         return {}
 
 
-def _run_command(ctx, properties, stage):
+def _run_command(ctx, properties, stage, **kwargs):
     platform_name = properties["platform"]
     file_config = _load_plugin_configuration().get(platform_name, {})
     user_config = properties.get("platform_config", {}).get(platform_name, {})
@@ -62,21 +62,23 @@ def _run_command(ctx, properties, stage):
     except AttributeError:
         msg = "Operation {} not implemented for {}"
         raise NonRecoverableError(msg.format(stage, platform))
-    func(ctx, config["auth"], config["env"])
+    func(ctx, config["auth"], config["env"], **kwargs)
 
 
-def _run_instance_command(ctx, stage):
-    _run_command(ctx, ctx.node.properties, stage)
+def _run_instance_command(ctx, stage, **kwargs):
+    _run_command(ctx, ctx.node.properties, stage, **kwargs)
 
 
-def _run_source_command(ctx, stage):
-    _run_command(ctx, ctx.source.node.properties, stage)
+def _run_source_command(ctx, stage, **kwargs):
+    _run_command(ctx, ctx.source.node.properties, stage, **kwargs)
 
 
 @operation
-def create_server(ctx):
+def create_server(ctx, image, instance_type, disk_type, user_data):
     ctx.logger.info("Creating host instance {}".format(ctx.instance.id))
-    _run_instance_command(ctx, "create_server")
+    _run_instance_command(ctx, "create_server",
+                          image=image, instance_type=instance_type,
+                          disk_type=disk_type, user_data=user_data)
     ctx.logger.info("Host instance {} created".format(ctx.instance.id))
 
 
@@ -185,9 +187,9 @@ def disconnect_virtual_ip(ctx):
 
 
 @operation
-def create_image(ctx):
+def create_image(ctx, image):
     ctx.logger.info("Creating image")
-    _run_instance_command(ctx, "create_image")
+    _run_instance_command(ctx, "create_image", image=image)
 
 
 @operation

@@ -49,8 +49,8 @@ def _get_client(config):
     return Client(**config)
 
 
-def _get_disk_skeleton(ctx, env):
-    disk_type = ctx.node.properties["disk_type"]
+def _get_disk_skeleton(ctx, env, kwargs):
+    disk_type = kwargs["disk_type"]
     disk_name = "{}-{}-disk".format(ctx.deployment.id, ctx.instance.id)
     return resources.disk.Disk(disk_type, disk_name, 0, env["vdc_uuid"])
 
@@ -60,10 +60,10 @@ def _get_nic_skeleton(ctx, env):
     return resources.nic.Nic(env["network_uuid"], nic_name)
 
 
-def _get_server_skeleton(ctx, env, disk, nic):
-    server_type = ctx.node.properties["instance_type"]
+def _get_server_skeleton(ctx, env, disk, nic, kwargs):
+    server_type = kwargs["instance_type"]
     server_name = "{}-{}-server".format(ctx.deployment.id, ctx.instance.id)
-    server_image = ctx.node.properties["image"]
+    server_image = kwargs["image"]
     return resources.server.Server(server_type, server_name, env["vdc_uuid"],
                                    disks=[disk], nics=[nic],
                                    imageUUID=server_image)
@@ -163,12 +163,12 @@ def _transform_rule(rule):
     } for port in range(from_port, to_port + 1))
 
 
-def create_server(ctx, auth, env):
+def create_server(ctx, auth, env, **kwargs):
     ctx.logger.info("Creating FCO instance")
 
-    disk = _get_disk_skeleton(ctx, env)
+    disk = _get_disk_skeleton(ctx, env, kwargs)
     nic = _get_nic_skeleton(ctx, env)
-    server = _get_server_skeleton(ctx, env, disk, nic)
+    server = _get_server_skeleton(ctx, env, disk, nic, kwargs)
     ctx.logger.debug("Server skeleton: {}".format(json.dumps(server)))
 
     client = _get_client(auth)

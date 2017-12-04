@@ -20,7 +20,7 @@ node_types:
         required: true
       user_data:
         description: User data (cloud init) to use when booting
-        default: null
+        default: ""
       use_existing:
         description: >
           Set this to true if OSv image is already present on platform and use
@@ -34,6 +34,10 @@ node_types:
         configure:
           implementation: dice.dice_plugin.tasks.osv.create
           executor: central_deployment_agent
+          inputs:
+            image:         { default: { get_property: [ SELF, image         ] } }
+            instance_type: { default: { get_property: [ SELF, instance_type ] } }
+            user_data:     { default: { get_property: [ SELF, user_data     ] } }
         start:
           implementation: dice.dice_plugin.general.start_server
           executor: central_deployment_agent

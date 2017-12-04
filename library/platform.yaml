@@ -117,6 +117,8 @@ node_types:
         configure:
           implementation: dice.dice_plugin.general.create_image
           executor: central_deployment_agent
+          inputs:
+            image: { default: { get_property: [ SELF, image ] } }
         delete:
           implementation: dice.dice_plugin.general.delete_image
           executor: central_deployment_agent
@@ -138,7 +140,7 @@ node_types:
         required: true
       user_data:
         description: User data (cloud init) to use when booting
-        default: null
+        default: ""
       platform:
         description: >
           Specifies what platform will host blueprint.
@@ -159,6 +161,11 @@ node_types:
         create:
           implementation: dice.dice_plugin.general.create_server
           executor: central_deployment_agent
+          inputs:
+            image:         { default: { get_property: [ SELF, image         ] } }
+            instance_type: { default: { get_property: [ SELF, instance_type ] } }
+            disk_type:     { default: { get_property: [ SELF, disk_type     ] } }
+            user_data:     { default: { get_property: [ SELF, user_data     ] } }
         start:
           implementation: dice.dice_plugin.general.start_server
           executor: central_deployment_agent

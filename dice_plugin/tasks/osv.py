@@ -27,11 +27,10 @@ from dice_plugin import general, utils
 # since we may need to migrate to aria soon-ish, we will do the cleanup at a
 # later time.
 
-def _inject_monitoring_vars(props):
+def _inject_monitoring_vars(props, user_data):
     if not props["monitoring"]["enabled"]:
-        return
+        return user_data
 
-    user_data = props.get("user_data", "")
     data = {} if user_data == "" else yaml.safe_load(user_data)
 
     vars = utils.get_monitoring_vars(props["monitoring"])
@@ -43,20 +42,22 @@ def _inject_monitoring_vars(props):
     cmds.extend(data.get("run", []))
     data["run"] = cmds
 
-    dict.__setitem__(props, "user_data",
-                     yaml.safe_dump(data, default_flow_style=False))
+    return yaml.safe_dump(data, default_flow_style=False)
 
 
 @operation
-def create(ctx):
+def create(ctx, image, instance_type, user_data):
     props = ctx.node.properties
     if not props["use_existing"]:
-        general.create_image(ctx)
+        general.create_image(ctx, image)
         rtprops = ctx.instance.runtime_properties
         rtprops["_image"] = rtprops.copy()
-        dict.__setitem__(props, "image", rtprops["openstack_id"])
-    _inject_monitoring_vars(props)
-    general.create_server(ctx)
+        image = rtprops["openstack_id"]
+    user_data = _inject_monitoring_vars(props, user_data)
+    # disk_type is set to dummy because OSv does not support FCO and this
+    # platform is the only one that would require meaningful value here.
+    general.create_server(ctx, image=image, instance_type=instance_type,
+                          disk_type="dummy", user_data=user_data)
 
 
 @operation

@@ -79,7 +79,7 @@ def skip_if_missing(f):
     return wrapper
 
 
-def create_server(ctx, auth, env):
+def create_server(ctx, auth, env, **kwargs):
     name = _get_resource_name(ctx)
     ctx.logger.info("Creating server {}".format(name))
 
@@ -91,15 +91,15 @@ def create_server(ctx, auth, env):
 
     resource = _get_resource(auth)
     args = dict(
-        ImageId=ctx.node.properties["image"],
-        InstanceType=ctx.node.properties["instance_type"],
+        ImageId=kwargs["image"],
+        InstanceType=kwargs["instance_type"],
         SubnetId=env["subnet_id"],
         SecurityGroupIds=groups,
         KeyName=env["key_name"],
         MinCount=1, MaxCount=1
     )
-    if ctx.node.properties["user_data"]:
-        user_data = utils.expand_template(ctx.node.properties["user_data"],
+    if kwargs["user_data"]:
+        user_data = utils.expand_template(kwargs["user_data"],
                                           ctx.instance.runtime_properties,
                                           ctx.node.properties)
         args["user_data"] = user_data

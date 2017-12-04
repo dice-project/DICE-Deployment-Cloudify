@@ -79,23 +79,23 @@ def skip_if_missing(f):
     return wrapper
 
 
-def create_server(ctx, auth, env):
+def create_server(ctx, auth, env, **kwargs):
     name = _get_resource_name(ctx)
     ctx.logger.info("Creating server {}".format(name))
 
     client = _get_client(auth)
     args = dict(
         name=name,
-        image_id=ctx.node.properties["image"],
-        flavor_id=ctx.node.properties["instance_type"],
+        image_id=kwargs["image"],
+        flavor_id=kwargs["instance_type"],
         networks=[
             {"uuid": env["internal_network_id"]}
         ],
         security_groups=[dict(name=env["default_security_group_name"])],
         key_name=env["key_name"]
     )
-    if ctx.node.properties["user_data"]:
-        user_data = utils.expand_template(ctx.node.properties["user_data"],
+    if kwargs["user_data"]:
+        user_data = utils.expand_template(kwargs["user_data"],
                                           ctx.instance.runtime_properties,
                                           ctx.node.properties)
         args["user_data"] = base64.b64encode(user_data)
@@ -211,18 +211,18 @@ def disconnect_virtual_ip(ctx, auth, env):
     )
 
 
-def create_image(ctx, auth, env):
+def create_image(ctx, auth, env, image):
     ctx.logger.info("Downloading image data")
-    img_file = utils.obtain_resource(ctx, ctx.node.properties["image"])
+    img_file = utils.obtain_resource(ctx, image)
 
     ctx.logger.info("Creating image")
     client = _get_client(auth)
     with open(img_file, "rb") as fd:
-        image = client.image.upload_image(
+        img = client.image.upload_image(
             container_format=ctx.node.properties["container_format"],
             disk_format=ctx.node.properties["disk_format"], data=fd,
         )
-    _set_id(ctx, image.id)
+    _set_id(ctx, img.id)
 
 
 @skip_if_missing
