@@ -42,7 +42,7 @@ def _expand_command(command, rt_props):
 
 
 @operation
-def create(ctx, command, host, image, tag, ports):
+def create(ctx, command, host, image, tag, ports, environ):
     """
     Create new docker container from image.
     """
@@ -59,7 +59,7 @@ def create(ctx, command, host, image, tag, ports):
     client.images.pull(image, tag=tag, **kwargs)
     img = "{}:{}".format(image, tag)
     container = client.containers.create(
-        img, detach=True, ports=ports,
+        img, detach=True, ports=ports, environment=environ,
         command=_expand_command(command, rt_props)
     )
     rt_props["id"] = container.id

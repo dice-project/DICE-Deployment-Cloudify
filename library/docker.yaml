@@ -72,6 +72,12 @@ node_types:
           will bind container port 80 to random ephemeral port on host.
         required: false
         default: {}
+      environment:
+        description: >
+          Map of environment variables and associated values that are passed
+          to the container.
+        required: false
+        default: {}
       host:
         description: >
           Address of the docker host. If container is already connected to
@@ -101,6 +107,7 @@ node_types:
             image:   { default: { get_property:  [ SELF, image        ] } }
             tag:     { default: { get_property:  [ SELF, tag          ] } }
             ports:   { default: { get_property:  [ SELF, port_mapping ] } }
+            environ: { default: { get_property:  [ SELF, environment  ] } }
         start:
           implementation: dice.dice_plugin.tasks.docker.start
           executor: central_deployment_agent
