@@ -1,3 +1,7 @@
+New in 0.7.7:
+
+* Add support for passing environment variables to docker container.
+
 New in 0.7.6:
 
 * Remove retry hacks around multi-node data gathering.
