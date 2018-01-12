@@ -78,6 +78,10 @@ node_types:
           to the container.
         required: false
         default: {}
+      network:
+        description: Network that container should be attached to.
+        required: false
+        default: null
       host:
         description: >
           Address of the docker host. If container is already connected to
@@ -97,8 +101,8 @@ node_types:
     interfaces:
       cloudify.interfaces.lifecycle:
         configure:
-          # We execute container creation in configure because host attribute
-          # gets set in preconfigure stage of relationship lifecycle.
+          # We execute container creation in configure because some attributes
+          # get set in preconfigure stage of relationship lifecycle.
           implementation: dice.dice_plugin.tasks.docker.create
           executor: central_deployment_agent
           inputs:
@@ -108,6 +112,7 @@ node_types:
             tag:     { default: { get_property:  [ SELF, tag          ] } }
             ports:   { default: { get_property:  [ SELF, port_mapping ] } }
             environ: { default: { get_property:  [ SELF, environment  ] } }
+            network: { default: { get_attribute: [ SELF, network      ] } }
         start:
           implementation: dice.dice_plugin.tasks.docker.start
           executor: central_deployment_agent
