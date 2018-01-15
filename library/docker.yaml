@@ -208,3 +208,17 @@ relationships:
           executor: central_deployment_agent
           inputs:
             host: { default: { get_attribute: [ TARGET, address ] } }
+
+  dice.relationships.docker.AttachedToNetwork:
+    derived_from: cloudify.relationships.connected_to
+    description: >
+      Informs deployment services which network should be used when creating
+      container. If this relationship is not set, container will be attached
+      to the default network.
+    source_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
+        preconfigure:
+          implementation: dice.dice_plugin.tasks.base.set_attributes
+          executor: central_deployment_agent
+          inputs:
+            network: { default: { get_attribute: [ TARGET, name ] } }
