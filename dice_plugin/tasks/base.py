@@ -28,11 +28,10 @@ from dice_plugin import utils
 
 
 @operation
-def copy_attr_from_target(ctx, source_name, target_name):
-    msg = "Copying target attribute '{}' to source attribute '{}'"
-    ctx.logger.info(msg.format(target_name, source_name))
-    prop = ctx.target.instance.runtime_properties[target_name]
-    ctx.source.instance.runtime_properties[source_name] = prop
+def set_attributes(ctx, **attrs):
+    ctx.logger.info("Updating instance attributes.")
+    instance = _get_instance(ctx)
+    instance.runtime_properties.update(attrs)
 
 
 @operation

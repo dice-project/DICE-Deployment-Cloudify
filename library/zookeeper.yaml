@@ -74,10 +74,10 @@ relationships:
     source_interfaces:
       cloudify.interfaces.relationship_lifecycle:
         preconfigure:
-          implementation: dice.dice_plugin.tasks.base.copy_attr_from_target
+          implementation: dice.dice_plugin.tasks.base.set_attributes
           inputs:
-            source_name: { default: zookeeper_quorum }
-            target_name: { default: zookeeper_quorum }
+            zookeeper_quorum:
+              default: { get_attribute: [ TARGET, zookeeper_quorum ] }
 
   dice.relationships.zookeeper.ConnectedToZookeeperQuorum:
     derived_from: dice.relationships.zookeeper.MemberOfQuorum
