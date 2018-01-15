@@ -106,3 +106,26 @@ def delete(ctx, host, container_id):
     if container_id is not None:
         ctx.logger.info("Removing container {}.".format(container_id))
         _get_docker_client(host).containers.get(container_id).remove()
+
+
+@operation
+def create_net(ctx, name, driver, attachable, host):
+    """
+    Create new docker network.
+    """
+    rt_props = ctx.instance.runtime_properties
+
+    ctx.logger.info("Creating new network")
+    client = _get_docker_client(host)
+    net = client.networks.create(name, driver=driver, attachable=attachable)
+    rt_props["id"] = net.id
+
+
+@operation
+def delete_net(ctx, host, network_id):
+    """
+    Remove selected docker network.
+    """
+    if network_id is not None:
+        ctx.logger.info("Removing network {}.".format(network_id))
+        _get_docker_client(host).networks.get(network_id).remove()

@@ -134,6 +134,49 @@ node_types:
     requirements:
       - dice.relationships.docker.HostedOn
 
+  dice.components.docker.Network:
+    description: Docker network.
+    derived_from: cloudify.nodes.Root
+    properties:
+      name:
+        description: Name of the network.
+        required: true
+      driver:
+        description: Driver that should be used for new network.
+        required: false
+        default: bridge
+      attachable:
+        description: Create attachable network.
+        required: false
+        default: true
+      host:
+        description: >
+          Address of the docker host. If network is already connected to
+          docker node, this property can be left out.
+        required: false
+        default: null
+    attributes:
+      id:
+        description: Id of the network that has been created.
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        create:
+          implementation: dice.dice_plugin.tasks.docker.create_net
+          executor: central_deployment_agent
+          inputs:
+            name:       { default: { get_property:  [ SELF, name       ] } }
+            driver:     { default: { get_property:  [ SELF, driver     ] } }
+            attachable: { default: { get_property:  [ SELF, attachable ] } }
+            host:       { default: { get_attribute: [ SELF, host       ] } }
+        delete:
+          implementation: dice.dice_plugin.tasks.docker.delete_net
+          executor: central_deployment_agent
+          inputs:
+            host:       { default: { get_attribute: [ SELF, host ] } }
+            network_id: { default: { get_attribute: [ SELF, id   ] } }
+    requirements:
+      - dice.relationships.docker.HostedOn
+
 
   # Firewall rules for docker
   dice.firewall_rules.docker.Server:
