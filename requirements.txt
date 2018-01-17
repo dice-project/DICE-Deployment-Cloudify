@@ -1,7 +1,7 @@
 cloudify-plugins-common>=3.3.1 # Apache-2.0
 requests # Apache-2.0
 pyyaml # MIT
-openstacksdk # Apache-2.0
+openstacksdk==0.9.19 # Apache-2.0
 fcoclient # Apache-2.0
 boto3 # Apache-2.0
 docker # Apache-2.0
