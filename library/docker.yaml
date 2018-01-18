@@ -162,7 +162,7 @@ node_types:
         description: Id of the network that has been created.
     interfaces:
       cloudify.interfaces.lifecycle:
-        create:
+        configure:
           implementation: dice.dice_plugin.tasks.docker.create_net
           executor: central_deployment_agent
           inputs:
