@@ -1,3 +1,7 @@
+New in 0.7.11:
+
+* Allow firewall ports to be specified as strings in addition to numbers.
+
 New in 0.7.10:
 
 * Add monitoring support to docker containers.
