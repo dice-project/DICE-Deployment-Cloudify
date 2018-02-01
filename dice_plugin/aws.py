@@ -50,9 +50,9 @@ def _remove_id(ctx):
 
 def _transform_rule(rule):
     if "port" in rule:
-        from_port, to_port = rule["port"], rule["port"]
+        from_port, to_port = int(rule["port"]), int(rule["port"])
     else:
-        from_port, to_port = rule["from_port"], rule["to_port"]
+        from_port, to_port = int(rule["from_port"]), int(rule["to_port"])
     return dict(
         IpProtocol=rule["protocol"],
         FromPort=from_port,

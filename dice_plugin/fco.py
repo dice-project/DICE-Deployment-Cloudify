@@ -144,10 +144,9 @@ def _transform_rule(rule):
     address, mask = rule["ip_prefix"].split("/")
     mask = int(mask)
     if "port" in rule:
-        from_port, to_port = rule["port"], rule["port"]
+        from_port, to_port = int(rule["port"]), int(rule["port"])
     else:
-        from_port = rule["from_port"]
-        to_port = rule["to_port"]
+        from_port, to_port = int(rule["from_port"]),int(rule["to_port"])
     protocol = rule["protocol"].upper()
 
     return ({
