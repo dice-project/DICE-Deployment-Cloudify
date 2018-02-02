@@ -1,3 +1,10 @@
+New in 0.8.0:
+
+* Add support for passing user data to new VM instances.
+* Add monitoring support to OSv applications.
+* Clean up the OSv and Image node types.
+* Add predefined OSv application sizes.
+
 New in 0.7.11:
 
 * Allow firewall ports to be specified as strings in addition to numbers.
