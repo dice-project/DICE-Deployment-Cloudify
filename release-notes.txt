@@ -1,3 +1,7 @@
+New in 0.8.1:
+
+* Pin all package dependencies to specific versions.
+
 New in 0.8.0:
 
 * Add support for passing user data to new VM instances.
